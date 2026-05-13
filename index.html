@@ -80,8 +80,7 @@
                 radial-gradient(ellipse 60% 40% at 80% 110%, rgba(52, 211, 153, 0.03) 0%, transparent 60%);
             pointer-events: none; z-index: 0;
         }
-        /* Extra padding bottom to prevent overlap with bottom bar */
-        #app { position: relative; z-index: 1; padding-bottom: 6rem; }
+        #app { position: relative; z-index: 1; padding-bottom: 3rem; }
 
         .card {
             background: var(--bg-card); border: 1px solid var(--border);
@@ -190,7 +189,7 @@
         .delete-btn { background: none; border: none; color: var(--text-muted); padding: 6px 8px; border-radius: 6px; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
         .delete-btn:hover { color: var(--red); background: rgba(248,113,113,0.1); transform: scale(1.1); }
 
-        #toast { position: fixed; bottom: 90px; right: 30px; z-index: 9999; pointer-events: none; display: flex; flex-direction: column; gap: 10px; }
+        #toast { position: fixed; bottom: 30px; right: 30px; z-index: 9999; pointer-events: none; display: flex; flex-direction: column; gap: 10px; }
         .toast-item { 
             background: var(--bg-card); border: 1px solid var(--border-bright); border-radius: 12px; 
             padding: 1rem 1.5rem; display: flex; align-items: center; gap: 0.75rem; 
@@ -201,7 +200,7 @@
         .toast-out { animation: toastOut 0.3s ease forwards !important; }
         @keyframes toastOut { to { transform: translateX(120%); opacity: 0; } }
 
-        .modal-bg { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); align-items: center; justify-content: center; padding: 1rem; }
+        .modal-bg { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.75); backdrop-filter: blur(5px); align-items: center; justify-content: center; padding: 1rem; }
         .modal-bg.open { display: flex; }
         .modal-box { 
             background: var(--bg-card); border: 1px solid var(--border-bright); border-radius: 20px; 
@@ -215,14 +214,6 @@
         @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
         
         .section-header { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.3rem; color: var(--text-primary); display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
-
-        /* Sticky Bottom Bar */
-        .bottom-bar {
-            position: fixed; bottom: 0; left: 0; right: 0; padding: 1rem;
-            background: rgba(6, 9, 15, 0.85); backdrop-filter: blur(12px);
-            border-top: 1px solid var(--border); z-index: 40;
-            display: flex; justify-content: center;
-        }
 
         /* Hide scrollbar class */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -242,7 +233,7 @@
             .data-table thead th { padding: 0.6rem; font-size: 0.75rem; }
             .data-table tbody td { padding: 0.75rem 0.6rem; font-size: 0.85rem; }
             
-            #toast { left: 50%; right: auto; transform: translateX(-50%); bottom: 85px; width: 90%; max-width: 320px; }
+            #toast { left: 50%; right: auto; transform: translateX(-50%); bottom: 20px; width: 90%; max-width: 320px; }
             @keyframes toastIn { from { transform: translate(-50%, 100%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
             @keyframes toastOut { to { transform: translate(-50%, 100%); opacity: 0; } }
             .toast-item { padding: 0.75rem 1rem; }
@@ -284,9 +275,16 @@
     <!-- ================= MAIN CONTENT ================= -->
     <main class="max-w-7xl mx-auto px-4 py-6 flex flex-col gap-6 md:gap-8">
         
+        <!-- --- MONTH TABS --- -->
+        <div class="w-full">
+            <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-2" id="month-tabs">
+                <!-- Javascript will inject months here -->
+            </div>
+        </div>
+
         <!-- --- STAT CARDS (Clickable for Reports) --- -->
         <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
-            <!-- Card: আমি পাবো (Overall) -->
+            <!-- Card: আমি পাবো (Overall - Not affected by month filter) -->
             <div class="card stat-card red-glow hover:ring-2 hover:ring-[var(--border-bright)]" onclick="openReport('owed-to-me')">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">আমি পাবো</p>
@@ -300,7 +298,7 @@
                 <p class="text-xs text-dim mt-2 font-medium"><span id="stat-owed-to-me-sub">— জন ঋণী</span> <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
             </div>
 
-            <!-- Card: আমি ঋণী (Overall) -->
+            <!-- Card: আমি ঋণী (Overall - Not affected by month filter) -->
             <div class="card stat-card green-glow hover:ring-2 hover:ring-[var(--border-bright)]" onclick="openReport('i-owe')">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">আমি ঋণী</p>
@@ -314,7 +312,7 @@
                 <p class="text-xs text-dim mt-2 font-medium"><span id="stat-i-owe-sub">— জনের কাছে</span> <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
             </div>
 
-            <!-- Card: অন্যদের খরচ (Current Month) -->
+            <!-- Card: অন্যদের খরচ (Filtered by Month) -->
             <div class="card stat-card accent-glow hover:ring-2 hover:ring-[var(--border-bright)]" onclick="openReport('people-spend')">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">অন্যদের খরচ</p>
@@ -325,10 +323,10 @@
                 <div class="number-display text-xl md:text-3xl font-semibold text-sky-400" id="stat-people-spend">
                     <span class="skeleton w-20 h-8"></span>
                 </div>
-                <p class="text-xs text-dim mt-2 font-medium" id="stat-people-spend-sub">চলতি মাসে <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
+                <p class="text-xs text-dim mt-2 font-medium" id="stat-people-spend-sub">নির্বাচিত মাসে <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
             </div>
 
-            <!-- Card: নিজস্ব খরচ (Current Month) -->
+            <!-- Card: নিজস্ব খরচ (Filtered by Month) -->
             <div class="card stat-card pink-glow hover:ring-2 hover:ring-[var(--border-bright)]" onclick="openReport('personal-spend')">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">নিজস্ব খরচ</p>
@@ -339,7 +337,7 @@
                 <div class="number-display text-xl md:text-3xl font-semibold text-pink-400" id="stat-personal-spend">
                     <span class="skeleton w-20 h-8"></span>
                 </div>
-                <p class="text-xs text-dim mt-2 font-medium" id="stat-personal-spend-sub">চলতি মাসে <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
+                <p class="text-xs text-dim mt-2 font-medium" id="stat-personal-spend-sub">নির্বাচিত মাসে <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
             </div>
         </section>
 
@@ -526,14 +524,14 @@
             </div>
         </section>
 
+        <!-- --- BOTTOM BAR FOR MONTHLY ARCHIVE (Normal Flow, Not Sticky) --- -->
+        <div class="flex justify-center mt-6 mb-8">
+            <button onclick="openMonthlyListModal()" class="btn-primary btn-tertiary w-full max-w-lg py-3 md:py-3.5 rounded-xl font-display font-bold text-[0.95rem] md:text-base tracking-wide shadow-[0_8px_30px_rgba(168,85,247,0.3)]">
+                <i class="fas fa-calendar-check mr-2 text-lg"></i> মাসিক রিপোর্ট ও আর্কাইভ
+            </button>
+        </div>
+
     </main>
-    
-    <!-- BOTTOM STICKY BAR FOR MONTHLY ARCHIVE -->
-    <div class="bottom-bar">
-        <button onclick="openMonthlyListModal()" class="btn-primary btn-tertiary w-full max-w-lg py-3 md:py-3.5 rounded-xl font-display font-bold text-[0.95rem] md:text-base tracking-wide">
-            <i class="fas fa-calendar-check mr-2 text-lg"></i> মাসিক রিপোর্ট ও আর্কাইভ
-        </button>
-    </div>
 </div>
 
 <!-- ================= MODAL: ADD PERSON ================= -->
@@ -666,12 +664,45 @@
     };
 
     function initApp() {
+        renderMonthTabs();
         setupFormListeners();
         setupModalListeners();
         refreshAll();
     }
 
-    function isCurrentMonth(iso) {
+    // ------------------------------------------------------------------------
+    // MONTH FILTERING LOGIC
+    // ------------------------------------------------------------------------
+    function renderMonthTabs() {
+        const container = document.getElementById("month-tabs");
+        
+        container.innerHTML = monthNames.map((m, idx) => {
+            const isSelected = state.reportMonth.month === idx;
+            const btnClass = isSelected 
+                ? "bg-[var(--accent)] text-white shadow-[0_0_10px_rgba(56,189,248,0.4)] border-transparent" 
+                : "bg-[var(--bg-input)] text-[var(--text-muted)] border-[var(--border)] hover:border-[var(--border-bright)] hover:text-white";
+            
+            return `<button onclick="selectMonth(${idx})" class="whitespace-nowrap px-4 py-1.5 md:py-2 rounded-xl text-xs md:text-sm font-semibold transition-all border ${btnClass}">
+                ${m}
+            </button>`;
+        }).join("");
+
+        setTimeout(() => {
+            const activeBtn = container.querySelector('.bg-\\[var\\(--accent\\)\\]');
+            if (activeBtn) activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }, 100);
+    }
+
+    function selectMonth(idx) {
+        state.reportMonth.month = idx;
+        renderMonthTabs();
+        renderStats();
+        renderTransactionsTable();
+        renderExpenseBreakdown();
+        renderExpenseTable();
+    }
+
+    function isWithinSelectedMonth(iso) {
         if (!iso) return false;
         const d = new Date(iso);
         return d.getFullYear() === state.reportMonth.year && d.getMonth() === state.reportMonth.month;
@@ -711,6 +742,7 @@
 
     async function fetchTransactions() {
         try {
+            // Expand multiple possible relation fields just in case
             const result = await pb.collection("transactions").getList(1, 200, { sort: "-created", expand: "people_id,person_id,person" });
             state.transactions = result.items;
         } catch (err) {
@@ -779,14 +811,14 @@
         // Spendings are filtered to CURRENT MONTH
         let recentPeopleSpend = 0;
         state.transactions.forEach(t => {
-            if ((t.trx_type === "Gave" || t.trx_type === "Shared Expense") && isCurrentMonth(t.created)) {
+            if ((t.trx_type === "Gave" || t.trx_type === "Shared Expense") && isWithinSelectedMonth(t.created)) {
                 recentPeopleSpend += Math.abs(t.amount);
             }
         });
 
         let thisMonthExpense = 0;
         state.personalExpenses.forEach(e => {
-            if (isCurrentMonth(e.created)) {
+            if (isWithinSelectedMonth(e.created)) {
                 thisMonthExpense += Math.abs(e.amount);
             }
         });
@@ -839,7 +871,7 @@
         if(tbody.innerHTML.includes("ডাটাবেস")) return;
 
         // Dashboard table only shows current month transactions
-        const rows = state.transactions.filter(t => isCurrentMonth(t.created));
+        const rows = state.transactions.filter(t => isWithinSelectedMonth(t.created));
 
         if (rows.length === 0) {
             tbody.innerHTML = `<tr><td colspan=\"7\" class=\"text-center py-10 text-muted text-sm\"><i class=\"fas fa-inbox text-3xl mb-3 text-dim\"></i><br>এই মাসে কোনো লেনদেন নেই।</td></tr>`;
@@ -884,7 +916,7 @@
 
         const catTots = { "food": 0, "transport": 0, "shopping": 0, "extra": 0 };
         state.personalExpenses.forEach(e => {
-            if(isCurrentMonth(e.created)) {
+            if(isWithinSelectedMonth(e.created)) {
                 if(catTots[e.category] !== undefined) catTots[e.category] += e.amount;
                 else catTots["extra"] += e.amount;
             }
@@ -902,7 +934,7 @@
         const tbody = document.getElementById("expenses-tbody");
         if(tbody.innerHTML.includes("ডাটাবেস")) return;
 
-        const rows = state.personalExpenses.filter(e => isCurrentMonth(e.created));
+        const rows = state.personalExpenses.filter(e => isWithinSelectedMonth(e.created));
 
         if (rows.length === 0) {
             tbody.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-muted text-sm"><i class="fas fa-file-invoice-dollar text-3xl mb-3 text-dim"></i><br>এই মাসে কোনো খরচ নেই।</td></tr>`;
@@ -1003,7 +1035,7 @@
                     <div class="text-2xl font-bold text-red-400 number-display">${fmt(total)}</div>
                 </div>`;
 
-            if(list.length === 0) html = '<p class="text-center text-muted py-6">কেউ ঋণী নেই।</p>';
+            if(list.length === 0) html = '<p class="text-center text-muted py-6">কেউ ঋণী নেই。</p>';
             else {
                 html = list.map(p => `
                     <div class="flex items-center justify-between py-3 border-b border-[var(--border)] last:border-0 cursor-pointer hover:bg-[var(--bg-input)] px-2 rounded-lg transition-colors" onclick="closeReportModal(); openPersonProfile('${p.id}')">
@@ -1043,7 +1075,7 @@
         else if (type === 'people-spend') {
             const mName = monthNames[state.reportMonth.month];
             title.innerHTML = `<i class="fas fa-users text-sky-400 mr-2"></i>অন্যদের খরচ (${mName})`;
-            const list = state.transactions.filter(t => (t.trx_type === "Gave" || t.trx_type === "Shared Expense") && isCurrentMonth(t.created));
+            const list = state.transactions.filter(t => (t.trx_type === "Gave" || t.trx_type === "Shared Expense") && isWithinSelectedMonth(t.created));
             
             const total = list.reduce((sum, t) => sum + Math.abs(t.amount), 0);
             headerHtml = `
@@ -1073,7 +1105,7 @@
         else if (type === 'personal-spend') {
             const mName = monthNames[state.reportMonth.month];
             title.innerHTML = `<i class="fas fa-user-tag text-pink-400 mr-2"></i>নিজস্ব খরচ (${mName})`;
-            const list = state.personalExpenses.filter(e => isCurrentMonth(e.created));
+            const list = state.personalExpenses.filter(e => isWithinSelectedMonth(e.created));
             
             const total = list.reduce((sum, e) => sum + Math.abs(e.amount), 0);
             headerHtml = `
@@ -1372,6 +1404,21 @@
     // ------------------------------------------------------------------------
     // UI UTILITIES
     // ------------------------------------------------------------------------
+    function togglePersonFilter(pId) {
+        state.filterPersonId = state.filterPersonId === pId ? "" : pId;
+        renderTransactionsTable(); renderPeopleGrid();
+        
+        const clearBtn = document.getElementById("clear-filter-btn");
+        if (state.filterPersonId) {
+            clearBtn.style.display = "inline-flex";
+            clearBtn.classList.add("animate-pulse"); setTimeout(()=>clearBtn.classList.remove("animate-pulse"), 500);
+        } else {
+            clearBtn.style.display = "none";
+        }
+    }
+    
+    function clearPersonFilter() { togglePersonFilter(state.filterPersonId); }
+    
     function populatePersonDropdowns() {
         const sel = document.getElementById("form-person"); const val = sel.value;
         sel.innerHTML = `<option value="">নির্বাচন করুন…</option>` + state.people.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("");
