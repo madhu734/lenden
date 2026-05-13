@@ -386,14 +386,15 @@
                     <div class="card p-4 md:p-6 border-t-[3px] border-t-[var(--accent)] relative overflow-hidden">
                         <div class="absolute -top-10 -right-10 text-[var(--accent)] opacity-[0.03] text-9xl pointer-events-none"><i class="fas fa-bolt"></i></div>
                         
-                        <div class="flex items-center justify-end mb-4 relative z-10">
-                            <button onclick="openPersonModal()" class="btn-ghost"><i class="fas fa-plus mr-2"></i>নতুন মানুষ</button>
-                        </div>
-                        
-                        <form id="trx-add-form" class="flex flex-col gap-4 relative z-10">
+                        <form id="trx-add-form" class="flex flex-col gap-4 relative z-10 mt-1">
                             <div>
                                 <label class="form-label">ব্যক্তি</label>
-                                <select id="form-person" class="form-input" required><option value="">নির্বাচন করুন…</option></select>
+                                <div class="flex gap-2">
+                                    <select id="form-person" class="form-input" required><option value="">নির্বাচন করুন…</option></select>
+                                    <button type="button" onclick="openPersonModal()" class="btn-ghost !px-3.5 shrink-0 rounded-lg flex items-center justify-center bg-sky-500/10 border-sky-500/20 text-sky-400 hover:bg-sky-500/20 hover:text-sky-300 transition-colors" title="নতুন মানুষ যোগ করুন">
+                                        <i class="fas fa-user-plus text-lg"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="grid grid-cols-2 gap-3 md:gap-4">
                                 <div>
@@ -1253,15 +1254,14 @@
             btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>সেভ হচ্ছে…`;
             
             try {
-                try {
-                    await pb.collection("transactions").create({ people_id: pId, amount: amt, trx_type: state.selectedTrxType, method, note });
-                } catch(err1) {
-                    try {
-                        await pb.collection("transactions").create({ person_id: pId, amount: amt, trx_type: state.selectedTrxType, method, note });
-                    } catch(err2) {
-                        await pb.collection("transactions").create({ person: pId, amount: amt, trx_type: state.selectedTrxType, method, note });
-                    }
-                }
+                // আপনার ডেটাবেসের ফিল্ড অনুযায়ী সরাসরি people_id ব্যবহার করা হলো
+                await pb.collection("transactions").create({ 
+                    people_id: pId, 
+                    amount: amt, 
+                    trx_type: state.selectedTrxType, 
+                    method: method, 
+                    note: note 
+                });
 
                 await updatePersonBalance(pId, state.selectedTrxType, amt);
                 await refreshAll();
@@ -1269,7 +1269,13 @@
                 document.querySelector(".trx-type-btn[data-value='Gave']").click(); 
                 showToast("লেনদেন যুক্ত হয়েছে!", "success");
             } catch (err) { 
-                showToast("সেভ করতে সমস্যা হয়েছে", "error"); 
+                console.error("Trx Save Error:", err.response || err);
+                let msg = "সেভ করতে সমস্যা হয়েছে";
+                // স্মার্ট এরর ডিটেকশন
+                if (err.response && err.response.data) {
+                    msg = `ডেটাবেস ফিল্ড ভুল: ${Object.keys(err.response.data).join(", ")}`;
+                }
+                showToast(msg, "error"); 
             } finally { 
                 btn.disabled = false; btn.innerHTML = `<i class="fas fa-check-circle mr-2"></i>সেভ করুন`; 
             }
@@ -1287,12 +1293,17 @@
             btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>যুক্ত হচ্ছে…`;
             
             try {
-                await pb.collection("personal_expenses").create({ amount: amt, category: cat, note });
+                await pb.collection("personal_expenses").create({ amount: amt, category: cat, note: note });
                 await refreshAll(); 
                 e.target.reset(); 
                 showToast("খরচ সফলভাবে যুক্ত হয়েছে!", "success");
             } catch (err) { 
-                showToast("খরচ যুক্ত করা যায়নি!", "error"); 
+                console.error("Expense Save Error:", err.response || err);
+                let msg = "খরচ যুক্ত করা যায়নি!";
+                if (err.response && err.response.data) {
+                    msg = `ডেটাবেস ফিল্ড ভুল: ${Object.keys(err.response.data).join(", ")}`;
+                }
+                showToast(msg, "error"); 
             } finally { 
                 btn.disabled = false; btn.innerHTML = `<i class="fas fa-plus-circle mr-2"></i>খরচ যুক্ত করুন`; 
             }
@@ -1326,7 +1337,8 @@
                 e.target.reset(); 
                 showToast("নতুন মানুষ যুক্ত হয়েছে!", "success");
             } catch (err) { 
-                showToast("মানুষ যোগ করা যায়নি", "error"); 
+                console.error("Add Person Error:", err.response || err);
+                showToast("মানুষ যোগ করা যায়নি, কনসোল দেখুন", "error"); 
             } finally { 
                 btn.disabled = false; btn.innerHTML = `<i class="fas fa-save mr-2"></i>সেভ করুন`; 
             }
@@ -1360,9 +1372,14 @@
 
     async function updatePersonBalance(pId, type, amt) {
         if(!pId) return;
-        const p = await pb.collection("people").getOne(pId);
-        const delta = { "Gave": -amt, "Received": +amt, "Shared Expense": -amt }[type] ?? 0;
-        await pb.collection("people").update(pId, { net_balance: (p.net_balance || 0) + delta });
+        try {
+            const p = await pb.collection("people").getOne(pId);
+            const delta = { "Gave": -amt, "Received": +amt, "Shared Expense": -amt }[type] ?? 0;
+            await pb.collection("people").update(pId, { net_balance: (p.net_balance || 0) + delta });
+        } catch(err) {
+            console.error("Balance Update Error:", err.response || err);
+            throw err;
+        }
     }
 
     // ------------------------------------------------------------------------
