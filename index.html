@@ -997,6 +997,9 @@
         const newBal = parseFloat(newBalStr);
         if(isNaN(newBal)) return showToast("সঠিক সংখ্যা দিন!", "error");
 
+        const pin = prompt("মালিকানা কোড (PIN) দিন:");
+        if (pin !== "0852") return showToast("ভুল পিন! এক্সেস নেই।", "error");
+
         try {
             await pb.collection("people").update(pId, { net_balance: newBal });
             await refreshAll();
@@ -1377,6 +1380,9 @@
         ev.stopPropagation(); 
         if (!confirm("আপনি কি নিশ্চিত এই লেনদেনটি ডিলিট করবেন?")) return;
         
+        const pin = prompt("মালিকানা কোড (PIN) দিন:");
+        if (pin !== "0852") return showToast("ভুল পিন! এক্সেস নেই।", "error");
+
         const trx = state.transactions.find(t => t.id === id); if (!trx) return;
         
         const btn = ev.currentTarget;
@@ -1410,6 +1416,9 @@
         ev.stopPropagation(); 
         if (!confirm("খরচের রেকর্ডটি ডিলিট করবেন?")) return;
         
+        const pin = prompt("মালিকানা কোড (PIN) দিন:");
+        if (pin !== "0852") return showToast("ভুল পিন! এক্সেস নেই।", "error");
+
         const btn = ev.currentTarget;
         btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
         btn.disabled = true;
