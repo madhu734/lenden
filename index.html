@@ -2,12 +2,14 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
+    <!-- Viewport for Mobile Optimization -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Title & Favicon -->
     <title>Madhu's financial tracker</title>
-
     <link rel="icon" type="image/png" href="https://i.postimg.cc/sx5dtBBK/psa.png">
 
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Google Fonts -->
@@ -21,7 +23,7 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- Tailwind Config -->
+    <!-- Tailwind Configuration -->
     <script>
         tailwind.config = {
             theme: {
@@ -30,14 +32,18 @@
                         display: ['Syne', 'sans-serif'],
                         body:    ['Hind Siliguri', 'sans-serif'],
                         mono:    ['DM Mono', 'monospace'],
+                    },
+                    screens: {
+                        'xs': '480px',
                     }
                 }
             }
         }
     </script>
 
+    <!-- Custom Premium Styles & Animations -->
     <style>
-        /* CSS CUSTOM PROPERTIES */
+        /* ================= CSS VARIABLES ================= */
         :root {
             --bg-base:       #06090f;
             --bg-card:       #0c1220;
@@ -58,9 +64,9 @@
             --pink:          #f472b6;
         }
 
+        /* ================= BASE STYLES ================= */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
-
         body {
             font-family: 'Hind Siliguri', sans-serif;
             background-color: var(--bg-base);
@@ -70,247 +76,311 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* Ambient Background Glow */
         body::before {
             content: ''; position: fixed; inset: 0;
-            background-image: radial-gradient(ellipse 80% 50% at 20% -10%, rgba(56, 189, 248, 0.045) 0%, transparent 70%),
-                              radial-gradient(ellipse 60% 40% at 80% 110%, rgba(52, 211, 153, 0.03) 0%, transparent 60%);
+            background-image: 
+                radial-gradient(ellipse 80% 50% at 20% -10%, rgba(56, 189, 248, 0.045) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 80% 110%, rgba(52, 211, 153, 0.03) 0%, transparent 60%);
             pointer-events: none; z-index: 0;
         }
-        #app { position: relative; z-index: 1; padding-bottom: 2rem; }
+        #app { position: relative; z-index: 1; padding-bottom: 3rem; }
 
-        /* CARDS */
+        /* ================= CARDS ================= */
         .card {
-            background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 14px; transition: border-color 0.2s ease, background 0.2s ease;
+            background: var(--bg-card); 
+            border: 1px solid var(--border);
+            border-radius: 16px; 
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
-        .card:hover { border-color: var(--border-bright); }
+        .card:hover { border-color: var(--border-bright); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); }
 
-        .stat-card { position: relative; overflow: hidden; }
+        .stat-card { position: relative; overflow: hidden; padding: 1.25rem; }
         .stat-card::after {
-            content: ''; position: absolute; top: 0; right: 0; width: 100px; height: 100px;
-            border-radius: 50%; opacity: 0.08; transform: translate(30%, -30%); pointer-events: none;
+            content: ''; position: absolute; top: 0; right: 0; 
+            width: 130px; height: 130px; border-radius: 50%; 
+            opacity: 0.06; transform: translate(35%, -35%); pointer-events: none;
+            transition: all 0.3s ease;
         }
+        .stat-card:hover::after { transform: translate(25%, -25%) scale(1.1); opacity: 0.1; }
+        
         .stat-card.red-glow::after    { background: var(--red); }
         .stat-card.green-glow::after  { background: var(--green); }
         .stat-card.accent-glow::after { background: var(--accent); }
         .stat-card.pink-glow::after   { background: var(--pink); }
 
-        /* FORM INPUTS */
+        /* ================= FORM ELEMENTS ================= */
         .form-input {
-            background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px;
-            color: var(--text-primary); font-family: 'Hind Siliguri', sans-serif;
-            font-size: 0.85rem; padding: 0.5rem 0.75rem; width: 100%; outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s; -webkit-appearance: none;
+            background: var(--bg-input); border: 1px solid var(--border); 
+            border-radius: 10px; color: var(--text-primary); 
+            font-family: 'Hind Siliguri', sans-serif;
+            padding: 0.75rem 1rem; width: 100%; outline: none;
+            transition: all 0.2s ease; -webkit-appearance: none;
         }
-        .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15); }
+        .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15); }
         .form-input::placeholder { color: var(--text-dim); }
         .form-input option { background: #0c1220; color: var(--text-primary); }
         
-        input[type="file"].form-input { padding: 0.35rem 0.6rem; font-size: 0.8rem; }
+        /* File Input Styling */
+        input[type="file"].form-input { padding: 0.5rem; }
         input[type="file"]::file-selector-button {
-            background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent); color: var(--accent);
-            border-radius: 6px; padding: 0.2rem 0.4rem; margin-right: 8px; cursor: pointer; font-size: 0.75rem;
+            background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent); 
+            color: var(--accent); border-radius: 8px; padding: 0.4rem 0.8rem; 
+            margin-right: 12px; cursor: pointer; font-family: 'Hind Siliguri', sans-serif;
+            font-weight: 600; transition: all 0.2s;
         }
+        input[type="file"]::file-selector-button:hover { background: var(--accent); color: #fff; }
 
-        .form-label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.3rem; }
+        .form-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.4rem; letter-spacing: 0.02em; }
 
-        /* BUTTONS */
+        /* ================= BUTTONS ================= */
         .btn-primary {
             background: linear-gradient(135deg, #0ea5e9, #38bdf8); color: #fff;
-            font-weight: 600; font-family: 'Hind Siliguri', sans-serif; font-size: 0.9rem;
-            border-radius: 8px; padding: 0.6rem 1.2rem; border: none; cursor: pointer;
-            transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center;
+            font-weight: 700; font-family: 'Hind Siliguri', sans-serif; font-size: 0.95rem;
+            border-radius: 10px; padding: 0.75rem 1.5rem; border: none; cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+            display: inline-flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.25);
         }
-        .btn-primary:active { transform: scale(0.98); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.4); }
+        .btn-primary:active { transform: translateY(0); }
         .btn-primary:disabled { opacity: 0.5; pointer-events: none; }
 
-        .btn-secondary { background: linear-gradient(135deg, #8b5cf6, #c084fc); }
+        .btn-secondary { background: linear-gradient(135deg, #8b5cf6, #c084fc); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.25); }
+        .btn-secondary:hover { box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4); }
         
         .btn-ghost {
             background: transparent; border: 1px solid var(--border); color: var(--text-muted);
-            border-radius: 6px; padding: 0.35rem 0.6rem; font-size: 0.75rem;
-            font-family: 'Hind Siliguri', sans-serif; cursor: pointer; transition: all 0.2s;
+            border-radius: 8px; padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 500;
+            font-family: 'Hind Siliguri', sans-serif; cursor: pointer; transition: all 0.2s ease;
             display: inline-flex; align-items: center; justify-content: center;
         }
-        .btn-ghost:active { background: var(--bg-card-hover); border-color: var(--border-bright); color: var(--text-primary); }
+        .btn-ghost:hover { background: var(--bg-card-hover); border-color: var(--border-bright); color: var(--text-primary); }
 
-        /* TYPE SELECTORS */
+        /* Transaction Type Buttons */
         .trx-type-btn {
-            background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px;
-            color: var(--text-muted); font-size: 0.75rem; font-weight: 500;
-            padding: 0.4rem 0.2rem; cursor: pointer; transition: all 0.2s; text-align: center;
+            background: var(--bg-input); border: 1px solid var(--border); border-radius: 10px;
+            color: var(--text-muted); font-size: 0.85rem; font-weight: 600;
+            padding: 0.6rem 0.4rem; cursor: pointer; transition: all 0.2s ease; text-align: center;
         }
-        .trx-type-btn.selected { border-color: var(--accent); color: var(--accent); background: rgba(56, 189, 248, 0.08); box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.15); }
-        .trx-type-btn.sel-red    { border-color: var(--red);   color: var(--red);   background: rgba(248,113,113,0.08); }
-        .trx-type-btn.sel-green  { border-color: var(--green); color: var(--green); background: rgba(52,211,153,0.08); }
-        .trx-type-btn.sel-amber  { border-color: var(--amber); color: var(--amber); background: rgba(251,191,36,0.08); }
+        .trx-type-btn:hover { border-color: var(--border-bright); background: var(--bg-card-hover); }
+        .trx-type-btn.selected { transform: scale(0.98); }
+        .trx-type-btn.sel-red.selected    { border-color: var(--red);   color: var(--red);   background: rgba(248,113,113,0.1); box-shadow: 0 0 0 2px rgba(248,113,113,0.2); }
+        .trx-type-btn.sel-green.selected  { border-color: var(--green); color: var(--green); background: rgba(52,211,153,0.1); box-shadow: 0 0 0 2px rgba(52,211,153,0.2); }
+        .trx-type-btn.sel-amber.selected  { border-color: var(--amber); color: var(--amber); background: rgba(251,191,36,0.1); box-shadow: 0 0 0 2px rgba(251,191,36,0.2); }
 
-        /* NUMBERS & CARDS */
+        /* ================= LISTS & AVATARS ================= */
         .number-display { font-family: 'DM Mono', monospace; font-feature-settings: 'tnum'; font-variant-numeric: tabular-nums; }
-        .item-card { cursor: pointer; transition: all 0.2s; }
-        .item-card:active { transform: scale(0.98); }
-        .item-card.active-filter { box-shadow: 0 0 0 1px var(--accent); border-color: var(--accent); }
+        
+        .item-card { cursor: pointer; transition: all 0.2s ease; }
+        .item-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+        .item-card.active-filter { border-color: var(--accent); background: rgba(56, 189, 248, 0.05); }
 
-        /* AVATAR */
         .avatar-sm { 
-            width: 32px; height: 32px; border-radius: 8px; font-size: 0.75rem; font-weight: 700;
+            width: 42px; height: 42px; border-radius: 10px; font-size: 1rem; font-weight: 700;
             display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;
-            font-family: 'Syne', sans-serif;
+            font-family: 'Syne', sans-serif; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
-        /* BADGES */
-        .badge { font-size: 0.65rem; font-weight: 600; padding: 0.15rem 0.4rem; border-radius: 4px; white-space: nowrap; }
-        .type-gave     { background: rgba(248,113,113,0.12); color: #f87171; }
-        .type-received { background: rgba(52,211,153,0.12);  color: #34d399; }
-        .type-shared   { background: rgba(251,191,36,0.12);  color: #fbbf24; }
-        .type-expense  { background: rgba(244,114,182,0.12); color: #f472b6; }
+        /* ================= BADGES ================= */
+        .badge { font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 6px; white-space: nowrap; letter-spacing: 0.02em; }
+        .type-gave     { background: rgba(248,113,113,0.12); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
+        .type-received { background: rgba(52,211,153,0.12);  color: #34d399; border: 1px solid rgba(52,211,153,0.2); }
+        .type-shared   { background: rgba(251,191,36,0.12);  color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
+        .type-expense  { background: rgba(244,114,182,0.12); color: #f472b6; border: 1px solid rgba(244,114,182,0.2); }
         .method-cash   { background: rgba(167,139,250,0.1); color: #a78bfa; }
         .method-bkash  { background: rgba(244,114,182,0.1); color: #f472b6; }
         .method-3rd    { background: rgba(56,189,248,0.1);  color: #38bdf8; }
 
-        /* TABLES */
+        /* ================= TABLES ================= */
         .data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
         .data-table thead th {
-            font-size: 0.7rem; font-weight: 600; color: var(--text-muted);
-            padding: 0.5rem; border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap;
+            font-size: 0.8rem; font-weight: 600; color: var(--text-muted);
+            padding: 1rem; border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap;
         }
+        .data-table tbody tr { transition: background 0.2s ease; }
+        .data-table tbody tr:hover { background: rgba(255,255,255,0.02); }
         .data-table tbody td {
-            padding: 0.6rem 0.5rem; border-bottom: 1px solid rgba(26, 37, 64, 0.45); font-size: 0.8rem; vertical-align: middle;
+            padding: 1rem; border-bottom: 1px solid rgba(26, 37, 64, 0.45); font-size: 0.9rem; vertical-align: middle;
         }
         .data-table tbody tr:last-child td { border-bottom: none; }
-        .delete-btn { background: none; border: none; color: var(--red); opacity: 0.6; padding: 4px; font-size: 0.8rem; cursor: pointer; }
-        .delete-btn:active { opacity: 1; transform: scale(1.1); }
+        
+        .delete-btn { background: none; border: none; color: var(--text-muted); padding: 6px 8px; border-radius: 6px; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
+        .delete-btn:hover { color: var(--red); background: rgba(248,113,113,0.1); transform: scale(1.1); }
 
-        /* TOAST - Optimized for mobile */
-        #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; display: flex; flex-direction: column; gap: 6px; width: 90%; max-width: 320px; }
-        .toast-item { background: var(--bg-card); border: 1px solid var(--border-bright); border-radius: 10px; padding: 0.7rem 1rem; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.6); animation: toastIn 0.3s forwards; pointer-events: all; }
-        @keyframes toastIn { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .toast-out { animation: toastOut 0.25s forwards !important; }
-        @keyframes toastOut { to { transform: translateY(100%); opacity: 0; } }
+        /* ================= TOAST NOTIFICATIONS ================= */
+        #toast { position: fixed; bottom: 30px; right: 30px; z-index: 9999; pointer-events: none; display: flex; flex-direction: column; gap: 10px; }
+        .toast-item { 
+            background: var(--bg-card); border: 1px solid var(--border-bright); border-radius: 12px; 
+            padding: 1rem 1.5rem; display: flex; align-items: center; gap: 0.75rem; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); pointer-events: all;
+            animation: toastIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; 
+        }
+        @keyframes toastIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .toast-out { animation: toastOut 0.3s ease forwards !important; }
+        @keyframes toastOut { to { transform: translateX(120%); opacity: 0; } }
 
-        /* MODAL */
-        #person-modal { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.8); backdrop-filter: blur(3px); align-items: center; justify-content: center; padding: 1rem; }
+        /* ================= MODAL ================= */
+        #person-modal { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.75); backdrop-filter: blur(5px); align-items: center; justify-content: center; padding: 1rem; }
         #person-modal.open { display: flex; }
-        .modal-box { background: var(--bg-card); border: 1px solid var(--border-bright); border-radius: 16px; width: 100%; max-width: 360px; padding: 1.25rem; animation: modalIn 0.2s forwards; }
-        @keyframes modalIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-box { 
+            background: var(--bg-card); border: 1px solid var(--border-bright); border-radius: 20px; 
+            width: 100%; max-width: 400px; padding: 2rem; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; 
+        }
+        @keyframes modalIn { from { transform: scale(0.9) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
 
-        .skeleton { background: linear-gradient(90deg, var(--bg-card) 25%, #141e31 50%, var(--bg-card) 75%); background-size: 200% 100%; animation: shimmer 1.6s infinite; border-radius: 4px; display: inline-block; }
+        /* ================= UTILS & RESPONSIVE ================= */
+        .skeleton { background: linear-gradient(90deg, var(--bg-card) 25%, #141e31 50%, var(--bg-card) 75%); background-size: 200% 100%; animation: shimmer 1.6s infinite; border-radius: 6px; display: inline-block; }
         @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
         
-        .section-header { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--text-primary); margin: 1.5rem 0 0.75rem 0; display: flex; align-items: center; gap: 8px; }
+        .section-header { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.3rem; color: var(--text-primary); margin: 2.5rem 0 1rem 0; display: flex; align-items: center; gap: 10px; }
 
-        ::-webkit-scrollbar { width: 3px; height: 3px; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 5px; }
 
-        /* MOBILE SPECIFIC HIDING */
+        /* 📱 Mobile Specific Tweaks (Optimized Compact Layout) */
         @media (max-width: 640px) { 
             .hide-mobile { display: none !important; } 
-            .stat-card { padding: 0.8rem; }
-        }
-        @media (min-width: 641px) {
-            .form-input { font-size: 0.9rem; padding: 0.6rem 0.8rem; }
-            .trx-type-btn { padding: 0.6rem 0.3rem; font-size: 0.85rem; }
-            .section-header { font-size: 1.25rem; margin: 2rem 0 1rem 0; }
-            .avatar-sm { width: 40px; height: 40px; font-size: 0.9rem; }
-            #toast { left: auto; right: 24px; transform: none; bottom: 24px; width: auto; }
-            @keyframes toastIn { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-            @keyframes toastOut { to { transform: translateX(110%); opacity: 0; } }
+            .stat-card { padding: 1rem; }
+            .section-header { font-size: 1.15rem; margin: 1.5rem 0 0.75rem 0; }
+            .form-input { padding: 0.6rem 0.8rem; font-size: 0.85rem; }
+            .btn-primary, .btn-ghost { padding: 0.6rem 1rem; font-size: 0.85rem; }
+            .avatar-sm { width: 34px; height: 34px; font-size: 0.8rem; }
+            .data-table thead th { padding: 0.6rem; font-size: 0.75rem; }
+            .data-table tbody td { padding: 0.75rem 0.6rem; font-size: 0.85rem; }
+            
+            #toast { left: 50%; right: auto; transform: translateX(-50%); bottom: 20px; width: 90%; max-width: 320px; }
+            @keyframes toastIn { from { transform: translate(-50%, 100%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+            @keyframes toastOut { to { transform: translate(-50%, 100%); opacity: 0; } }
+            .toast-item { padding: 0.75rem 1rem; }
         }
     </style>
 </head>
 <body>
 <div id="app">
-    <!-- HEADER -->
-    <header class="border-b border-[var(--border)] sticky top-0 z-40 bg-[var(--bg-base)] bg-opacity-95 backdrop-blur-sm">
-        <div class="max-w-7xl mx-auto px-3 py-3 flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 md:w-9 md:h-9 rounded-lg flex items-center justify-center shrink-0" style="background: linear-gradient(135deg, #0284c7, #38bdf8); box-shadow: 0 0 15px rgba(56,189,248,0.2);">
-                    <i class="fas fa-wallet text-white text-sm"></i>
+    <!-- ================= HEADER ================= -->
+    <header class="border-b border-[var(--border)] sticky top-0 z-40 bg-[var(--bg-base)] bg-opacity-90 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 py-3 md:py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3 md:gap-4">
+                <div class="w-10 h-10 md:w-11 md:h-11 rounded-xl flex items-center justify-center shrink-0" 
+                     style="background: linear-gradient(135deg, #0284c7, #38bdf8); box-shadow: 0 4px 15px rgba(56,189,248,0.3);">
+                    <i class="fas fa-wallet text-white text-base md:text-lg"></i>
                 </div>
                 <div>
-                    <h1 class="font-display font-bold text-base md:text-lg leading-tight text-primary">Madhu's Finance</h1>
-                    <p class="text-[0.65rem] md:text-xs text-muted">পার্সোনাল ফাইন্যান্স</p>
+                    <h1 class="font-display font-bold text-lg md:text-xl leading-tight text-primary tracking-wide">
+                        Madhu's Finance
+                    </h1>
+                    <p class="text-xs md:text-sm text-muted mt-0.5">পার্সোনাল ফাইন্যান্স ট্র্যাকার</p>
                 </div>
             </div>
 
-            <div class="flex items-center gap-2">
-                <div id="connection-status" class="flex items-center gap-1 text-[0.65rem] md:text-xs px-2 py-1 rounded-full" style="background: rgba(52,211,153,0.08); color: #34d399; border: 1px solid rgba(52,211,153,0.18);">
-                    <div class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></div>
+            <div class="flex items-center gap-3">
+                <div id="connection-status" class="flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full" 
+                     style="background: rgba(52,211,153,0.08); color: #34d399; border: 1px solid rgba(52,211,153,0.2);">
+                    <div class="w-2 h-2 rounded-full bg-current animate-pulse"></div>
                     <span id="status-text" class="hidden sm:inline">কানেক্টেড</span>
                 </div>
-                <button onclick="refreshAll()" id="refresh-btn" class="btn-ghost !px-2"><i class="fas fa-rotate-right text-xs"></i><span class="hidden sm:inline ml-1">রিফ্রেশ</span></button>
+                <button onclick="refreshAll()" id="refresh-btn" class="btn-ghost !px-3 md:!px-4">
+                    <i class="fas fa-rotate-right text-xs md:text-sm"></i>
+                    <span class="hidden sm:inline ml-2">রিফ্রেশ</span>
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- MAIN CONTENT -->
-    <main class="max-w-7xl mx-auto px-3 py-4 flex flex-col gap-4">
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="max-w-7xl mx-auto px-4 py-6 flex flex-col gap-6 md:gap-8">
         
-        <!-- ================= STAT CARDS ================= -->
-        <section class="grid grid-cols-2 md:grid-cols-4 gap-2.5 md:gap-4">
+        <!-- --- STAT CARDS (2x2 on Mobile, 4 in row on Desktop) --- -->
+        <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
             <div class="card stat-card red-glow">
-                <div class="flex items-start justify-between mb-2">
-                    <p class="form-label mb-0 text-[0.65rem] md:text-xs">আমি পাবো</p>
-                    <i class="fas fa-arrow-trend-down text-red-400 text-xs md:text-sm bg-red-500/10 p-1.5 rounded"></i>
+                <div class="flex items-start justify-between mb-3">
+                    <p class="form-label mb-0 text-[0.7rem] md:text-xs">আমি পাবো</p>
+                    <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center bg-red-500/10 text-red-400">
+                        <i class="fas fa-arrow-trend-down text-sm md:text-base"></i>
+                    </div>
                 </div>
-                <div class="number-display text-lg md:text-2xl font-medium text-red-400" id="stat-owed-to-me"><span class="skeleton w-16 h-6"></span></div>
-                <p class="text-[0.6rem] md:text-xs text-dim mt-1" id="stat-owed-to-me-sub">— জন ঋণী</p>
+                <div class="number-display text-xl md:text-3xl font-semibold text-red-400" id="stat-owed-to-me">
+                    <span class="skeleton w-20 h-8"></span>
+                </div>
+                <p class="text-xs text-dim mt-2 font-medium" id="stat-owed-to-me-sub">— জন ঋণী</p>
             </div>
 
             <div class="card stat-card green-glow">
-                <div class="flex items-start justify-between mb-2">
-                    <p class="form-label mb-0 text-[0.65rem] md:text-xs">আমি ঋণী</p>
-                    <i class="fas fa-arrow-trend-up text-green-400 text-xs md:text-sm bg-green-500/10 p-1.5 rounded"></i>
+                <div class="flex items-start justify-between mb-3">
+                    <p class="form-label mb-0 text-[0.7rem] md:text-xs">আমি ঋণী</p>
+                    <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center bg-green-500/10 text-green-400">
+                        <i class="fas fa-arrow-trend-up text-sm md:text-base"></i>
+                    </div>
                 </div>
-                <div class="number-display text-lg md:text-2xl font-medium text-green-400" id="stat-i-owe"><span class="skeleton w-16 h-6"></span></div>
-                <p class="text-[0.6rem] md:text-xs text-dim mt-1" id="stat-i-owe-sub">— জনের কাছে</p>
+                <div class="number-display text-xl md:text-3xl font-semibold text-green-400" id="stat-i-owe">
+                    <span class="skeleton w-20 h-8"></span>
+                </div>
+                <p class="text-xs text-dim mt-2 font-medium" id="stat-i-owe-sub">— জনের কাছে</p>
             </div>
 
             <div class="card stat-card accent-glow">
-                <div class="flex items-start justify-between mb-2">
-                    <p class="form-label mb-0 text-[0.65rem] md:text-xs">অন্যদের খরচ</p>
-                    <i class="fas fa-users text-sky-400 text-xs md:text-sm bg-sky-500/10 p-1.5 rounded"></i>
+                <div class="flex items-start justify-between mb-3">
+                    <p class="form-label mb-0 text-[0.7rem] md:text-xs">অন্যদের খরচ</p>
+                    <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center bg-sky-500/10 text-sky-400">
+                        <i class="fas fa-users text-sm md:text-base"></i>
+                    </div>
                 </div>
-                <div class="number-display text-lg md:text-2xl font-medium text-sky-400" id="stat-people-spend"><span class="skeleton w-16 h-6"></span></div>
-                <p class="text-[0.6rem] md:text-xs text-dim mt-1">গত ৩০ দিন</p>
+                <div class="number-display text-xl md:text-3xl font-semibold text-sky-400" id="stat-people-spend">
+                    <span class="skeleton w-20 h-8"></span>
+                </div>
+                <p class="text-xs text-dim mt-2 font-medium">গত ৩০ দিন</p>
             </div>
 
             <div class="card stat-card pink-glow">
-                <div class="flex items-start justify-between mb-2">
-                    <p class="form-label mb-0 text-[0.65rem] md:text-xs">নিজস্ব খরচ</p>
-                    <i class="fas fa-user-tag text-pink-400 text-xs md:text-sm bg-pink-500/10 p-1.5 rounded"></i>
+                <div class="flex items-start justify-between mb-3">
+                    <p class="form-label mb-0 text-[0.7rem] md:text-xs">নিজস্ব খরচ</p>
+                    <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center bg-pink-500/10 text-pink-400">
+                        <i class="fas fa-user-tag text-sm md:text-base"></i>
+                    </div>
                 </div>
-                <div class="number-display text-lg md:text-2xl font-medium text-pink-400" id="stat-personal-spend"><span class="skeleton w-16 h-6"></span></div>
-                <p class="text-[0.6rem] md:text-xs text-dim mt-1">চলতি মাসে</p>
+                <div class="number-display text-xl md:text-3xl font-semibold text-pink-400" id="stat-personal-spend">
+                    <span class="skeleton w-20 h-8"></span>
+                </div>
+                <p class="text-xs text-dim mt-2 font-medium">চলতি মাসে</p>
             </div>
         </section>
 
 
-        <!-- ================= SECTION: মানুষের সাথে লেনদেন ================= -->
+        <!-- --- SECTION: মানুষের সাথে লেনদেন --- -->
         <h2 class="section-header">
-            <span class="bg-sky-500/15 text-sky-400 p-1.5 md:p-2 rounded-lg text-sm md:text-base"><i class="fas fa-handshake"></i></span>
+            <span class="bg-sky-500/15 text-sky-400 p-2 md:p-2.5 rounded-xl text-base md:text-lg shadow-[0_0_15px_rgba(56,189,248,0.15)]"><i class="fas fa-handshake"></i></span>
             লেনদেনের হিসাব
         </h2>
 
-        <section class="grid grid-cols-1 lg:grid-cols-5 gap-3 md:gap-4">
+        <section class="grid grid-cols-1 xl:grid-cols-5 gap-4 md:gap-6">
             
             <!-- QUICK ADD FORM -->
-            <div class="lg:col-span-2 card p-3 md:p-5 border-t-2 md:border-t-4 border-t-[var(--accent)]">
-                <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-display font-bold text-sm md:text-base text-primary">নতুন লেনদেন যোগ</h3>
-                    <button onclick="openPersonModal()" class="btn-ghost"><i class="fas fa-plus mr-1"></i>মানুষ</button>
+            <div class="xl:col-span-2 card p-4 md:p-6 border-t-[3px] border-t-[var(--accent)] relative overflow-hidden">
+                <!-- Background decoration -->
+                <div class="absolute -top-10 -right-10 text-[var(--accent)] opacity-[0.03] text-9xl pointer-events-none"><i class="fas fa-bolt"></i></div>
+                
+                <div class="flex items-center justify-between mb-5 relative z-10">
+                    <h3 class="font-display font-bold text-base md:text-lg text-primary tracking-wide">নতুন লেনদেন যোগ</h3>
+                    <button onclick="openPersonModal()" class="btn-ghost"><i class="fas fa-plus mr-2"></i>নতুন মানুষ</button>
                 </div>
                 
-                <form id="trx-add-form" class="flex flex-col gap-2.5">
+                <form id="trx-add-form" class="flex flex-col gap-4 relative z-10">
                     <div>
-                        <select id="form-person" class="form-input" required><option value="">ব্যক্তি নির্বাচন করুন…</option></select>
+                        <label class="form-label">ব্যক্তি</label>
+                        <select id="form-person" class="form-input" required><option value="">নির্বাচন করুন…</option></select>
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
+                    <div class="grid grid-cols-2 gap-3 md:gap-4">
                         <div>
-                            <input type="number" id="form-amount" class="form-input" placeholder="পরিমাণ (৳)" step="0.01" min="0.01" required>
+                            <label class="form-label">পরিমাণ (৳)</label>
+                            <input type="number" id="form-amount" class="form-input" placeholder="0.00" step="0.01" min="0.01" required>
                         </div>
                         <div>
+                            <label class="form-label">মাধ্যম</label>
                             <select id="form-method" class="form-input">
                                 <option value="Cash">ক্যাশ</option>
                                 <option value="bKash">বিকাশ</option>
@@ -319,51 +389,58 @@
                         </div>
                     </div>
                     <div>
-                        <div class="grid grid-cols-3 gap-1.5 md:gap-2 mt-1">
+                        <label class="form-label">লেনদেনের ধরন</label>
+                        <div class="grid grid-cols-3 gap-2">
                             <button type="button" class="trx-type-btn selected sel-red" data-value="Gave" data-color="sel-red">
-                                <i class="fas fa-arrow-up block mb-0.5"></i>দিয়েছি
+                                <i class="fas fa-arrow-up block mb-1.5 text-lg opacity-80"></i>দিয়েছি
                             </button>
                             <button type="button" class="trx-type-btn" data-value="Received" data-color="sel-green">
-                                <i class="fas fa-arrow-down block mb-0.5"></i>পেয়েছি
+                                <i class="fas fa-arrow-down block mb-1.5 text-lg opacity-80"></i>পেয়েছি
                             </button>
                             <button type="button" class="trx-type-btn" data-value="Shared Expense" data-color="sel-amber">
-                                <i class="fas fa-utensils block mb-0.5"></i>শেয়ার্ড
+                                <i class="fas fa-utensils block mb-1.5 text-lg opacity-80"></i>শেয়ার্ড
                             </button>
                         </div>
-                        <p id="amount-hint" class="text-[0.65rem] text-amber-400 mt-1.5 hidden">⚠ শেয়ার্ড বিলে <em>শুধুমাত্র তার অংশটুকু</em> লিখুন।</p>
+                        <p id="amount-hint" class="text-[0.7rem] text-amber-400 mt-2 hidden font-medium">⚠ শেয়ার্ড বিলে <em>শুধুমাত্র তার অংশটুকু</em> লিখুন।</p>
                     </div>
                     <div>
-                        <input type="text" id="form-note" class="form-input" placeholder="নোট (অপশনাল)">
+                        <label class="form-label">নোট (অপশনাল)</label>
+                        <input type="text" id="form-note" class="form-input" placeholder="কীসের জন্য?">
                     </div>
-                    <button type="submit" class="btn-primary w-full mt-1" id="submit-btn"><i class="fas fa-check mr-1.5"></i>সেভ করুন</button>
+                    <button type="submit" class="btn-primary w-full mt-2" id="submit-btn"><i class="fas fa-check-circle mr-2"></i>সেভ করুন</button>
                 </form>
             </div>
 
             <!-- PEOPLE GRID & TRX TABLE -->
-            <div class="lg:col-span-3 flex flex-col gap-3 md:gap-4">
+            <div class="xl:col-span-3 flex flex-col gap-4 md:gap-6">
                 
                 <!-- People Cards -->
-                <div class="card p-3 md:p-4">
-                    <div class="flex items-center justify-between mb-2">
-                        <h3 class="font-display font-bold text-sm text-primary">ব্যালেন্স <span class="text-xs text-muted ml-1" id="people-count">(০)</span></h3>
-                        <button id="clear-filter-btn" onclick="clearPersonFilter()" class="btn-ghost !py-0.5 !text-[0.65rem]" style="display:none;"><i class="fas fa-xmark mr-1"></i>ফিল্টার মুছুন</button>
+                <div class="card p-4 md:p-5 flex flex-col max-h-[300px]">
+                    <div class="flex items-center justify-between mb-4 border-b border-[var(--border)] pb-3">
+                        <h3 class="font-display font-bold text-base md:text-lg text-primary tracking-wide">ব্যালেন্স <span class="text-sm text-muted ml-1" id="people-count">(০)</span></h3>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-dim hidden sm:inline"><i class="fas fa-filter mr-1"></i>কার্ডে ক্লিক করে ফিল্টার করুন</span>
+                            <button id="clear-filter-btn" onclick="clearPersonFilter()" class="btn-ghost !py-1 !px-2 !text-xs text-red-400 border-red-500/30 hover:bg-red-500/10 hover:border-red-400" style="display:none;"><i class="fas fa-times mr-1"></i>মুছুন</button>
+                        </div>
                     </div>
-                    <!-- Swipeable on mobile, max 2.5 rows visible -->
-                    <div id="people-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[160px] md:max-h-[200px] overflow-y-auto pr-1">
-                        <div class="col-span-full text-center py-4 text-muted text-xs"><i class="fas fa-spinner fa-spin text-lg mb-1"></i><br>লোড হচ্ছে...</div>
+                    <!-- Swipeable grid -->
+                    <div id="people-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 overflow-y-auto pr-2 pb-1" style="flex:1;">
+                        <div class="col-span-full text-center py-8 text-muted"><i class="fas fa-spinner fa-spin text-2xl mb-2 text-dim"></i><br>লোড হচ্ছে...</div>
                     </div>
                 </div>
 
                 <!-- Trx History -->
                 <div class="card flex-1 flex flex-col overflow-hidden">
-                    <div class="p-3 border-b border-[var(--border)] bg-[var(--bg-input)]">
-                        <h3 class="font-display font-bold text-sm text-primary">হিস্ট্রি</h3>
+                    <div class="p-4 md:p-5 border-b border-[var(--border)] bg-[var(--bg-input)] bg-opacity-50">
+                        <h3 class="font-display font-bold text-base md:text-lg text-primary tracking-wide">হিস্ট্রি</h3>
                     </div>
-                    <div class="overflow-x-auto flex-1 max-h-[250px] overflow-y-auto">
+                    <div class="overflow-x-auto flex-1 max-h-[350px] overflow-y-auto p-1">
                         <table class="data-table">
-                            <thead><tr><th>সময়</th><th>ব্যক্তি</th><th>ধরন</th><th class="hide-mobile">মাধ্যম</th><th>পরিমাণ</th><th class="hide-mobile">নোট</th><th></th></tr></thead>
+                            <thead>
+                                <tr><th>সময়</th><th>ব্যক্তি</th><th>ধরন</th><th class="hide-mobile">মাধ্যম</th><th>পরিমাণ</th><th class="hide-mobile">নোট</th><th></th></tr>
+                            </thead>
                             <tbody id="transactions-tbody">
-                                <tr><td colspan="7" class="text-center py-6 text-muted text-xs"><i class="fas fa-spinner fa-spin text-lg mb-1"></i><br>লোড হচ্ছে...</td></tr>
+                                <tr><td colspan="7" class="text-center py-10 text-muted"><i class="fas fa-spinner fa-spin text-2xl mb-2 text-dim"></i><br>লোড হচ্ছে...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -372,57 +449,68 @@
         </section>
 
 
-        <!-- ================= SECTION: আমার নিজস্ব খরচ ================= -->
+        <!-- --- SECTION: আমার নিজস্ব খরচ --- -->
         <h2 class="section-header">
-            <span class="bg-pink-500/15 text-pink-400 p-1.5 md:p-2 rounded-lg text-sm md:text-base"><i class="fas fa-receipt"></i></span>
+            <span class="bg-pink-500/15 text-pink-400 p-2 md:p-2.5 rounded-xl text-base md:text-lg shadow-[0_0_15px_rgba(244,114,182,0.15)]"><i class="fas fa-receipt"></i></span>
             ব্যক্তিগত খরচ
         </h2>
 
-        <section class="grid grid-cols-1 lg:grid-cols-5 gap-3 md:gap-4 mb-4">
+        <section class="grid grid-cols-1 xl:grid-cols-5 gap-4 md:gap-6 mb-8">
             
             <!-- EXPENSE ADD FORM -->
-            <div class="lg:col-span-2 card p-3 md:p-5 border-t-2 md:border-t-4 border-t-[var(--pink)]">
-                <h3 class="font-display font-bold text-sm md:text-base text-primary mb-3">খরচ যোগ করুন</h3>
+            <div class="xl:col-span-2 card p-4 md:p-6 border-t-[3px] border-t-[var(--pink)] relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 text-[var(--pink)] opacity-[0.03] text-9xl pointer-events-none"><i class="fas fa-tags"></i></div>
+
+                <h3 class="font-display font-bold text-base md:text-lg text-primary tracking-wide mb-5 relative z-10">খরচ যোগ করুন</h3>
                 
-                <form id="exp-add-form" class="flex flex-col gap-2.5">
-                    <div class="grid grid-cols-2 gap-2">
-                        <select id="exp-category" class="form-input" required>
-                            <option value="">ক্যাটাগরি…</option>
-                            <option value="food">🍔 খাওয়া</option>
-                            <option value="transport">🚌 যাতায়াত</option>
-                            <option value="shopping">🛍️ জিনিস</option>
-                            <option value="extra">📦 হাবিজাবি</option>
-                        </select>
-                        <input type="number" id="exp-amount" class="form-input" placeholder="পরিমাণ (৳)" step="0.01" min="0.01" required>
+                <form id="exp-add-form" class="flex flex-col gap-4 relative z-10">
+                    <div class="grid grid-cols-2 gap-3 md:gap-4">
+                        <div>
+                            <label class="form-label">ক্যাটাগরি</label>
+                            <select id="exp-category" class="form-input" required>
+                                <option value="">নির্বাচন করুন…</option>
+                                <option value="food">🍔 খাওয়া</option>
+                                <option value="transport">🚌 যাতায়াত</option>
+                                <option value="shopping">🛍️ জিনিস</option>
+                                <option value="extra">📦 হাবিজাবি</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">পরিমাণ (৳)</label>
+                            <input type="number" id="exp-amount" class="form-input" placeholder="0.00" step="0.01" min="0.01" required>
+                        </div>
                     </div>
                     <div>
-                        <input type="text" id="exp-note" class="form-input" placeholder="বিস্তারিত (ঐচ্ছিক)">
+                        <label class="form-label">বিস্তারিত (ঐচ্ছিক)</label>
+                        <input type="text" id="exp-note" class="form-input" placeholder="কীসে খরচ হলো?">
                     </div>
-                    <button type="submit" class="btn-primary btn-secondary w-full mt-1" id="exp-submit-btn"><i class="fas fa-plus mr-1.5"></i>যুক্ত করুন</button>
+                    <button type="submit" class="btn-primary btn-secondary w-full mt-2" id="exp-submit-btn"><i class="fas fa-plus-circle mr-2"></i>খরচ যুক্ত করুন</button>
                 </form>
             </div>
 
             <!-- EXPENSE BREAKDOWN & HISTORY -->
-            <div class="lg:col-span-3 flex flex-col gap-3 md:gap-4">
+            <div class="xl:col-span-3 flex flex-col gap-4 md:gap-6">
                 
                 <!-- Category Breakdown -->
-                <div class="card p-3 md:p-4">
-                    <h3 class="font-display font-bold text-sm text-primary mb-2">চলতি মাসের খাত</h3>
-                    <div id="expense-breakdown-grid" class="grid grid-cols-4 gap-2">
+                <div class="card p-4 md:p-5">
+                    <h3 class="font-display font-bold text-base md:text-lg text-primary mb-4 tracking-wide border-b border-[var(--border)] pb-3">চলতি মাসের খাত</h3>
+                    <div id="expense-breakdown-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
                         <!-- Filled dynamically -->
                     </div>
                 </div>
 
                 <!-- Expense History Table -->
                 <div class="card flex-1 flex flex-col overflow-hidden">
-                    <div class="p-3 border-b border-[var(--border)] bg-[var(--bg-input)]">
-                        <h3 class="font-display font-bold text-sm text-primary">খরচের তালিকা</h3>
+                    <div class="p-4 md:p-5 border-b border-[var(--border)] bg-[var(--bg-input)] bg-opacity-50">
+                        <h3 class="font-display font-bold text-base md:text-lg text-primary tracking-wide">খরচের তালিকা</h3>
                     </div>
-                    <div class="overflow-x-auto flex-1 max-h-[220px] overflow-y-auto">
+                    <div class="overflow-x-auto flex-1 max-h-[300px] overflow-y-auto p-1">
                         <table class="data-table">
-                            <thead><tr><th>সময়</th><th>খাত</th><th>পরিমাণ</th><th class="hide-mobile">বিস্তারিত</th><th></th></tr></thead>
+                            <thead>
+                                <tr><th>সময়</th><th>খাত</th><th>পরিমাণ</th><th class="hide-mobile">বিস্তারিত</th><th></th></tr>
+                            </thead>
                             <tbody id="expenses-tbody">
-                                <tr><td colspan="5" class="text-center py-6 text-muted text-xs"><i class="fas fa-spinner fa-spin text-lg mb-1"></i><br>লোড হচ্ছে...</td></tr>
+                                <tr><td colspan="5" class="text-center py-10 text-muted"><i class="fas fa-spinner fa-spin text-2xl mb-2 text-dim"></i><br>লোড হচ্ছে...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -434,51 +522,57 @@
     </main>
 </div>
 
-<!-- ADD PERSON MODAL -->
+<!-- ================= MODAL: ADD PERSON ================= -->
 <div id="person-modal">
     <div class="modal-box">
-        <div class="flex items-center justify-between mb-3">
-            <h3 class="font-display font-bold text-sm md:text-base text-primary">নতুন ব্যক্তি</h3>
-            <button onclick="closePersonModal()" class="btn-ghost !px-2 !py-1"><i class="fas fa-xmark"></i></button>
+        <div class="flex items-center justify-between mb-5 border-b border-[var(--border)] pb-3">
+            <h3 class="font-display font-bold text-lg text-primary tracking-wide">নতুন ব্যক্তি</h3>
+            <button onclick="closePersonModal()" class="btn-ghost !px-2.5 !py-1.5"><i class="fas fa-times text-lg"></i></button>
         </div>
         
-        <form id="add-person-form" class="flex flex-col gap-2.5">
+        <form id="add-person-form" class="flex flex-col gap-4">
             <div>
-                <input type="text" id="person-name" class="form-input" placeholder="নাম" required>
+                <label class="form-label">নাম</label>
+                <input type="text" id="person-name" class="form-input" placeholder="পুরো নাম" required>
             </div>
             <div>
-                <input type="number" id="person-balance" class="form-input" placeholder="প্রারম্ভিক ব্যালেন্স (৳)" step="0.01">
+                <label class="form-label">প্রারম্ভিক ব্যালেন্স (৳)</label>
+                <input type="number" id="person-balance" class="form-input" placeholder="0.00" step="0.01">
             </div>
             <div>
-                <label class="form-label !mb-1 text-[0.65rem]">ছবি (ঐচ্ছিক)</label>
+                <label class="form-label">ছবি (ঐচ্ছিক)</label>
                 <input type="file" id="person-photo" class="form-input" accept="image/*">
             </div>
             
-            <!-- Owner Code -->
-            <div class="mt-1 p-2 border rounded border-red-500/30 bg-red-500/5">
-                <label class="form-label text-red-400 !mb-1 text-[0.65rem]"><i class="fas fa-lock mr-1"></i>মালিকানা কোড</label>
-                <input type="password" id="owner-code" class="form-input !py-1.5" placeholder="****" required>
+            <!-- Owner Code Box -->
+            <div class="mt-2 p-4 border border-red-500/20 bg-red-500/5 rounded-xl">
+                <label class="form-label text-red-400 !mb-2 font-bold"><i class="fas fa-shield-alt mr-1.5"></i>মালিকানা কোড</label>
+                <input type="password" id="owner-code" class="form-input !bg-red-950/20 !border-red-500/30 focus:!border-red-400" placeholder="****" required>
             </div>
 
-            <div class="grid grid-cols-2 gap-2 mt-1">
-                <button type="button" onclick="closePersonModal()" class="btn-ghost">বাতিল</button>
-                <button type="submit" class="btn-primary" id="add-person-btn"><i class="fas fa-check mr-1"></i>সেভ</button>
+            <div class="grid grid-cols-2 gap-3 mt-4">
+                <button type="button" onclick="closePersonModal()" class="btn-ghost font-bold">বাতিল</button>
+                <button type="submit" class="btn-primary" id="add-person-btn"><i class="fas fa-save mr-2"></i>সেভ করুন</button>
             </div>
         </form>
     </div>
 </div>
 
+<!-- ================= TOAST CONTAINER ================= -->
 <div id="toast"></div>
 
-<!-- INTEGRATED JAVASCRIPT -->
+<!-- ================= INTEGRATED JAVASCRIPT ================= -->
 <script>
-    // =================================================================
+    // ---------------------------------------------------------
     // ⚙️ POCKETBASE CONFIGURATION
-    // =================================================================
+    // ---------------------------------------------------------
     const POCKETBASE_URL = "https://efljudb.duckdns.org";
     const pb = new PocketBase(POCKETBASE_URL);
     pb.autoCancellation(false);
 
+    // ---------------------------------------------------------
+    // 📦 APP STATE
+    // ---------------------------------------------------------
     const state = {
         people: [],
         transactions: [],
@@ -487,34 +581,42 @@
         filterPersonId: "",
     };
 
+    // Category Mappings (DB English -> UI Bangla)
     const catMap = {
         "food": { name: "খাওয়া", icon: "fa-burger" },
         "transport": { name: "যাতায়াত", icon: "fa-bus" },
         "shopping": { name: "জিনিস", icon: "fa-bag-shopping" },
-        "extra": { name: "হাবিজাবি", icon: "fa-box" }
+        "extra": { name: "হাবিজাবি", icon: "fa-box-open" }
     };
 
+    // Initialize App
     function initApp() {
         setupFormListeners();
         setupModalListeners();
         refreshAll();
     }
 
+    // ---------------------------------------------------------
+    // 🔄 DATA FETCHING & SYNC
+    // ---------------------------------------------------------
     async function refreshAll() {
         const btn = document.getElementById("refresh-btn");
-        btn.querySelector('i').classList.add('fa-spin');
+        const icon = btn.querySelector('i');
+        icon.classList.add('fa-spin');
         btn.disabled = true;
         setConnectionStatus(true);
 
+        // Fetch parallel requests, don't crash if one fails
         await Promise.allSettled([ fetchPeople(), fetchTransactions(), fetchPersonalExpenses() ]);
 
+        // Render everything
         renderStats();
         renderPeopleGrid();
         renderTransactionsTable();
         renderExpenseBreakdown();
         renderExpenseTable();
 
-        btn.querySelector('i').classList.remove('fa-spin');
+        icon.classList.remove('fa-spin');
         btn.disabled = false;
     }
 
@@ -524,17 +626,18 @@
             populatePersonDropdowns();
         } catch (err) {
             setConnectionStatus(false);
-            showLoadError("people-grid", "ডাটাবেস এরর");
+            showLoadError("people-grid", "ডাটাবেস কানেকশন এরর");
         }
     }
 
     async function fetchTransactions() {
         try {
+            // using -created since date field is removed
             const result = await pb.collection("transactions").getList(1, 50, { sort: "-created", expand: "person_id" });
             state.transactions = result.items;
         } catch (err) {
             setConnectionStatus(false);
-            showLoadError("transactions-tbody", "ডাটাবেস এরর", 7);
+            showLoadError("transactions-tbody", "লেনদেনের ডাটা পাওয়া যায়নি", 7);
         }
     }
 
@@ -544,14 +647,18 @@
             state.personalExpenses = result.items;
         } catch (err) {
             setConnectionStatus(false);
-            showLoadError("expenses-tbody", "ডাটাবেস এরর", 5);
-            showLoadError("expense-breakdown-grid", "এরর");
+            showLoadError("expenses-tbody", "খরচের ডাটা পাওয়া যায়নি", 5);
+            showLoadError("expense-breakdown-grid", "ডাটাবেস এরর");
         }
     }
 
-    // ================== RENDERING ==================
+    // ---------------------------------------------------------
+    // 🎨 RENDER LOGIC
+    // ---------------------------------------------------------
+    
     function renderStats() {
         let owedToMe = 0, iOwe = 0, owedToMeCount = 0, iOweCount = 0;
+        
         state.people.forEach(p => {
             const bal = p.net_balance || 0;
             if (bal < 0) { owedToMe += Math.abs(bal); owedToMeCount++; } 
@@ -586,35 +693,38 @@
 
     function renderPeopleGrid() {
         const grid = document.getElementById("people-grid");
-        if(grid.innerHTML.includes("ডাটাবেস")) return;
+        if(grid.innerHTML.includes("ডাটাবেস")) return; // Prevent overwriting error messages
 
         document.getElementById("people-count").textContent = `(${state.people.length})`;
+        
         if (state.people.length === 0) {
-            grid.innerHTML = `<div class="col-span-full text-center py-4 text-muted text-xs">কেউ নেই।</div>`;
+            grid.innerHTML = `<div class="col-span-full text-center py-6 text-muted text-sm"><i class="fas fa-users-slash text-2xl mb-2 text-dim"></i><br>কাউকে যোগ করা হয়নি।</div>`;
             return;
         }
+
         grid.innerHTML = state.people.map(p => {
             const bal = p.net_balance || 0;
-            const isNeg = bal < 0; const isPos = bal > 0;
-            const mainColor = isNeg ? "var(--red)" : isPos ? "var(--green)" : "var(--text-muted)";
+            const isNeg = bal < 0, isPos = bal > 0;
+            
+            const mainColor   = isNeg ? "var(--red)" : isPos ? "var(--green)" : "var(--text-muted)";
             const borderColor = isNeg ? "rgba(248,113,113,0.3)" : isPos ? "rgba(52,211,153,0.3)" : "var(--border)";
-            const avatarBg = isNeg ? "rgba(248,113,113,0.15)" : isPos ? "rgba(52,211,153,0.15)" : "rgba(56,189,248,0.1)";
+            const avatarBg    = isNeg ? "rgba(248,113,113,0.15)" : isPos ? "rgba(52,211,153,0.15)" : "rgba(56,189,248,0.1)";
             const avatarColor = isNeg ? "var(--red)" : isPos ? "var(--green)" : "var(--accent)";
-            const displayBal = `${isNeg ? "-" : isPos ? "+" : ""}${fmt(Math.abs(bal))}`;
+            const displayBal  = `${isNeg ? "-" : isPos ? "+" : ""}${fmt(Math.abs(bal))}`;
             
             let avatarInner = escapeHtml(p.name.substring(0, 2).toUpperCase());
             if (p.photo) {
-                avatarInner = `<img src="${POCKETBASE_URL}/api/files/people/${p.id}/${p.photo}" class="w-full h-full object-cover">`;
+                avatarInner = `<img src="${POCKETBASE_URL}/api/files/people/${p.id}/${p.photo}" alt="${escapeHtml(p.name)}" class="w-full h-full object-cover">`;
             }
 
             const activeClass = state.filterPersonId === p.id ? " active-filter" : "";
 
             return `
-            <div class="card item-card${activeClass} p-2 flex items-center gap-2.5" style="border-color:${borderColor};" onclick="togglePersonFilter('${p.id}')">
+            <div class="card item-card${activeClass} p-3 flex items-center gap-3 md:gap-4" style="border-color:${borderColor};" onclick="togglePersonFilter('${p.id}')">
                 <div class="avatar-sm" style="background:${avatarBg};color:${avatarColor};">${avatarInner}</div>
                 <div class="flex-1 min-w-0 leading-tight">
-                    <div class="font-semibold text-[0.8rem] text-primary truncate">${escapeHtml(p.name)}</div>
-                    <div class="number-display text-xs font-medium mt-0.5" style="color:${mainColor};">${escapeHtml(displayBal)}</div>
+                    <div class="font-semibold text-sm md:text-[0.95rem] text-primary truncate">${escapeHtml(p.name)}</div>
+                    <div class="number-display text-[0.8rem] md:text-sm font-medium mt-1" style="color:${mainColor};">${escapeHtml(displayBal)}</div>
                 </div>
             </div>`;
         }).join("");
@@ -626,7 +736,7 @@
 
         const rows = state.filterPersonId ? state.transactions.filter(t => t.person_id === state.filterPersonId) : state.transactions;
         if (rows.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted text-xs">কোনো লেনদেন নেই।</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-10 text-muted text-sm"><i class="fas fa-inbox text-3xl mb-3 text-dim"></i><br>কোনো লেনদেন নেই।</td></tr>`;
             return;
         }
 
@@ -634,18 +744,24 @@
 
         tbody.innerHTML = rows.map(t => {
             const pName = t.expand?.person_id?.name || state.people.find(p => p.id === t.person_id)?.name || "অজানা";
-            const typeBadge = t.trx_type === "Gave" ? `<span class="badge type-gave">দিয়েছি</span>` : t.trx_type === "Received" ? `<span class="badge type-received">পেয়েছি</span>` : `<span class="badge type-shared">শেয়ার্ড</span>`;
+            
+            let typeBadge = "";
+            if(t.trx_type === "Gave") typeBadge = `<span class="badge type-gave">দিয়েছি</span>`;
+            else if(t.trx_type === "Received") typeBadge = `<span class="badge type-received">পেয়েছি</span>`;
+            else typeBadge = `<span class="badge type-shared">শেয়ার্ড</span>`;
+
             const color = t.trx_type === "Received" ? "var(--green)" : t.trx_type === "Gave" ? "var(--red)" : "var(--amber)";
+            const dt = fmtDateObj(t.created);
             
             return `
             <tr>
-                <td class="number-display text-muted whitespace-nowrap"><div class="text-[0.65rem]">${fmtDateObj(t.created).d}</div><div class="text-[0.55rem] opacity-70">${fmtDateObj(t.created).t}</div></td>
-                <td class="font-medium truncate max-w-[80px] md:max-w-none text-[0.75rem] md:text-sm">${escapeHtml(pName)}</td>
+                <td class="number-display text-muted whitespace-nowrap"><div class="text-[0.75rem] md:text-[0.8rem] text-primary">${dt.d}</div><div class="text-[0.65rem] md:text-xs mt-0.5 opacity-80">${dt.t}</div></td>
+                <td class="font-semibold text-primary truncate max-w-[90px] md:max-w-none text-[0.85rem] md:text-[0.95rem]">${escapeHtml(pName)}</td>
                 <td>${typeBadge}</td>
-                <td class="hide-mobile text-[0.75rem] text-muted">${methodMap[t.method] || escapeHtml(t.method)}</td>
-                <td class="number-display font-medium whitespace-nowrap" style="color:${color};">${t.trx_type === "Received" ? "+" : "−"}${escapeHtml(fmt(t.amount))}</td>
-                <td class="hide-mobile text-[0.7rem] text-muted truncate max-w-[100px]">${escapeHtml(t.note || "—")}</td>
-                <td class="text-right"><button class="delete-btn" onclick="deleteTransaction('${t.id}', event)"><i class="fas fa-trash-can"></i></button></td>
+                <td class="hide-mobile text-sm text-muted font-medium">${methodMap[t.method] || escapeHtml(t.method)}</td>
+                <td class="number-display font-bold whitespace-nowrap text-[0.95rem] md:text-base" style="color:${color};">${t.trx_type === "Received" ? "+" : "−"}${escapeHtml(fmt(t.amount))}</td>
+                <td class="hide-mobile text-sm text-muted truncate max-w-[120px]">${escapeHtml(t.note || "—")}</td>
+                <td class="text-right"><button class="delete-btn" onclick="deleteTransaction('${t.id}', event)" title="ডিলিট করুন"><i class="fas fa-trash-alt"></i></button></td>
             </tr>`;
         }).join("");
     }
@@ -665,9 +781,9 @@
         });
 
         grid.innerHTML = Object.keys(catTots).map(k => `
-            <div class="card p-2 border-b-2 text-center" style="border-bottom-color:var(--pink); background:rgba(244,114,182,0.03);">
-                <div class="text-[0.6rem] text-muted font-semibold mb-1"><i class="fas ${catMap[k].icon} mr-0.5"></i> ${catMap[k].name}</div>
-                <div class="number-display text-[0.8rem] md:text-sm font-medium text-primary">${fmt(catTots[k])}</div>
+            <div class="card p-3 border-b-[3px] text-center flex flex-col justify-center shadow-none hover:shadow-[0_4px_15px_rgba(244,114,182,0.1)]" style="border-bottom-color:var(--pink); background:linear-gradient(to bottom, transparent, rgba(244,114,182,0.03));">
+                <div class="text-[0.65rem] md:text-xs text-muted font-bold mb-1.5 uppercase tracking-wide"><i class="fas ${catMap[k].icon} mr-1 text-pink-400"></i> ${catMap[k].name}</div>
+                <div class="number-display text-[0.9rem] md:text-[1.1rem] font-bold text-primary">${fmt(catTots[k])}</div>
             </div>
         `).join("");
     }
@@ -677,65 +793,99 @@
         if(tbody.innerHTML.includes("ডাটাবেস")) return;
 
         if (state.personalExpenses.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted text-xs">কোনো খরচ নেই।</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-muted text-sm"><i class="fas fa-file-invoice-dollar text-3xl mb-3 text-dim"></i><br>কোনো খরচ নেই।</td></tr>`;
             return;
         }
 
-        tbody.innerHTML = state.personalExpenses.map(e => `
+        tbody.innerHTML = state.personalExpenses.map(e => {
+            const dt = fmtDateObj(e.created);
+            return `
             <tr>
-                <td class="number-display text-muted whitespace-nowrap"><div class="text-[0.65rem]">${fmtDateObj(e.created).d}</div><div class="text-[0.55rem] opacity-70">${fmtDateObj(e.created).t}</div></td>
-                <td><span class="badge type-expense">${escapeHtml(catMap[e.category]?.name || e.category)}</span></td>
-                <td class="number-display font-medium text-primary">${escapeHtml(fmt(e.amount))}</td>
-                <td class="hide-mobile text-[0.7rem] text-muted truncate max-w-[120px]">${escapeHtml(e.note || "—")}</td>
-                <td class="text-right"><button class="delete-btn" onclick="deleteExpense('${e.id}', event)"><i class="fas fa-trash-can"></i></button></td>
+                <td class="number-display text-muted whitespace-nowrap"><div class="text-[0.75rem] md:text-[0.8rem] text-primary">${dt.d}</div><div class="text-[0.65rem] md:text-xs mt-0.5 opacity-80">${dt.t}</div></td>
+                <td><span class="badge type-expense px-2 py-1">${escapeHtml(catMap[e.category]?.name || e.category)}</span></td>
+                <td class="number-display font-bold text-primary text-[0.95rem] md:text-base">${escapeHtml(fmt(e.amount))}</td>
+                <td class="hide-mobile text-sm text-muted truncate max-w-[150px]">${escapeHtml(e.note || "—")}</td>
+                <td class="text-right"><button class="delete-btn" onclick="deleteExpense('${e.id}', event)" title="ডিলিট করুন"><i class="fas fa-trash-alt"></i></button></td>
             </tr>
-        `).join("");
+            `;
+        }).join("");
     }
 
-    // ================== HANDLERS ==================
+    // ---------------------------------------------------------
+    // 🖱️ FORM ACTIONS & HANDLERS
+    // ---------------------------------------------------------
+    
     function setupFormListeners() {
+        // Transaction Type Button Toggles
         document.querySelectorAll(".trx-type-btn").forEach(btn => {
             btn.addEventListener("click", () => {
                 document.querySelectorAll(".trx-type-btn").forEach(b => b.classList.remove("selected", "sel-red", "sel-green", "sel-amber"));
                 btn.classList.add("selected", btn.dataset.color);
                 state.selectedTrxType = btn.dataset.value;
-                document.getElementById("amount-hint").style.display = (state.selectedTrxType === "Shared Expense") ? "block" : "none";
+                
+                // Show hint only for shared expense
+                const hint = document.getElementById("amount-hint");
+                if(state.selectedTrxType === "Shared Expense") {
+                    hint.style.display = "block";
+                    hint.classList.add("animate-pulse"); setTimeout(()=>hint.classList.remove("animate-pulse"), 1000);
+                } else {
+                    hint.style.display = "none";
+                }
             });
         });
 
+        // Add Transaction Submit
         document.getElementById("trx-add-form").addEventListener("submit", async (e) => {
             e.preventDefault();
-            const pId = document.getElementById("form-person").value, amt = parseFloat(document.getElementById("form-amount").value);
-            const method = document.getElementById("form-method").value, note = document.getElementById("form-note").value.trim();
+            const pId = document.getElementById("form-person").value;
+            const amt = parseFloat(document.getElementById("form-amount").value);
+            const method = document.getElementById("form-method").value;
+            const note = document.getElementById("form-note").value.trim();
             
-            if (!pId || !amt) return showToast("তথ্য দিন।", "error");
-            const btn = document.getElementById("submit-btn"); btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+            if (!pId || !amt) return showToast("সব তথ্য দিন।", "error");
+            
+            const btn = document.getElementById("submit-btn"); 
+            btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>সেভ হচ্ছে…`;
             
             try {
                 await pb.collection("transactions").create({ person_id: pId, amount: amt, trx_type: state.selectedTrxType, method, note });
                 await updatePersonBalance(pId, state.selectedTrxType, amt);
                 await refreshAll();
-                e.target.reset(); document.querySelector(".trx-type-btn[data-value='Gave']").click();
-                showToast("লেনদেন যুক্ত হয়েছে", "success");
-            } catch (err) { showToast("সেভ হয়নি", "error"); } 
-            finally { btn.disabled = false; btn.innerHTML = `<i class="fas fa-check mr-1.5"></i>সেভ করুন`; }
+                e.target.reset(); 
+                document.querySelector(".trx-type-btn[data-value='Gave']").click(); // reset to default
+                showToast("লেনদেন যুক্ত হয়েছে!", "success");
+            } catch (err) { 
+                showToast("সেভ করতে সমস্যা হয়েছে", "error"); 
+            } finally { 
+                btn.disabled = false; btn.innerHTML = `<i class="fas fa-check-circle mr-2"></i>সেভ করুন`; 
+            }
         });
 
+        // Add Personal Expense Submit
         document.getElementById("exp-add-form").addEventListener("submit", async (e) => {
             e.preventDefault();
-            const cat = document.getElementById("exp-category").value, amt = parseFloat(document.getElementById("exp-amount").value);
+            const cat = document.getElementById("exp-category").value;
+            const amt = parseFloat(document.getElementById("exp-amount").value);
             const note = document.getElementById("exp-note").value.trim();
             
-            if (!cat || !amt) return showToast("তথ্য দিন।", "error");
-            const btn = document.getElementById("exp-submit-btn"); btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+            if (!cat || !amt) return showToast("ক্যাটাগরি এবং পরিমাণ দিন।", "error");
+            
+            const btn = document.getElementById("exp-submit-btn"); 
+            btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>যুক্ত হচ্ছে…`;
             
             try {
                 await pb.collection("personal_expenses").create({ amount: amt, category: cat, note });
-                await refreshAll(); e.target.reset(); showToast("খরচ যুক্ত হয়েছে", "success");
-            } catch (err) { showToast("এরর!", "error"); } 
-            finally { btn.disabled = false; btn.innerHTML = `<i class="fas fa-plus mr-1.5"></i>যুক্ত করুন`; }
+                await refreshAll(); 
+                e.target.reset(); 
+                showToast("খরচ সফলভাবে যুক্ত হয়েছে!", "success");
+            } catch (err) { 
+                showToast("খরচ যুক্ত করা যায়নি!", "error"); 
+            } finally { 
+                btn.disabled = false; btn.innerHTML = `<i class="fas fa-plus-circle mr-2"></i>খরচ যুক্ত করুন`; 
+            }
         });
 
+        // Add Person Submit
         document.getElementById("add-person-form").addEventListener("submit", async (e) => {
             e.preventDefault();
             const name = document.getElementById("person-name").value.trim();
@@ -743,35 +893,57 @@
             const photo = document.getElementById("person-photo").files[0];
             const code = document.getElementById("owner-code").value;
 
-            if (code !== "0852") return showToast("ভুল পিন!", "error");
+            // Security check
+            if (code !== "0852") {
+                document.getElementById("owner-code").value = "";
+                return showToast("ভুল পিন! এক্সেস নেই।", "error");
+            }
             if (!name) return;
 
-            const btn = document.getElementById("add-person-btn"); btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+            const btn = document.getElementById("add-person-btn"); 
+            btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>সেভ হচ্ছে…`;
+            
             try {
-                const fd = new FormData(); fd.append("name", name); fd.append("net_balance", bal);
+                const fd = new FormData(); 
+                fd.append("name", name); 
+                fd.append("net_balance", bal);
                 if (photo) fd.append("photo", photo);
+                
                 await pb.collection("people").create(fd);
-                await refreshAll(); closePersonModal(); e.target.reset(); showToast("যুক্ত হয়েছে!", "success");
-            } catch (err) { showToast("ডাটাবেস এরর", "error"); } 
-            finally { btn.disabled = false; btn.innerHTML = `<i class="fas fa-check mr-1"></i>সেভ`; }
+                await refreshAll(); 
+                closePersonModal(); 
+                e.target.reset(); 
+                showToast("নতুন মানুষ যুক্ত হয়েছে!", "success");
+            } catch (err) { 
+                showToast("মানুষ যোগ করা যায়নি", "error"); 
+            } finally { 
+                btn.disabled = false; btn.innerHTML = `<i class="fas fa-save mr-2"></i>সেভ করুন`; 
+            }
         });
     }
 
     async function deleteTransaction(id, ev) {
-        ev.stopPropagation(); if (!confirm("ডিলিট করবেন?")) return;
+        ev.stopPropagation(); 
+        if (!confirm("আপনি কি নিশ্চিত এই লেনদেনটি ডিলিট করবেন?")) return;
+        
         const trx = state.transactions.find(t => t.id === id); if (!trx) return;
         try {
             const revMap = { "Gave": "Received", "Received": "Gave", "Shared Expense": "Received" };
             await updatePersonBalance(trx.person_id, revMap[trx.trx_type], trx.amount);
             await pb.collection("transactions").delete(id);
-            await refreshAll(); showToast("ডিলিট হয়েছে", "success");
-        } catch (e) { showToast("এরর", "error"); }
+            await refreshAll(); 
+            showToast("লেনদেন ডিলিট হয়েছে", "success");
+        } catch (e) { showToast("ডিলিট করা যায়নি", "error"); }
     }
 
     async function deleteExpense(id, ev) {
-        ev.stopPropagation(); if (!confirm("ডিলিট করবেন?")) return;
-        try { await pb.collection("personal_expenses").delete(id); await refreshAll(); showToast("ডিলিট হয়েছে", "success"); } 
-        catch (e) { showToast("এরর", "error"); }
+        ev.stopPropagation(); 
+        if (!confirm("খরচের রেকর্ডটি ডিলিট করবেন?")) return;
+        try { 
+            await pb.collection("personal_expenses").delete(id); 
+            await refreshAll(); 
+            showToast("খরচ ডিলিট হয়েছে", "success"); 
+        } catch (e) { showToast("ডিলিট করা যায়নি", "error"); }
     }
 
     async function updatePersonBalance(pId, type, amt) {
@@ -780,36 +952,67 @@
         await pb.collection("people").update(pId, { net_balance: (p.net_balance || 0) + delta });
     }
 
-    // ================== UTILS ==================
+    // ---------------------------------------------------------
+    // 🛠️ UTILITIES & HELPERS
+    // ---------------------------------------------------------
+    
     function togglePersonFilter(pId) {
         state.filterPersonId = state.filterPersonId === pId ? "" : pId;
         renderTransactionsTable(); renderPeopleGrid();
-        document.getElementById("clear-filter-btn").style.display = state.filterPersonId ? "inline-flex" : "none";
+        
+        const clearBtn = document.getElementById("clear-filter-btn");
+        if (state.filterPersonId) {
+            clearBtn.style.display = "inline-flex";
+            clearBtn.classList.add("animate-pulse"); setTimeout(()=>clearBtn.classList.remove("animate-pulse"), 500);
+        } else {
+            clearBtn.style.display = "none";
+        }
     }
+    
     function clearPersonFilter() { togglePersonFilter(state.filterPersonId); }
+    
     function populatePersonDropdowns() {
-        const s = document.getElementById("form-person"); const v = s.value;
-        s.innerHTML = `<option value="">ব্যক্তি নির্বাচন করুন…</option>` + state.people.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("");
-        s.value = v;
+        const sel = document.getElementById("form-person"); const val = sel.value;
+        sel.innerHTML = `<option value="">ব্যক্তি নির্বাচন করুন…</option>` + state.people.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("");
+        sel.value = val;
     }
+    
     function openPersonModal() { document.getElementById("person-modal").classList.add("open"); }
-    function closePersonModal() { document.getElementById("person-modal").classList.remove("open"); document.getElementById("owner-code").value = ""; }
-    function setupModalListeners() {
-        document.getElementById("person-modal").addEventListener("click", e => { if (e.target.id === "person-modal") closePersonModal(); });
+    function closePersonModal() { 
+        document.getElementById("person-modal").classList.remove("open"); 
+        document.getElementById("owner-code").value = ""; 
     }
+    
+    function setupModalListeners() {
+        document.getElementById("person-modal").addEventListener("click", e => { 
+            if (e.target.id === "person-modal") closePersonModal(); 
+        });
+    }
+    
     function showToast(msg, type = "info") {
         const c = document.getElementById("toast");
-        const icons = { success: "fa-check-circle text-green-400", error: "fa-times-circle text-red-400", info: "fa-info-circle text-sky-400" };
-        const el = document.createElement("div"); el.className = "toast-item";
-        el.innerHTML = `<i class="fas ${icons[type]} text-base"></i><span class="text-xs md:text-sm font-medium text-[var(--text-primary)]">${escapeHtml(msg)}</span>`;
-        c.appendChild(el); setTimeout(() => { el.classList.add("toast-out"); el.addEventListener("animationend", () => el.remove(), {once:true}); }, 3000);
+        const icons = { success: "fa-check-circle text-green-400", error: "fa-exclamation-circle text-red-400", info: "fa-info-circle text-sky-400" };
+        const el = document.createElement("div"); 
+        el.className = "toast-item";
+        el.innerHTML = `<i class="fas ${icons[type]} text-lg md:text-xl"></i><span class="text-sm md:text-base font-semibold text-[var(--text-primary)] tracking-wide">${escapeHtml(msg)}</span>`;
+        c.appendChild(el); 
+        setTimeout(() => { 
+            el.classList.add("toast-out"); 
+            el.addEventListener("animationend", () => el.remove(), {once:true}); 
+        }, 3500);
     }
+    
     function setConnectionStatus(connected) {
-        const p = document.getElementById("connection-status"), t = document.getElementById("status-text");
-        if (connected) { p.style.background = "rgba(52,211,153,0.08)"; p.style.color = "#34d399"; p.style.borderColor = "rgba(52,211,153,0.18)"; t.textContent = "কানেক্টেড"; } 
-        else { p.style.background = "rgba(248,113,113,0.08)"; p.style.color = "#f87171"; p.style.borderColor = "rgba(248,113,113,0.18)"; t.textContent = "ডাটাবেস এরর"; }
+        const pill = document.getElementById("connection-status"), txt = document.getElementById("status-text");
+        if (connected) { 
+            pill.style.background = "rgba(52,211,153,0.1)"; pill.style.color = "#34d399"; pill.style.borderColor = "rgba(52,211,153,0.25)"; txt.textContent = "কানেক্টেড"; 
+        } else { 
+            pill.style.background = "rgba(248,113,113,0.1)"; pill.style.color = "#f87171"; pill.style.borderColor = "rgba(248,113,113,0.25)"; txt.textContent = "সার্ভার এরর"; 
+        }
     }
+    
     function fmt(amt) { return "৳" + Number(amt || 0).toLocaleString("en-IN", { minimumFractionDigits: 0, maximumFractionDigits: 2 }); }
+    
     function fmtDateObj(iso) { 
         if (!iso) return { d: "—", t: "" };
         try { 
@@ -820,13 +1023,16 @@
             };
         } catch { return { d: iso, t: "" }; } 
     }
+    
     function escapeHtml(str) { return String(str||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+    
     function showLoadError(id, msg, col) {
         const el = document.getElementById(id); if(!el) return;
-        const inner = `<i class="fas fa-exclamation-triangle text-amber-500 text-lg mb-1 block"></i><span class="text-[0.65rem] text-muted">${escapeHtml(msg)}</span>`;
-        el.innerHTML = col ? `<tr><td colspan="${col}" class="text-center py-4">${inner}</td></tr>` : `<div class="col-span-full text-center py-4">${inner}</div>`;
+        const inner = `<i class="fas fa-exclamation-triangle text-amber-500 text-2xl mb-2 block"></i><span class="text-sm font-medium text-muted">${escapeHtml(msg)}</span>`;
+        el.innerHTML = col ? `<tr><td colspan="${col}" class="text-center py-8">${inner}</td></tr>` : `<div class="col-span-full text-center py-8">${inner}</div>`;
     }
 
+    // Start
     initApp();
 </script>
 </body>
