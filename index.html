@@ -80,7 +80,7 @@
                 radial-gradient(ellipse 60% 40% at 80% 110%, rgba(52, 211, 153, 0.03) 0%, transparent 60%);
             pointer-events: none; z-index: 0;
         }
-        #app { position: relative; z-index: 1; padding-bottom: 3rem; }
+        #app { position: relative; z-index: 1; padding-bottom: 6rem; }
 
         .card {
             background: var(--bg-card); border: 1px solid var(--border);
@@ -215,6 +215,14 @@
         
         .section-header { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.3rem; color: var(--text-primary); display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
 
+        /* Sticky Bottom Bar */
+        .bottom-bar {
+            position: fixed; bottom: 0; left: 0; right: 0; padding: 1rem;
+            background: rgba(6, 9, 15, 0.85); backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border); z-index: 40;
+            display: flex; justify-content: center;
+        }
+
         /* Hide scrollbar class */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -316,7 +324,7 @@
                 <div class="number-display text-xl md:text-3xl font-semibold text-sky-400" id="stat-people-spend">
                     <span class="skeleton w-20 h-8"></span>
                 </div>
-                <p class="text-xs text-dim mt-2 font-medium" id="stat-people-spend-sub">নির্বাচিত মাসে <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
+                <p class="text-xs text-dim mt-2 font-medium" id="stat-people-spend-sub">চলতি মাসে <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
             </div>
 
             <!-- Card: নিজস্ব খরচ (Filtered by Month) -->
@@ -330,7 +338,7 @@
                 <div class="number-display text-xl md:text-3xl font-semibold text-pink-400" id="stat-personal-spend">
                     <span class="skeleton w-20 h-8"></span>
                 </div>
-                <p class="text-xs text-dim mt-2 font-medium" id="stat-personal-spend-sub">নির্বাচিত মাসে <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
+                <p class="text-xs text-dim mt-2 font-medium" id="stat-personal-spend-sub">চলতি মাসে <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
             </div>
         </section>
 
@@ -405,7 +413,7 @@
                                     <label class="form-label">মাধ্যম</label>
                                     <select id="form-method" class="form-input">
                                         <option value="Cash">ক্যাশ</option>
-                                        <option value="bKash">বিকাশ</option>
+                                        <option value="Bkash">বিকাশ</option>
                                         <option value="3rd party">থার্ড পার্টি</option>
                                     </select>
                                 </div>
@@ -642,10 +650,7 @@
         transactions: [],
         personalExpenses: [],
         selectedTrxType: "Gave",
-        reportMonth: {
-            year: new Date().getFullYear(),
-            month: new Date().getMonth() // 0 to 11
-        }
+        filterPersonId: ""
     };
 
     const monthNames = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
@@ -707,7 +712,6 @@
 
     async function fetchTransactions() {
         try {
-            // Expand multiple possible relation fields just in case
             const result = await pb.collection("transactions").getList(1, 200, { sort: "-created", expand: "people_id,person_id,person" });
             state.transactions = result.items;
         } catch (err) {
@@ -843,7 +847,7 @@
             return;
         }
 
-        const methodMap = { "Cash": "ক্যাশ", "bKash": "বিকাশ", "3rd party": "৩য় পক্ষ" };
+        const methodMap = { "Cash": "ক্যাশ", "Bkash": "বিকাশ", "3rd party": "৩য় পক্ষ" };
 
         tbody.innerHTML = rows.map(t => {
             const pObj = getPersonObj(t);
@@ -906,6 +910,8 @@
             return;
         }
 
+        const methodMap = { "Cash": "ক্যাশ", "Bkash": "বিকাশ", "3rd party": "৩য় পক্ষ" };
+
         tbody.innerHTML = rows.map(e => {
             const dt = fmtDateObj(e.created);
             return `
@@ -945,7 +951,7 @@
         if(trxs.length === 0) {
             listContainer.innerHTML = `<div class="text-center py-10 text-muted text-sm border border-[var(--border)] rounded-xl bg-sky-500/5"><i class="fas fa-inbox text-3xl mb-3 text-dim"></i><br>কোনো লেনদেনের রেকর্ড নেই।</div>`;
         } else {
-            const methodMap = { "Cash": "ক্যাশ", "bKash": "বিকাশ", "3rd party": "৩য় পক্ষ" };
+            const methodMap = { "Cash": "ক্যাশ", "Bkash": "বিকাশ", "3rd party": "৩য় পক্ষ" };
 
             listContainer.innerHTML = trxs.map(t => {
                 let typeBadge = "";
@@ -1000,7 +1006,7 @@
                     <div class="text-2xl font-bold text-red-400 number-display">${fmt(total)}</div>
                 </div>`;
 
-            if(list.length === 0) html = '<p class="text-center text-muted py-6">কেউ ঋণী নেই。</p>';
+            if(list.length === 0) html = '<p class="text-center text-muted py-6">কেউ ঋণী নেই।</p>';
             else {
                 html = list.map(p => `
                     <div class="flex items-center justify-between py-3 border-b border-[var(--border)] last:border-0 cursor-pointer hover:bg-[var(--bg-input)] px-2 rounded-lg transition-colors" onclick="closeReportModal(); openPersonProfile('${p.id}')">
@@ -1254,14 +1260,15 @@
             btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>সেভ হচ্ছে…`;
             
             try {
-                // আপনার ডেটাবেসের ফিল্ড অনুযায়ী সরাসরি people_id ব্যবহার করা হলো
-                await pb.collection("transactions").create({ 
-                    people_id: pId, 
-                    amount: amt, 
-                    trx_type: state.selectedTrxType, 
-                    method: method, 
-                    note: note 
-                });
+                try {
+                    await pb.collection("transactions").create({ people_id: pId, amount: amt, trx_type: state.selectedTrxType, method, note });
+                } catch(err1) {
+                    try {
+                        await pb.collection("transactions").create({ person_id: pId, amount: amt, trx_type: state.selectedTrxType, method, note });
+                    } catch(err2) {
+                        await pb.collection("transactions").create({ person: pId, amount: amt, trx_type: state.selectedTrxType, method, note });
+                    }
+                }
 
                 await updatePersonBalance(pId, state.selectedTrxType, amt);
                 await refreshAll();
@@ -1271,7 +1278,6 @@
             } catch (err) { 
                 console.error("Trx Save Error:", err.response || err);
                 let msg = "সেভ করতে সমস্যা হয়েছে";
-                // স্মার্ট এরর ডিটেকশন
                 if (err.response && err.response.data) {
                     msg = `ডেটাবেস ফিল্ড ভুল: ${Object.keys(err.response.data).join(", ")}`;
                 }
