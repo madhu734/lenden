@@ -2,10 +2,8 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <!-- Viewport for Mobile Optimization -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <!-- Title & Favicon -->
     <title>Madhu's financial tracker</title>
     <link rel="icon" type="image/png" href="https://i.postimg.cc/sx5dtBBK/psa.png">
 
@@ -43,7 +41,6 @@
 
     <!-- Custom Premium Styles & Animations -->
     <style>
-        /* ================= CSS VARIABLES ================= */
         :root {
             --bg-base:       #06090f;
             --bg-card:       #0c1220;
@@ -64,7 +61,6 @@
             --pink:          #f472b6;
         }
 
-        /* ================= BASE STYLES ================= */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
         body {
@@ -76,7 +72,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Ambient Background Glow */
         body::before {
             content: ''; position: fixed; inset: 0;
             background-image: 
@@ -86,12 +81,9 @@
         }
         #app { position: relative; z-index: 1; padding-bottom: 3rem; }
 
-        /* ================= CARDS ================= */
         .card {
-            background: var(--bg-card); 
-            border: 1px solid var(--border);
-            border-radius: 16px; 
-            transition: all 0.3s ease;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 16px; transition: all 0.3s ease;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
         .card:hover { border-color: var(--border-bright); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); }
@@ -100,47 +92,38 @@
         .stat-card::after {
             content: ''; position: absolute; top: 0; right: 0; 
             width: 130px; height: 130px; border-radius: 50%; 
-            opacity: 0.06; transform: translate(35%, -35%); pointer-events: none;
-            transition: all 0.3s ease;
+            opacity: 0.06; transform: translate(35%, -35%); pointer-events: none; transition: all 0.3s ease;
         }
         .stat-card:hover::after { transform: translate(25%, -25%) scale(1.1); opacity: 0.1; }
-        
         .stat-card.red-glow::after    { background: var(--red); }
         .stat-card.green-glow::after  { background: var(--green); }
         .stat-card.accent-glow::after { background: var(--accent); }
         .stat-card.pink-glow::after   { background: var(--pink); }
 
-        /* ================= FORM ELEMENTS ================= */
         .form-input {
-            background: var(--bg-input); border: 1px solid var(--border); 
-            border-radius: 10px; color: var(--text-primary); 
-            font-family: 'Hind Siliguri', sans-serif;
-            padding: 0.75rem 1rem; width: 100%; outline: none;
-            transition: all 0.2s ease; -webkit-appearance: none;
+            background: var(--bg-input); border: 1px solid var(--border); border-radius: 10px; 
+            color: var(--text-primary); font-family: 'Hind Siliguri', sans-serif;
+            padding: 0.75rem 1rem; width: 100%; outline: none; transition: all 0.2s ease; -webkit-appearance: none;
         }
         .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15); }
         .form-input::placeholder { color: var(--text-dim); }
         .form-input option { background: #0c1220; color: var(--text-primary); }
         
-        /* File Input Styling */
         input[type="file"].form-input { padding: 0.5rem; }
         input[type="file"]::file-selector-button {
-            background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent); 
-            color: var(--accent); border-radius: 8px; padding: 0.4rem 0.8rem; 
-            margin-right: 12px; cursor: pointer; font-family: 'Hind Siliguri', sans-serif;
-            font-weight: 600; transition: all 0.2s;
+            background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent); color: var(--accent); 
+            border-radius: 8px; padding: 0.4rem 0.8rem; margin-right: 12px; cursor: pointer; 
+            font-family: 'Hind Siliguri', sans-serif; font-weight: 600; transition: all 0.2s;
         }
         input[type="file"]::file-selector-button:hover { background: var(--accent); color: #fff; }
 
         .form-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.4rem; letter-spacing: 0.02em; }
 
-        /* ================= BUTTONS ================= */
         .btn-primary {
             background: linear-gradient(135deg, #0ea5e9, #38bdf8); color: #fff;
             font-weight: 700; font-family: 'Hind Siliguri', sans-serif; font-size: 0.95rem;
             border-radius: 10px; padding: 0.75rem 1.5rem; border: none; cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
-            display: inline-flex; align-items: center; justify-content: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); display: inline-flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 15px rgba(56, 189, 248, 0.25);
         }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.4); }
@@ -158,7 +141,6 @@
         }
         .btn-ghost:hover { background: var(--bg-card-hover); border-color: var(--border-bright); color: var(--text-primary); }
 
-        /* Transaction Type Buttons */
         .trx-type-btn {
             background: var(--bg-input); border: 1px solid var(--border); border-radius: 10px;
             color: var(--text-muted); font-size: 0.85rem; font-weight: 600;
@@ -170,7 +152,6 @@
         .trx-type-btn.sel-green.selected  { border-color: var(--green); color: var(--green); background: rgba(52,211,153,0.1); box-shadow: 0 0 0 2px rgba(52,211,153,0.2); }
         .trx-type-btn.sel-amber.selected  { border-color: var(--amber); color: var(--amber); background: rgba(251,191,36,0.1); box-shadow: 0 0 0 2px rgba(251,191,36,0.2); }
 
-        /* ================= LISTS & AVATARS ================= */
         .number-display { font-family: 'DM Mono', monospace; font-feature-settings: 'tnum'; font-variant-numeric: tabular-nums; }
         
         .item-card { cursor: pointer; transition: all 0.2s ease; }
@@ -178,22 +159,17 @@
         .item-card.active-filter { border-color: var(--accent); background: rgba(56, 189, 248, 0.05); }
 
         .avatar-sm { 
-            width: 42px; height: 42px; border-radius: 10px; font-size: 1rem; font-weight: 700;
+            width: 42px; height: 42px; border-radius: 12px; font-size: 1rem; font-weight: 700;
             display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;
             font-family: 'Syne', sans-serif; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
-        /* ================= BADGES ================= */
         .badge { font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 6px; white-space: nowrap; letter-spacing: 0.02em; }
         .type-gave     { background: rgba(248,113,113,0.12); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
         .type-received { background: rgba(52,211,153,0.12);  color: #34d399; border: 1px solid rgba(52,211,153,0.2); }
         .type-shared   { background: rgba(251,191,36,0.12);  color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
         .type-expense  { background: rgba(244,114,182,0.12); color: #f472b6; border: 1px solid rgba(244,114,182,0.2); }
-        .method-cash   { background: rgba(167,139,250,0.1); color: #a78bfa; }
-        .method-bkash  { background: rgba(244,114,182,0.1); color: #f472b6; }
-        .method-3rd    { background: rgba(56,189,248,0.1);  color: #38bdf8; }
-
-        /* ================= TABLES ================= */
+        
         .data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
         .data-table thead th {
             font-size: 0.8rem; font-weight: 600; color: var(--text-muted);
@@ -209,7 +185,6 @@
         .delete-btn { background: none; border: none; color: var(--text-muted); padding: 6px 8px; border-radius: 6px; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
         .delete-btn:hover { color: var(--red); background: rgba(248,113,113,0.1); transform: scale(1.1); }
 
-        /* ================= TOAST NOTIFICATIONS ================= */
         #toast { position: fixed; bottom: 30px; right: 30px; z-index: 9999; pointer-events: none; display: flex; flex-direction: column; gap: 10px; }
         .toast-item { 
             background: var(--bg-card); border: 1px solid var(--border-bright); border-radius: 12px; 
@@ -221,35 +196,31 @@
         .toast-out { animation: toastOut 0.3s ease forwards !important; }
         @keyframes toastOut { to { transform: translateX(120%); opacity: 0; } }
 
-        /* ================= MODAL ================= */
         #person-modal { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.75); backdrop-filter: blur(5px); align-items: center; justify-content: center; padding: 1rem; }
         #person-modal.open { display: flex; }
         .modal-box { 
             background: var(--bg-card); border: 1px solid var(--border-bright); border-radius: 20px; 
-            width: 100%; max-width: 400px; padding: 2rem; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            width: 100%; max-width: 400px; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; 
         }
         @keyframes modalIn { from { transform: scale(0.9) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
 
-        /* ================= UTILS & RESPONSIVE ================= */
         .skeleton { background: linear-gradient(90deg, var(--bg-card) 25%, #141e31 50%, var(--bg-card) 75%); background-size: 200% 100%; animation: shimmer 1.6s infinite; border-radius: 6px; display: inline-block; }
         @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
         
-        .section-header { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.3rem; color: var(--text-primary); margin: 2.5rem 0 1rem 0; display: flex; align-items: center; gap: 10px; }
+        .section-header { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.3rem; color: var(--text-primary); display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
 
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 5px; }
 
-        /* 📱 Mobile Specific Tweaks (Optimized Compact Layout) */
-        @media (max-width: 640px) { 
+        @media (max-width: 1024px) { 
             .hide-mobile { display: none !important; } 
             .stat-card { padding: 1rem; }
-            .section-header { font-size: 1.15rem; margin: 1.5rem 0 0.75rem 0; }
+            .section-header { font-size: 1.15rem; margin-bottom: 1rem; }
             .form-input { padding: 0.6rem 0.8rem; font-size: 0.85rem; }
             .btn-primary, .btn-ghost { padding: 0.6rem 1rem; font-size: 0.85rem; }
-            .avatar-sm { width: 34px; height: 34px; font-size: 0.8rem; }
+            .avatar-sm { width: 38px; height: 38px; font-size: 0.8rem; }
             .data-table thead th { padding: 0.6rem; font-size: 0.75rem; }
             .data-table tbody td { padding: 0.75rem 0.6rem; font-size: 0.85rem; }
             
@@ -295,12 +266,13 @@
     <!-- ================= MAIN CONTENT ================= -->
     <main class="max-w-7xl mx-auto px-4 py-6 flex flex-col gap-6 md:gap-8">
         
-        <!-- --- STAT CARDS (2x2 on Mobile, 4 in row on Desktop) --- -->
+        <!-- --- STAT CARDS --- -->
         <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
+            <!-- Card: আমি পাবো -->
             <div class="card stat-card red-glow">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">আমি পাবো</p>
-                    <div class="w-10 h-10 md:w-14 md:h-14 rounded-lg flex items-center justify-center bg-red-500/10 text-red-400 overflow-hidden shrink-0 shadow-sm border border-red-500/20">
+                    <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center bg-red-500/10 text-red-400 overflow-hidden shrink-0 shadow-sm border border-red-500/20">
                         <img src="https://i.postimg.cc/sx5dtBBK/psa.png" alt="আমি পাবো" class="w-full h-full object-cover">
                     </div>
                 </div>
@@ -310,10 +282,11 @@
                 <p class="text-xs text-dim mt-2 font-medium" id="stat-owed-to-me-sub">— জন ঋণী</p>
             </div>
 
+            <!-- Card: আমি ঋণী -->
             <div class="card stat-card green-glow">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">আমি ঋণী</p>
-                    <div class="w-10 h-10 md:w-14 md:h-14 rounded-lg flex items-center justify-center bg-green-500/10 text-green-400 overflow-hidden shrink-0 shadow-sm border border-green-500/20">
+                    <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center bg-green-500/10 text-green-400 overflow-hidden shrink-0 shadow-sm border border-green-500/20">
                         <img src="https://i.postimg.cc/SsRd3HPM/andha.jpg" alt="আমি ঋণী" class="w-full h-full object-cover">
                     </div>
                 </div>
@@ -323,11 +296,12 @@
                 <p class="text-xs text-dim mt-2 font-medium" id="stat-i-owe-sub">— জনের কাছে</p>
             </div>
 
+            <!-- Card: অন্যদের খরচ -->
             <div class="card stat-card accent-glow">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">অন্যদের খরচ</p>
-                    <div class="w-10 h-10 md:w-14 md:h-14 rounded-lg flex items-center justify-center bg-sky-500/10 text-sky-400 shrink-0 border border-sky-500/20 shadow-sm">
-                        <i class="fas fa-users text-lg md:text-2xl"></i>
+                    <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center bg-sky-500/10 text-sky-400 shrink-0 border border-sky-500/20 shadow-sm">
+                        <i class="fas fa-users text-xl md:text-2xl"></i>
                     </div>
                 </div>
                 <div class="number-display text-xl md:text-3xl font-semibold text-sky-400" id="stat-people-spend">
@@ -336,10 +310,11 @@
                 <p class="text-xs text-dim mt-2 font-medium">গত ৩০ দিন</p>
             </div>
 
+            <!-- Card: নিজস্ব খরচ -->
             <div class="card stat-card pink-glow">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">নিজস্ব খরচ</p>
-                    <div class="w-10 h-10 md:w-14 md:h-14 rounded-lg flex items-center justify-center bg-pink-500/10 text-pink-400 overflow-hidden shrink-0 shadow-sm border border-pink-500/20">
+                    <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center bg-pink-500/10 text-pink-400 overflow-hidden shrink-0 shadow-sm border border-pink-500/20">
                         <img src="https://i.postimg.cc/KjLHpdK8/dk.jpg" alt="নিজস্ব খরচ" class="w-full h-full object-cover">
                     </div>
                 </div>
@@ -350,170 +325,187 @@
             </div>
         </section>
 
-        <!-- --- SECTION: আমার নিজস্ব খরচ --- -->
-        <h2 class="section-header">
-            <span class="bg-pink-500/15 text-pink-400 p-2 md:p-2.5 rounded-xl text-base md:text-lg shadow-[0_0_15px_rgba(244,114,182,0.15)]"><i class="fas fa-receipt"></i></span>
-            ব্যক্তিগত খরচ
-        </h2>
-
-        <section class="grid grid-cols-1 xl:grid-cols-5 gap-4 md:gap-6">
+        <!-- --- TWO COLUMN LAYOUT: FORMS (LEFT) & REPORTS (RIGHT) --- -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
             
-            <!-- EXPENSE ADD FORM -->
-            <div class="xl:col-span-2 card p-4 md:p-6 border-t-[3px] border-t-[var(--pink)] relative overflow-hidden">
-                <div class="absolute -top-10 -right-10 text-[var(--pink)] opacity-[0.03] text-9xl pointer-events-none"><i class="fas fa-tags"></i></div>
-
-                <h3 class="font-display font-bold text-base md:text-lg text-primary tracking-wide mb-5 relative z-10">খরচ যোগ করুন</h3>
+            <!-- ====== LEFT COLUMN: ENTRY FORMS (lg:col-span-5) ====== -->
+            <div class="lg:col-span-5 flex flex-col gap-8 md:gap-10">
                 
-                <form id="exp-add-form" class="flex flex-col gap-4 relative z-10">
-                    <div class="grid grid-cols-2 gap-3 md:gap-4">
-                        <div>
-                            <label class="form-label">ক্যাটাগরি</label>
-                            <select id="exp-category" class="form-input" required>
-                                <option value="">নির্বাচন করুন…</option>
-                                <option value="food">🍔 খাওয়া</option>
-                                <option value="transport">🚌 যাতায়াত</option>
-                                <option value="shopping">🛍️ জিনিস</option>
-                                <option value="extra">📦 হাবিজাবি</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="form-label">পরিমাণ (৳)</label>
-                            <input type="number" id="exp-amount" class="form-input" placeholder="0.00" step="0.01" min="0.01" required>
-                        </div>
+                <!-- 1. PERSONAL EXPENSE ENTRY -->
+                <div>
+                    <h2 class="section-header">
+                        <span class="bg-pink-500/15 text-pink-400 p-2 md:p-2.5 rounded-xl shadow-[0_0_15px_rgba(244,114,182,0.15)]"><i class="fas fa-receipt"></i></span>
+                        ব্যক্তিগত খরচ এন্ট্রি
+                    </h2>
+                    
+                    <div class="card p-4 md:p-6 border-t-[3px] border-t-[var(--pink)] relative overflow-hidden">
+                        <div class="absolute -top-10 -right-10 text-[var(--pink)] opacity-[0.03] text-9xl pointer-events-none"><i class="fas fa-tags"></i></div>
+                        
+                        <form id="exp-add-form" class="flex flex-col gap-4 relative z-10">
+                            <div class="grid grid-cols-2 gap-3 md:gap-4">
+                                <div>
+                                    <label class="form-label">ক্যাটাগরি</label>
+                                    <select id="exp-category" class="form-input" required>
+                                        <option value="">নির্বাচন করুন…</option>
+                                        <option value="food">🍔 খাওয়া</option>
+                                        <option value="transport">🚌 যাতায়াত</option>
+                                        <option value="shopping">🛍️ জিনিস</option>
+                                        <option value="extra">📦 হাবিজাবি</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="form-label">পরিমাণ (৳)</label>
+                                    <input type="number" id="exp-amount" class="form-input" placeholder="0.00" step="0.01" min="0.01" required>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="form-label">বিস্তারিত (ঐচ্ছিক)</label>
+                                <input type="text" id="exp-note" class="form-input" placeholder="কীসে খরচ হলো?">
+                            </div>
+                            <button type="submit" class="btn-primary btn-secondary w-full mt-2" id="exp-submit-btn"><i class="fas fa-plus-circle mr-2"></i>খরচ যুক্ত করুন</button>
+                        </form>
                     </div>
-                    <div>
-                        <label class="form-label">বিস্তারিত (ঐচ্ছিক)</label>
-                        <input type="text" id="exp-note" class="form-input" placeholder="কীসে খরচ হলো?">
+                </div>
+
+                <!-- 2. TRANSACTION ENTRY -->
+                <div>
+                    <h2 class="section-header">
+                        <span class="bg-sky-500/15 text-sky-400 p-2 md:p-2.5 rounded-xl shadow-[0_0_15px_rgba(56,189,248,0.15)]"><i class="fas fa-handshake"></i></span>
+                        লেনদেন এন্ট্রি
+                    </h2>
+
+                    <div class="card p-4 md:p-6 border-t-[3px] border-t-[var(--accent)] relative overflow-hidden">
+                        <div class="absolute -top-10 -right-10 text-[var(--accent)] opacity-[0.03] text-9xl pointer-events-none"><i class="fas fa-bolt"></i></div>
+                        
+                        <div class="flex items-center justify-end mb-4 relative z-10">
+                            <button onclick="openPersonModal()" class="btn-ghost"><i class="fas fa-plus mr-2"></i>নতুন মানুষ</button>
+                        </div>
+                        
+                        <form id="trx-add-form" class="flex flex-col gap-4 relative z-10">
+                            <div>
+                                <label class="form-label">ব্যক্তি</label>
+                                <select id="form-person" class="form-input" required><option value="">নির্বাচন করুন…</option></select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3 md:gap-4">
+                                <div>
+                                    <label class="form-label">পরিমাণ (৳)</label>
+                                    <input type="number" id="form-amount" class="form-input" placeholder="0.00" step="0.01" min="0.01" required>
+                                </div>
+                                <div>
+                                    <label class="form-label">মাধ্যম</label>
+                                    <select id="form-method" class="form-input">
+                                        <option value="Cash">ক্যাশ</option>
+                                        <option value="bKash">বিকাশ</option>
+                                        <option value="3rd party">থার্ড পার্টি</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="form-label">লেনদেনের ধরন</label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button type="button" class="trx-type-btn selected sel-red" data-value="Gave" data-color="sel-red">
+                                        <i class="fas fa-arrow-up block mb-1.5 text-lg opacity-80"></i>দিয়েছি
+                                    </button>
+                                    <button type="button" class="trx-type-btn" data-value="Received" data-color="sel-green">
+                                        <i class="fas fa-arrow-down block mb-1.5 text-lg opacity-80"></i>নিয়েছি/পেয়েছি
+                                    </button>
+                                    <button type="button" class="trx-type-btn" data-value="Shared Expense" data-color="sel-amber">
+                                        <i class="fas fa-utensils block mb-1.5 text-lg opacity-80"></i>শেয়ার্ড
+                                    </button>
+                                </div>
+                                <p id="amount-hint" class="text-[0.7rem] text-amber-400 mt-2 hidden font-medium">⚠ শেয়ার্ড বিলে <em>শুধুমাত্র তার অংশটুকু</em> লিখুন।</p>
+                            </div>
+                            <div>
+                                <label class="form-label">নোট (অপশনাল)</label>
+                                <input type="text" id="form-note" class="form-input" placeholder="কীসের জন্য?">
+                            </div>
+                            <button type="submit" class="btn-primary w-full mt-2" id="submit-btn"><i class="fas fa-check-circle mr-2"></i>সেভ করুন</button>
+                        </form>
                     </div>
-                    <button type="submit" class="btn-primary btn-secondary w-full mt-2" id="exp-submit-btn"><i class="fas fa-plus-circle mr-2"></i>খরচ যুক্ত করুন</button>
-                </form>
+                </div>
+
             </div>
 
-            <!-- EXPENSE BREAKDOWN & HISTORY -->
-            <div class="xl:col-span-3 flex flex-col gap-4 md:gap-6">
+            <!-- ====== RIGHT COLUMN: REPORTS & HISTORY (lg:col-span-7) ====== -->
+            <div class="lg:col-span-7 flex flex-col gap-8 md:gap-10">
                 
-                <!-- Category Breakdown -->
-                <div class="card p-4 md:p-5">
-                    <h3 class="font-display font-bold text-base md:text-lg text-primary mb-4 tracking-wide border-b border-[var(--border)] pb-3">চলতি মাসের খাত</h3>
-                    <div id="expense-breakdown-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
-                        <!-- Filled dynamically -->
-                    </div>
-                </div>
-
-                <!-- Expense History Table -->
-                <div class="card flex-1 flex flex-col overflow-hidden">
-                    <div class="p-4 md:p-5 border-b border-[var(--border)] bg-[var(--bg-input)] bg-opacity-50">
-                        <h3 class="font-display font-bold text-base md:text-lg text-primary tracking-wide">খরচের তালিকা</h3>
-                    </div>
-                    <div class="overflow-x-auto flex-1 max-h-[300px] overflow-y-auto p-1">
-                        <table class="data-table">
-                            <thead>
-                                <tr><th>সময়</th><th>খাত</th><th>পরিমাণ</th><th class="hide-mobile">বিস্তারিত</th><th></th></tr>
-                            </thead>
-                            <tbody id="expenses-tbody">
-                                <tr><td colspan="5" class="text-center py-10 text-muted"><i class="fas fa-spinner fa-spin text-2xl mb-2 text-dim"></i><br>লোড হচ্ছে...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-        </section>
-
-        <!-- --- SECTION: মানুষের সাথে লেনদেন --- -->
-        <h2 class="section-header">
-            <span class="bg-sky-500/15 text-sky-400 p-2 md:p-2.5 rounded-xl text-base md:text-lg shadow-[0_0_15px_rgba(56,189,248,0.15)]"><i class="fas fa-handshake"></i></span>
-            লেনদেনের হিসাব
-        </h2>
-
-        <section class="grid grid-cols-1 xl:grid-cols-5 gap-4 md:gap-6 mb-8">
-            
-            <!-- QUICK ADD FORM -->
-            <div class="xl:col-span-2 card p-4 md:p-6 border-t-[3px] border-t-[var(--accent)] relative overflow-hidden">
-                <!-- Background decoration -->
-                <div class="absolute -top-10 -right-10 text-[var(--accent)] opacity-[0.03] text-9xl pointer-events-none"><i class="fas fa-bolt"></i></div>
-                
-                <div class="flex items-center justify-between mb-5 relative z-10">
-                    <h3 class="font-display font-bold text-base md:text-lg text-primary tracking-wide">নতুন লেনদেন যোগ</h3>
-                    <button onclick="openPersonModal()" class="btn-ghost"><i class="fas fa-plus mr-2"></i>নতুন মানুষ</button>
-                </div>
-                
-                <form id="trx-add-form" class="flex flex-col gap-4 relative z-10">
-                    <div>
-                        <label class="form-label">ব্যক্তি</label>
-                        <select id="form-person" class="form-input" required><option value="">নির্বাচন করুন…</option></select>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3 md:gap-4">
-                        <div>
-                            <label class="form-label">পরিমাণ (৳)</label>
-                            <input type="number" id="form-amount" class="form-input" placeholder="0.00" step="0.01" min="0.01" required>
+                <!-- 1. PERSONAL EXPENSE DATA -->
+                <div>
+                    <h2 class="section-header">
+                        <span class="bg-pink-500/15 text-pink-400 p-2 md:p-2.5 rounded-xl shadow-[0_0_15px_rgba(244,114,182,0.15)]"><i class="fas fa-chart-pie"></i></span>
+                        ব্যক্তিগত রিপোর্ট
+                    </h2>
+                    
+                    <div class="flex flex-col gap-4">
+                        <!-- Category Breakdown -->
+                        <div class="card p-4 md:p-5">
+                            <h3 class="font-display font-bold text-[0.9rem] md:text-base text-primary mb-4 tracking-wide border-b border-[var(--border)] pb-3">চলতি মাসের খাত</h3>
+                            <div id="expense-breakdown-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
+                                <!-- Filled dynamically -->
+                            </div>
                         </div>
-                        <div>
-                            <label class="form-label">মাধ্যম</label>
-                            <select id="form-method" class="form-input">
-                                <option value="Cash">ক্যাশ</option>
-                                <option value="bKash">বিকাশ</option>
-                                <option value="3rd party">থার্ড পার্টি</option>
-                            </select>
+
+                        <!-- Expense History Table -->
+                        <div class="card flex flex-col overflow-hidden">
+                            <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-input)] bg-opacity-50">
+                                <h3 class="font-display font-bold text-[0.9rem] md:text-base text-primary tracking-wide">খরচের তালিকা</h3>
+                            </div>
+                            <div class="overflow-x-auto max-h-[300px] overflow-y-auto p-1">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr><th>সময়</th><th>খাত</th><th>পরিমাণ</th><th class="hide-mobile">বিস্তারিত</th><th></th></tr>
+                                    </thead>
+                                    <tbody id="expenses-tbody">
+                                        <tr><td colspan="5" class="text-center py-10 text-muted"><i class="fas fa-spinner fa-spin text-2xl mb-2 text-dim"></i><br>লোড হচ্ছে...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        <label class="form-label">লেনদেনের ধরন</label>
-                        <div class="grid grid-cols-3 gap-2">
-                            <button type="button" class="trx-type-btn selected sel-red" data-value="Gave" data-color="sel-red">
-                                <i class="fas fa-arrow-up block mb-1.5 text-lg opacity-80"></i>দিয়েছি
-                            </button>
-                            <button type="button" class="trx-type-btn" data-value="Received" data-color="sel-green">
-                                <i class="fas fa-arrow-down block mb-1.5 text-lg opacity-80"></i>পেয়েছি
-                            </button>
-                            <button type="button" class="trx-type-btn" data-value="Shared Expense" data-color="sel-amber">
-                                <i class="fas fa-utensils block mb-1.5 text-lg opacity-80"></i>শেয়ার্ড
-                            </button>
-                        </div>
-                        <p id="amount-hint" class="text-[0.7rem] text-amber-400 mt-2 hidden font-medium">⚠ শেয়ার্ড বিলে <em>শুধুমাত্র তার অংশটুকু</em> লিখুন।</p>
-                    </div>
-                    <div>
-                        <label class="form-label">নোট (অপশনাল)</label>
-                        <input type="text" id="form-note" class="form-input" placeholder="কীসের জন্য?">
-                    </div>
-                    <button type="submit" class="btn-primary w-full mt-2" id="submit-btn"><i class="fas fa-check-circle mr-2"></i>সেভ করুন</button>
-                </form>
-            </div>
+                </div>
 
-            <!-- PEOPLE GRID & TRX TABLE -->
-            <div class="xl:col-span-3 flex flex-col gap-4 md:gap-6">
-                
-                <!-- People Cards -->
-                <div class="card p-4 md:p-5 flex flex-col max-h-[300px]">
-                    <div class="flex items-center justify-between mb-4 border-b border-[var(--border)] pb-3">
-                        <h3 class="font-display font-bold text-base md:text-lg text-primary tracking-wide">ব্যালেন্স <span class="text-sm text-muted ml-1" id="people-count">(০)</span></h3>
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs text-dim hidden sm:inline"><i class="fas fa-filter mr-1"></i>কার্ডে ক্লিক করে ফিল্টার করুন</span>
-                            <button id="clear-filter-btn" onclick="clearPersonFilter()" class="btn-ghost !py-1 !px-2 !text-xs text-red-400 border-red-500/30 hover:bg-red-500/10 hover:border-red-400" style="display:none;"><i class="fas fa-times mr-1"></i>মুছুন</button>
+                <!-- 2. TRANSACTION DATA -->
+                <div>
+                    <h2 class="section-header">
+                        <span class="bg-sky-500/15 text-sky-400 p-2 md:p-2.5 rounded-xl shadow-[0_0_15px_rgba(56,189,248,0.15)]"><i class="fas fa-users-rectangle"></i></span>
+                        লেনদেন রিপোর্ট
+                    </h2>
+                    
+                    <div class="flex flex-col gap-4">
+                        <!-- People Cards Grid -->
+                        <div class="card p-4 md:p-5 flex flex-col max-h-[300px]">
+                            <div class="flex items-center justify-between mb-4 border-b border-[var(--border)] pb-3">
+                                <h3 class="font-display font-bold text-[0.9rem] md:text-base text-primary tracking-wide">ব্যালেন্স <span class="text-sm text-muted ml-1" id="people-count">(০)</span></h3>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[0.7rem] text-dim hidden sm:inline"><i class="fas fa-filter mr-1"></i>কার্ডে ক্লিক করে ফিল্টার করুন</span>
+                                    <button id="clear-filter-btn" onclick="clearPersonFilter()" class="btn-ghost !py-1 !px-2 !text-[0.7rem] text-red-400 border-red-500/30 hover:bg-red-500/10 hover:border-red-400" style="display:none;"><i class="fas fa-times mr-1"></i>মুছুন</button>
+                                </div>
+                            </div>
+                            <!-- Swipeable grid -->
+                            <div id="people-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 overflow-y-auto pr-2 pb-1 flex-1">
+                                <div class="col-span-full text-center py-8 text-muted"><i class="fas fa-spinner fa-spin text-2xl mb-2 text-dim"></i><br>লোড হচ্ছে...</div>
+                            </div>
                         </div>
-                    </div>
-                    <!-- Swipeable grid -->
-                    <div id="people-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 overflow-y-auto pr-2 pb-1" style="flex:1;">
-                        <div class="col-span-full text-center py-8 text-muted"><i class="fas fa-spinner fa-spin text-2xl mb-2 text-dim"></i><br>লোড হচ্ছে...</div>
+
+                        <!-- Trx History Table -->
+                        <div class="card flex flex-col overflow-hidden">
+                            <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-input)] bg-opacity-50">
+                                <h3 class="font-display font-bold text-[0.9rem] md:text-base text-primary tracking-wide">লেনদেনের তালিকা</h3>
+                            </div>
+                            <div class="overflow-x-auto max-h-[350px] overflow-y-auto p-1">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr><th>সময়</th><th>ব্যক্তি</th><th>ধরন</th><th class="hide-mobile">মাধ্যম</th><th>পরিমাণ</th><th class="hide-mobile">নোট</th><th></th></tr>
+                                    </thead>
+                                    <tbody id="transactions-tbody">
+                                        <tr><td colspan="7" class="text-center py-10 text-muted"><i class="fas fa-spinner fa-spin text-2xl mb-2 text-dim"></i><br>লোড হচ্ছে...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Trx History -->
-                <div class="card flex-1 flex flex-col overflow-hidden">
-                    <div class="p-4 md:p-5 border-b border-[var(--border)] bg-[var(--bg-input)] bg-opacity-50">
-                        <h3 class="font-display font-bold text-base md:text-lg text-primary tracking-wide">হিস্ট্রি</h3>
-                    </div>
-                    <div class="overflow-x-auto flex-1 max-h-[350px] overflow-y-auto p-1">
-                        <table class="data-table">
-                            <thead>
-                                <tr><th>সময়</th><th>ব্যক্তি</th><th>ধরন</th><th class="hide-mobile">মাধ্যম</th><th>পরিমাণ</th><th class="hide-mobile">নোট</th><th></th></tr>
-                            </thead>
-                            <tbody id="transactions-tbody">
-                                <tr><td colspan="7" class="text-center py-10 text-muted"><i class="fas fa-spinner fa-spin text-2xl mb-2 text-dim"></i><br>লোড হচ্ছে...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -561,16 +553,10 @@
 
 <!-- ================= INTEGRATED JAVASCRIPT ================= -->
 <script>
-    // ---------------------------------------------------------
-    // ⚙️ POCKETBASE CONFIGURATION
-    // ---------------------------------------------------------
     const POCKETBASE_URL = "https://efljudb.duckdns.org";
     const pb = new PocketBase(POCKETBASE_URL);
     pb.autoCancellation(false);
 
-    // ---------------------------------------------------------
-    // 📦 APP STATE
-    // ---------------------------------------------------------
     const state = {
         people: [],
         transactions: [],
@@ -579,7 +565,6 @@
         filterPersonId: "",
     };
 
-    // Category Mappings (DB English -> UI Bangla)
     const catMap = {
         "food": { name: "খাওয়া", icon: "fa-burger" },
         "transport": { name: "যাতায়াত", icon: "fa-bus" },
@@ -587,16 +572,12 @@
         "extra": { name: "হাবিজাবি", icon: "fa-box-open" }
     };
 
-    // Initialize App
     function initApp() {
         setupFormListeners();
         setupModalListeners();
         refreshAll();
     }
 
-    // ---------------------------------------------------------
-    // 🔄 DATA FETCHING & SYNC
-    // ---------------------------------------------------------
     async function refreshAll() {
         const btn = document.getElementById("refresh-btn");
         const icon = btn.querySelector('i');
@@ -604,10 +585,8 @@
         btn.disabled = true;
         setConnectionStatus(true);
 
-        // Fetch parallel requests, don't crash if one fails
         await Promise.allSettled([ fetchPeople(), fetchTransactions(), fetchPersonalExpenses() ]);
 
-        // Render everything
         renderStats();
         renderPeopleGrid();
         renderTransactionsTable();
@@ -630,8 +609,7 @@
 
     async function fetchTransactions() {
         try {
-            // using -created since date field is removed
-            const result = await pb.collection("transactions").getList(1, 50, { sort: "-created", expand: "person_id" });
+            const result = await pb.collection("transactions").getList(1, 50, { sort: "-created", expand: "person_id,person" });
             state.transactions = result.items;
         } catch (err) {
             setConnectionStatus(false);
@@ -649,10 +627,6 @@
             showLoadError("expense-breakdown-grid", "ডাটাবেস এরর");
         }
     }
-
-    // ---------------------------------------------------------
-    // 🎨 RENDER LOGIC
-    // ---------------------------------------------------------
     
     function renderStats() {
         let owedToMe = 0, iOwe = 0, owedToMeCount = 0, iOweCount = 0;
@@ -691,7 +665,7 @@
 
     function renderPeopleGrid() {
         const grid = document.getElementById("people-grid");
-        if(grid.innerHTML.includes("ডাটাবেস")) return; // Prevent overwriting error messages
+        if(grid.innerHTML.includes("ডাটাবেস")) return; 
 
         document.getElementById("people-count").textContent = `(${state.people.length})`;
         
@@ -732,7 +706,7 @@
         const tbody = document.getElementById("transactions-tbody");
         if(tbody.innerHTML.includes("ডাটাবেস")) return;
 
-        const rows = state.filterPersonId ? state.transactions.filter(t => t.person_id === state.filterPersonId) : state.transactions;
+        const rows = state.filterPersonId ? state.transactions.filter(t => (t.person_id === state.filterPersonId || t.person === state.filterPersonId)) : state.transactions;
         if (rows.length === 0) {
             tbody.innerHTML = `<tr><td colspan="7" class="text-center py-10 text-muted text-sm"><i class="fas fa-inbox text-3xl mb-3 text-dim"></i><br>কোনো লেনদেন নেই।</td></tr>`;
             return;
@@ -741,11 +715,14 @@
         const methodMap = { "Cash": "ক্যাশ", "bKash": "বিকাশ", "3rd party": "৩য় পক্ষ" };
 
         tbody.innerHTML = rows.map(t => {
-            const pName = t.expand?.person_id?.name || state.people.find(p => p.id === t.person_id)?.name || "অজানা";
+            // Robust fallback check for relation matching
+            const pIdField = t.person_id || t.person;
+            const pObj = t.expand?.person_id || t.expand?.person || state.people.find(p => p.id === pIdField);
+            const pName = pObj?.name || "অজানা";
             
             let typeBadge = "";
             if(t.trx_type === "Gave") typeBadge = `<span class="badge type-gave">দিয়েছি</span>`;
-            else if(t.trx_type === "Received") typeBadge = `<span class="badge type-received">পেয়েছি</span>`;
+            else if(t.trx_type === "Received") typeBadge = `<span class="badge type-received">নিয়েছি/পেয়েছি</span>`;
             else typeBadge = `<span class="badge type-shared">শেয়ার্ড</span>`;
 
             const color = t.trx_type === "Received" ? "var(--green)" : t.trx_type === "Gave" ? "var(--red)" : "var(--amber)";
@@ -808,20 +785,14 @@
             `;
         }).join("");
     }
-
-    // ---------------------------------------------------------
-    // 🖱️ FORM ACTIONS & HANDLERS
-    // ---------------------------------------------------------
     
     function setupFormListeners() {
-        // Transaction Type Button Toggles
         document.querySelectorAll(".trx-type-btn").forEach(btn => {
             btn.addEventListener("click", () => {
                 document.querySelectorAll(".trx-type-btn").forEach(b => b.classList.remove("selected", "sel-red", "sel-green", "sel-amber"));
                 btn.classList.add("selected", btn.dataset.color);
                 state.selectedTrxType = btn.dataset.value;
                 
-                // Show hint only for shared expense
                 const hint = document.getElementById("amount-hint");
                 if(state.selectedTrxType === "Shared Expense") {
                     hint.style.display = "block";
@@ -832,7 +803,6 @@
             });
         });
 
-        // Add Transaction Submit
         document.getElementById("trx-add-form").addEventListener("submit", async (e) => {
             e.preventDefault();
             const pId = document.getElementById("form-person").value;
@@ -846,11 +816,12 @@
             btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>সেভ হচ্ছে…`;
             
             try {
+                // We use person_id to save the relation.
                 await pb.collection("transactions").create({ person_id: pId, amount: amt, trx_type: state.selectedTrxType, method, note });
                 await updatePersonBalance(pId, state.selectedTrxType, amt);
                 await refreshAll();
                 e.target.reset(); 
-                document.querySelector(".trx-type-btn[data-value='Gave']").click(); // reset to default
+                document.querySelector(".trx-type-btn[data-value='Gave']").click(); 
                 showToast("লেনদেন যুক্ত হয়েছে!", "success");
             } catch (err) { 
                 showToast("সেভ করতে সমস্যা হয়েছে", "error"); 
@@ -859,7 +830,6 @@
             }
         });
 
-        // Add Personal Expense Submit
         document.getElementById("exp-add-form").addEventListener("submit", async (e) => {
             e.preventDefault();
             const cat = document.getElementById("exp-category").value;
@@ -883,7 +853,6 @@
             }
         });
 
-        // Add Person Submit
         document.getElementById("add-person-form").addEventListener("submit", async (e) => {
             e.preventDefault();
             const name = document.getElementById("person-name").value.trim();
@@ -891,7 +860,6 @@
             const photo = document.getElementById("person-photo").files[0];
             const code = document.getElementById("owner-code").value;
 
-            // Security check
             if (code !== "0852") {
                 document.getElementById("owner-code").value = "";
                 return showToast("ভুল পিন! এক্সেস নেই।", "error");
@@ -926,8 +894,9 @@
         
         const trx = state.transactions.find(t => t.id === id); if (!trx) return;
         try {
+            const pIdField = trx.person_id || trx.person;
             const revMap = { "Gave": "Received", "Received": "Gave", "Shared Expense": "Received" };
-            await updatePersonBalance(trx.person_id, revMap[trx.trx_type], trx.amount);
+            await updatePersonBalance(pIdField, revMap[trx.trx_type], trx.amount);
             await pb.collection("transactions").delete(id);
             await refreshAll(); 
             showToast("লেনদেন ডিলিট হয়েছে", "success");
@@ -945,15 +914,12 @@
     }
 
     async function updatePersonBalance(pId, type, amt) {
+        if(!pId) return;
         const p = await pb.collection("people").getOne(pId);
         const delta = { "Gave": -amt, "Received": +amt, "Shared Expense": -amt }[type] ?? 0;
         await pb.collection("people").update(pId, { net_balance: (p.net_balance || 0) + delta });
     }
 
-    // ---------------------------------------------------------
-    // 🛠️ UTILITIES & HELPERS
-    // ---------------------------------------------------------
-    
     function togglePersonFilter(pId) {
         state.filterPersonId = state.filterPersonId === pId ? "" : pId;
         renderTransactionsTable(); renderPeopleGrid();
@@ -971,7 +937,7 @@
     
     function populatePersonDropdowns() {
         const sel = document.getElementById("form-person"); const val = sel.value;
-        sel.innerHTML = `<option value="">ব্যক্তি নির্বাচন করুন…</option>` + state.people.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("");
+        sel.innerHTML = `<option value="">নির্বাচন করুন…</option>` + state.people.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("");
         sel.value = val;
     }
     
@@ -1009,8 +975,10 @@
         }
     }
     
+    // Numbers always in English Digits
     function fmt(amt) { return "৳" + Number(amt || 0).toLocaleString("en-IN", { minimumFractionDigits: 0, maximumFractionDigits: 2 }); }
     
+    // Dates & Times always in English
     function fmtDateObj(iso) { 
         if (!iso) return { d: "—", t: "" };
         try { 
@@ -1030,7 +998,6 @@
         el.innerHTML = col ? `<tr><td colspan="${col}" class="text-center py-8">${inner}</td></tr>` : `<div class="col-span-full text-center py-8">${inner}</div>`;
     }
 
-    // Start
     initApp();
 </script>
 </body>
