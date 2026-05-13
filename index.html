@@ -80,7 +80,8 @@
                 radial-gradient(ellipse 60% 40% at 80% 110%, rgba(52, 211, 153, 0.03) 0%, transparent 60%);
             pointer-events: none; z-index: 0;
         }
-        #app { position: relative; z-index: 1; padding-bottom: 6rem; }
+        
+        #app { position: relative; z-index: 1; padding-bottom: 3rem; }
 
         .card {
             background: var(--bg-card); border: 1px solid var(--border);
@@ -215,14 +216,6 @@
         
         .section-header { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.3rem; color: var(--text-primary); display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
 
-        /* Sticky Bottom Bar */
-        .bottom-bar {
-            position: fixed; bottom: 0; left: 0; right: 0; padding: 1rem;
-            background: rgba(6, 9, 15, 0.85); backdrop-filter: blur(12px);
-            border-top: 1px solid var(--border); z-index: 40;
-            display: flex; justify-content: center;
-        }
-
         /* Hide scrollbar class */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -285,7 +278,7 @@
 
         <!-- --- STAT CARDS (Clickable for Reports) --- -->
         <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
-            <!-- Card: আমি পাবো (Overall - Not affected by month filter) -->
+            <!-- Card: আমি পাবো (Overall) -->
             <div class="card stat-card red-glow hover:ring-2 hover:ring-[var(--border-bright)]" onclick="openReport('owed-to-me')">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">আমি পাবো</p>
@@ -299,7 +292,7 @@
                 <p class="text-xs text-dim mt-2 font-medium"><span id="stat-owed-to-me-sub">— জন ঋণী</span> <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
             </div>
 
-            <!-- Card: আমি ঋণী (Overall - Not affected by month filter) -->
+            <!-- Card: আমি ঋণী (Overall) -->
             <div class="card stat-card green-glow hover:ring-2 hover:ring-[var(--border-bright)]" onclick="openReport('i-owe')">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">আমি ঋণী</p>
@@ -313,7 +306,7 @@
                 <p class="text-xs text-dim mt-2 font-medium"><span id="stat-i-owe-sub">— জনের কাছে</span> <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
             </div>
 
-            <!-- Card: অন্যদের খরচ (Filtered by Month) -->
+            <!-- Card: অন্যদের খরচ (Current Month) -->
             <div class="card stat-card accent-glow hover:ring-2 hover:ring-[var(--border-bright)]" onclick="openReport('people-spend')">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">অন্যদের খরচ</p>
@@ -327,7 +320,7 @@
                 <p class="text-xs text-dim mt-2 font-medium" id="stat-people-spend-sub">চলতি মাসে <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
             </div>
 
-            <!-- Card: নিজস্ব খরচ (Filtered by Month) -->
+            <!-- Card: নিজস্ব খরচ (Current Month) -->
             <div class="card stat-card pink-glow hover:ring-2 hover:ring-[var(--border-bright)]" onclick="openReport('personal-spend')">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">নিজস্ব খরচ</p>
@@ -526,14 +519,14 @@
             </div>
         </section>
 
+        <!-- --- BOTTOM BAR FOR MONTHLY ARCHIVE (Normal Flow, Not Sticky) --- -->
+        <div class="flex justify-center mt-6 mb-8">
+            <button onclick="openMonthlyListModal()" class="btn-primary btn-tertiary w-full max-w-lg py-3 md:py-3.5 rounded-xl font-display font-bold text-[0.95rem] md:text-base tracking-wide shadow-[0_8px_30px_rgba(168,85,247,0.3)]">
+                <i class="fas fa-calendar-check mr-2 text-lg"></i> মাসিক রিপোর্ট ও আর্কাইভ
+            </button>
+        </div>
+
     </main>
-    
-    <!-- BOTTOM STICKY BAR FOR MONTHLY ARCHIVE -->
-    <div class="bottom-bar">
-        <button onclick="openMonthlyListModal()" class="btn-primary btn-tertiary w-full max-w-lg py-3 md:py-3.5 rounded-xl font-display font-bold text-[0.95rem] md:text-base tracking-wide shadow-[0_8px_30px_rgba(168,85,247,0.3)]">
-            <i class="fas fa-calendar-check mr-2 text-lg"></i> মাসিক রিপোর্ট ও আর্কাইভ
-        </button>
-    </div>
 </div>
 
 <!-- ================= MODAL: ADD PERSON ================= -->
