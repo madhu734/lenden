@@ -88,7 +88,8 @@
         }
         .card:hover { border-color: var(--border-bright); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); }
 
-        .stat-card { position: relative; overflow: hidden; padding: 1.25rem; }
+        .stat-card { position: relative; overflow: hidden; padding: 1.25rem; cursor: pointer; }
+        .stat-card:active { transform: scale(0.97); }
         .stat-card::after {
             content: ''; position: absolute; top: 0; right: 0; 
             width: 130px; height: 130px; border-radius: 50%; 
@@ -196,13 +197,14 @@
         .toast-out { animation: toastOut 0.3s ease forwards !important; }
         @keyframes toastOut { to { transform: translateX(120%); opacity: 0; } }
 
-        #person-modal { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.75); backdrop-filter: blur(5px); align-items: center; justify-content: center; padding: 1rem; }
-        #person-modal.open { display: flex; }
+        .modal-bg { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.75); backdrop-filter: blur(5px); align-items: center; justify-content: center; padding: 1rem; }
+        .modal-bg.open { display: flex; }
         .modal-box { 
             background: var(--bg-card); border: 1px solid var(--border-bright); border-radius: 20px; 
             width: 100%; max-width: 400px; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; 
         }
+        .report-box { max-width: 450px; padding: 1.5rem; }
         @keyframes modalIn { from { transform: scale(0.9) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
 
         .skeleton { background: linear-gradient(90deg, var(--bg-card) 25%, #141e31 50%, var(--bg-card) 75%); background-size: 200% 100%; animation: shimmer 1.6s infinite; border-radius: 6px; display: inline-block; }
@@ -266,10 +268,10 @@
     <!-- ================= MAIN CONTENT ================= -->
     <main class="max-w-7xl mx-auto px-4 py-6 flex flex-col gap-6 md:gap-8">
         
-        <!-- --- STAT CARDS --- -->
+        <!-- --- STAT CARDS (Now Clickable for Reports) --- -->
         <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
             <!-- Card: আমি পাবো -->
-            <div class="card stat-card red-glow">
+            <div class="card stat-card red-glow hover:ring-2 hover:ring-[var(--border-bright)]" onclick="openReport('owed-to-me')">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">আমি পাবো</p>
                     <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center bg-red-500/10 text-red-400 overflow-hidden shrink-0 shadow-sm border border-red-500/20">
@@ -279,11 +281,11 @@
                 <div class="number-display text-xl md:text-3xl font-semibold text-red-400" id="stat-owed-to-me">
                     <span class="skeleton w-20 h-8"></span>
                 </div>
-                <p class="text-xs text-dim mt-2 font-medium" id="stat-owed-to-me-sub">— জন ঋণী</p>
+                <p class="text-xs text-dim mt-2 font-medium"><span id="stat-owed-to-me-sub">— জন ঋণী</span> <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
             </div>
 
             <!-- Card: আমি ঋণী -->
-            <div class="card stat-card green-glow">
+            <div class="card stat-card green-glow hover:ring-2 hover:ring-[var(--border-bright)]" onclick="openReport('i-owe')">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">আমি ঋণী</p>
                     <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center bg-green-500/10 text-green-400 overflow-hidden shrink-0 shadow-sm border border-green-500/20">
@@ -293,11 +295,11 @@
                 <div class="number-display text-xl md:text-3xl font-semibold text-green-400" id="stat-i-owe">
                     <span class="skeleton w-20 h-8"></span>
                 </div>
-                <p class="text-xs text-dim mt-2 font-medium" id="stat-i-owe-sub">— জনের কাছে</p>
+                <p class="text-xs text-dim mt-2 font-medium"><span id="stat-i-owe-sub">— জনের কাছে</span> <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
             </div>
 
             <!-- Card: অন্যদের খরচ -->
-            <div class="card stat-card accent-glow">
+            <div class="card stat-card accent-glow hover:ring-2 hover:ring-[var(--border-bright)]" onclick="openReport('people-spend')">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">অন্যদের খরচ</p>
                     <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center bg-sky-500/10 text-sky-400 shrink-0 border border-sky-500/20 shadow-sm">
@@ -307,11 +309,11 @@
                 <div class="number-display text-xl md:text-3xl font-semibold text-sky-400" id="stat-people-spend">
                     <span class="skeleton w-20 h-8"></span>
                 </div>
-                <p class="text-xs text-dim mt-2 font-medium">গত ৩০ দিন</p>
+                <p class="text-xs text-dim mt-2 font-medium">গত ৩০ দিন <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
             </div>
 
             <!-- Card: নিজস্ব খরচ -->
-            <div class="card stat-card pink-glow">
+            <div class="card stat-card pink-glow hover:ring-2 hover:ring-[var(--border-bright)]" onclick="openReport('personal-spend')">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">নিজস্ব খরচ</p>
                     <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center bg-pink-500/10 text-pink-400 overflow-hidden shrink-0 shadow-sm border border-pink-500/20">
@@ -321,7 +323,7 @@
                 <div class="number-display text-xl md:text-3xl font-semibold text-pink-400" id="stat-personal-spend">
                     <span class="skeleton w-20 h-8"></span>
                 </div>
-                <p class="text-xs text-dim mt-2 font-medium">চলতি মাসে</p>
+                <p class="text-xs text-dim mt-2 font-medium">চলতি মাসে <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
             </div>
         </section>
 
@@ -448,7 +450,7 @@
                         <!-- Expense History Table -->
                         <div class="card flex flex-col overflow-hidden">
                             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-input)] bg-opacity-50">
-                                <h3 class="font-display font-bold text-[0.9rem] md:text-base text-primary tracking-wide">খরচের তালিকা</h3>
+                                <h3 class="font-display font-bold text-[0.9rem] md:text-base text-primary tracking-wide">খরচের হাবিজাবি তালিকা</h3>
                             </div>
                             <div class="overflow-x-auto max-h-[300px] overflow-y-auto p-1">
                                 <table class="data-table">
@@ -490,7 +492,7 @@
                         <!-- Trx History Table -->
                         <div class="card flex flex-col overflow-hidden">
                             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-input)] bg-opacity-50">
-                                <h3 class="font-display font-bold text-[0.9rem] md:text-base text-primary tracking-wide">লেনদেনের তালিকা</h3>
+                                <h3 class="font-display font-bold text-[0.9rem] md:text-base text-primary tracking-wide">লেনদেনের হাবিজাবি তালিকা</h3>
                             </div>
                             <div class="overflow-x-auto max-h-[350px] overflow-y-auto p-1">
                                 <table class="data-table">
@@ -513,7 +515,7 @@
 </div>
 
 <!-- ================= MODAL: ADD PERSON ================= -->
-<div id="person-modal">
+<div id="person-modal" class="modal-bg">
     <div class="modal-box">
         <div class="flex items-center justify-between mb-5 border-b border-[var(--border)] pb-3">
             <h3 class="font-display font-bold text-lg text-primary tracking-wide">নতুন ব্যক্তি</h3>
@@ -522,8 +524,8 @@
         
         <form id="add-person-form" class="flex flex-col gap-4">
             <div>
-                <label class="form-label">নাম</label>
-                <input type="text" id="person-name" class="form-input" placeholder="পুরো নাম" required>
+                <label class="form-label">নাম (English preferred)</label>
+                <input type="text" id="person-name" class="form-input" placeholder="Name" required>
             </div>
             <div>
                 <label class="form-label">প্রারম্ভিক ব্যালেন্স (৳)</label>
@@ -547,6 +549,20 @@
         </form>
     </div>
 </div>
+
+<!-- ================= MODAL: GENERIC REPORT (Clicking Stat Cards) ================= -->
+<div id="report-modal" class="modal-bg">
+    <div class="modal-box report-box">
+        <div class="flex items-center justify-between mb-4 border-b border-[var(--border)] pb-3">
+            <h3 id="report-title" class="font-display font-bold text-base md:text-lg text-primary tracking-wide">রিপোর্ট</h3>
+            <button onclick="closeReportModal()" class="btn-ghost !px-2.5 !py-1.5"><i class="fas fa-times text-base md:text-lg"></i></button>
+        </div>
+        <div id="report-content" class="text-sm">
+            <!-- Content filled by JS -->
+        </div>
+    </div>
+</div>
+
 
 <!-- ================= TOAST CONTAINER ================= -->
 <div id="toast"></div>
@@ -609,7 +625,8 @@
 
     async function fetchTransactions() {
         try {
-            const result = await pb.collection("transactions").getList(1, 50, { sort: "-created", expand: "person_id,person" });
+            // Using -created since date field is removed
+            const result = await pb.collection("transactions").getList(1, 50, { sort: "-created" });
             state.transactions = result.items;
         } catch (err) {
             setConnectionStatus(false);
@@ -628,6 +645,45 @@
         }
     }
     
+    // ------------------------------------------------------------------------
+    // HELPER: ROBUST DB RELATION MATCHER (Fixes "Unknown/অজানা" Issue)
+    // ------------------------------------------------------------------------
+    function getPersonIdFromTrx(t) {
+        // Try common field names first
+        let pId = t.person_id || t.person || t.personId;
+        // If not found, scan all keys to find one that matches an ID in state.people
+        if (!pId) {
+            for (const key in t) {
+                if (typeof t[key] === 'string' && state.people.some(p => p.id === t[key])) {
+                    pId = t[key];
+                    break;
+                }
+            }
+        }
+        return pId;
+    }
+
+    function getPersonObj(t) {
+        const pId = getPersonIdFromTrx(t);
+        return state.people.find(p => p.id === pId) || null;
+    }
+
+    function getPersonName(t) {
+        const pObj = getPersonObj(t);
+        return pObj ? pObj.name : "অজানা"; // Bangla "Unknown" fallback
+    }
+
+    function getAvatarHTML(pObj) {
+        if (!pObj) return escapeHtml("অজ");
+        if (pObj.photo) {
+            return `<img src="${POCKETBASE_URL}/api/files/people/${pObj.id}/${pObj.photo}" alt="${escapeHtml(pObj.name)}" class="w-full h-full object-cover">`;
+        }
+        return escapeHtml(pObj.name.substring(0, 2).toUpperCase());
+    }
+
+    // ------------------------------------------------------------------------
+    // RENDER FUNCTIONS
+    // ------------------------------------------------------------------------
     function renderStats() {
         let owedToMe = 0, iOwe = 0, owedToMeCount = 0, iOweCount = 0;
         
@@ -684,16 +740,11 @@
             const avatarColor = isNeg ? "var(--red)" : isPos ? "var(--green)" : "var(--accent)";
             const displayBal  = `${isNeg ? "-" : isPos ? "+" : ""}${fmt(Math.abs(bal))}`;
             
-            let avatarInner = escapeHtml(p.name.substring(0, 2).toUpperCase());
-            if (p.photo) {
-                avatarInner = `<img src="${POCKETBASE_URL}/api/files/people/${p.id}/${p.photo}" alt="${escapeHtml(p.name)}" class="w-full h-full object-cover">`;
-            }
-
             const activeClass = state.filterPersonId === p.id ? " active-filter" : "";
 
             return `
             <div class="card item-card${activeClass} p-3 flex items-center gap-3 md:gap-4" style="border-color:${borderColor};" onclick="togglePersonFilter('${p.id}')">
-                <div class="avatar-sm" style="background:${avatarBg};color:${avatarColor};">${avatarInner}</div>
+                <div class="avatar-sm" style="background:${avatarBg};color:${avatarColor};">${getAvatarHTML(p)}</div>
                 <div class="flex-1 min-w-0 leading-tight">
                     <div class="font-semibold text-sm md:text-[0.95rem] text-primary truncate">${escapeHtml(p.name)}</div>
                     <div class="number-display text-[0.8rem] md:text-sm font-medium mt-1" style="color:${mainColor};">${escapeHtml(displayBal)}</div>
@@ -706,19 +757,17 @@
         const tbody = document.getElementById("transactions-tbody");
         if(tbody.innerHTML.includes("ডাটাবেস")) return;
 
-        const rows = state.filterPersonId ? state.transactions.filter(t => (t.person_id === state.filterPersonId || t.person === state.filterPersonId)) : state.transactions;
+        const rows = state.filterPersonId ? state.transactions.filter(t => getPersonIdFromTrx(t) === state.filterPersonId) : state.transactions;
         if (rows.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-10 text-muted text-sm"><i class="fas fa-inbox text-3xl mb-3 text-dim"></i><br>কোনো লেনদেন নেই।</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan=\"7\" class=\"text-center py-10 text-muted text-sm\"><i class=\"fas fa-inbox text-3xl mb-3 text-dim\"></i><br>কোনো লেনদেন নেই।</td></tr>`;
             return;
         }
 
         const methodMap = { "Cash": "ক্যাশ", "bKash": "বিকাশ", "3rd party": "৩য় পক্ষ" };
 
         tbody.innerHTML = rows.map(t => {
-            // Robust fallback check for relation matching
-            const pIdField = t.person_id || t.person;
-            const pObj = t.expand?.person_id || t.expand?.person || state.people.find(p => p.id === pIdField);
-            const pName = pObj?.name || "অজানা";
+            const pObj = getPersonObj(t);
+            const pName = getPersonName(t);
             
             let typeBadge = "";
             if(t.trx_type === "Gave") typeBadge = `<span class="badge type-gave">দিয়েছি</span>`;
@@ -731,7 +780,12 @@
             return `
             <tr>
                 <td class="number-display text-muted whitespace-nowrap"><div class="text-[0.75rem] md:text-[0.8rem] text-primary">${dt.d}</div><div class="text-[0.65rem] md:text-xs mt-0.5 opacity-80">${dt.t}</div></td>
-                <td class="font-semibold text-primary truncate max-w-[90px] md:max-w-none text-[0.85rem] md:text-[0.95rem]">${escapeHtml(pName)}</td>
+                <td>
+                    <div class="flex items-center gap-2 md:gap-3">
+                        <div class="avatar-sm !w-7 !h-7 md:!w-8 md:!h-8 !rounded-md bg-sky-500/10 text-sky-400">${getAvatarHTML(pObj)}</div>
+                        <span class="font-semibold text-primary truncate max-w-[90px] md:max-w-none text-[0.85rem] md:text-[0.95rem]">${escapeHtml(pName)}</span>
+                    </div>
+                </td>
                 <td>${typeBadge}</td>
                 <td class="hide-mobile text-sm text-muted font-medium">${methodMap[t.method] || escapeHtml(t.method)}</td>
                 <td class="number-display font-bold whitespace-nowrap text-[0.95rem] md:text-base" style="color:${color};">${t.trx_type === "Received" ? "+" : "−"}${escapeHtml(fmt(t.amount))}</td>
@@ -786,6 +840,104 @@
         }).join("");
     }
     
+    // ------------------------------------------------------------------------
+    // STAT CARD REPORTS (Modal)
+    // ------------------------------------------------------------------------
+    function openReport(type) {
+        const content = document.getElementById("report-content");
+        const title = document.getElementById("report-title");
+        let html = '';
+
+        if(type === 'owed-to-me') {
+            title.innerHTML = '<i class="fas fa-arrow-trend-down text-red-400 mr-2"></i>যারা আপনার কাছে ঋণী (আমি পাবো)';
+            const list = state.people.filter(p => (p.net_balance || 0) < 0);
+            if(list.length === 0) html = '<p class="text-center text-muted py-6">কেউ ঋণী নেই।</p>';
+            else {
+                html = list.map(p => `
+                    <div class="flex items-center justify-between py-3 border-b border-[var(--border)] last:border-0">
+                        <div class="flex items-center gap-3">
+                            <div class="avatar-sm bg-red-500/10 text-red-400">${getAvatarHTML(p)}</div>
+                            <div class="font-medium text-primary">${escapeHtml(p.name)}</div>
+                        </div>
+                        <div class="font-bold text-red-400 number-display text-base">${fmt(Math.abs(p.net_balance))}</div>
+                    </div>
+                `).join('');
+            }
+        } 
+        else if (type === 'i-owe') {
+            title.innerHTML = '<i class="fas fa-arrow-trend-up text-green-400 mr-2"></i>যাদের কাছে আমি ঋণী';
+            const list = state.people.filter(p => (p.net_balance || 0) > 0);
+            if(list.length === 0) html = '<p class="text-center text-muted py-6">আপনি কারও কাছে ঋণী নন।</p>';
+            else {
+                html = list.map(p => `
+                    <div class="flex items-center justify-between py-3 border-b border-[var(--border)] last:border-0">
+                        <div class="flex items-center gap-3">
+                            <div class="avatar-sm bg-green-500/10 text-green-400">${getAvatarHTML(p)}</div>
+                            <div class="font-medium text-primary">${escapeHtml(p.name)}</div>
+                        </div>
+                        <div class="font-bold text-green-400 number-display text-base">${fmt(p.net_balance)}</div>
+                    </div>
+                `).join('');
+            }
+        } 
+        else if (type === 'people-spend') {
+            title.innerHTML = '<i class="fas fa-users text-sky-400 mr-2"></i>অন্যদের পিছনে খরচ (গত ৩০ দিন)';
+            const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(new Date().getDate() - 30);
+            const list = state.transactions.filter(t => (t.trx_type === "Gave" || t.trx_type === "Shared Expense") && new Date(t.created) >= thirtyDaysAgo);
+            
+            if(list.length === 0) html = '<p class="text-center text-muted py-6">গত ৩০ দিনে কোনো খরচ নেই।</p>';
+            else {
+                html = list.map(t => {
+                    const pObj = getPersonObj(t);
+                    return `
+                    <div class="flex items-center justify-between py-3 border-b border-[var(--border)] last:border-0">
+                        <div class="flex items-center gap-3">
+                            <div class="avatar-sm bg-sky-500/10 text-sky-400">${getAvatarHTML(pObj)}</div>
+                            <div>
+                                <div class="font-medium text-primary">${escapeHtml(getPersonName(t))}</div>
+                                <div class="text-xs text-muted number-display mt-0.5">${fmtDateObj(t.created).d}</div>
+                            </div>
+                        </div>
+                        <div class="font-bold text-sky-400 number-display text-base">${fmt(t.amount)}</div>
+                    </div>`;
+                }).join('');
+            }
+        } 
+        else if (type === 'personal-spend') {
+            title.innerHTML = '<i class="fas fa-user-tag text-pink-400 mr-2"></i>নিজস্ব খরচ (চলতি মাসে)';
+            const now = new Date();
+            const list = state.personalExpenses.filter(e => new Date(e.created).getMonth() === now.getMonth() && new Date(e.created).getFullYear() === now.getFullYear());
+            
+            if(list.length === 0) html = '<p class="text-center text-muted py-6">চলতি মাসে কোনো খরচ নেই।</p>';
+            else {
+                html = list.map(e => `
+                    <div class="flex items-center justify-between py-3 border-b border-[var(--border)] last:border-0">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-pink-500/10 text-pink-400 text-lg">
+                                <i class="fas ${catMap[e.category]?.icon || 'fa-box'}"></i>
+                            </div>
+                            <div>
+                                <div class="font-medium text-primary">${escapeHtml(catMap[e.category]?.name || e.category)}</div>
+                                <div class="text-xs text-muted number-display mt-0.5">${fmtDateObj(e.created).d}</div>
+                            </div>
+                        </div>
+                        <div class="font-bold text-pink-400 number-display text-base">${fmt(e.amount)}</div>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        content.innerHTML = `<div class="max-h-[60vh] overflow-y-auto pr-2">${html}</div>`;
+        document.getElementById("report-modal").classList.add("open");
+    }
+
+    function closeReportModal() {
+        document.getElementById("report-modal").classList.remove("open");
+    }
+
+    // ------------------------------------------------------------------------
+    // EVENT LISTENERS
+    // ------------------------------------------------------------------------
     function setupFormListeners() {
         document.querySelectorAll(".trx-type-btn").forEach(btn => {
             btn.addEventListener("click", () => {
@@ -816,8 +968,14 @@
             btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>সেভ হচ্ছে…`;
             
             try {
-                // We use person_id to save the relation.
-                await pb.collection("transactions").create({ person_id: pId, amount: amt, trx_type: state.selectedTrxType, method, note });
+                // Try to create with person_id as relation field. 
+                // Using a fallback catch to try creating with "person" field if "person_id" doesn't exist in DB schema.
+                try {
+                    await pb.collection("transactions").create({ person_id: pId, amount: amt, trx_type: state.selectedTrxType, method, note });
+                } catch(err1) {
+                    await pb.collection("transactions").create({ person: pId, amount: amt, trx_type: state.selectedTrxType, method, note });
+                }
+
                 await updatePersonBalance(pId, state.selectedTrxType, amt);
                 await refreshAll();
                 e.target.reset(); 
@@ -894,7 +1052,7 @@
         
         const trx = state.transactions.find(t => t.id === id); if (!trx) return;
         try {
-            const pIdField = trx.person_id || trx.person;
+            const pIdField = getPersonIdFromTrx(trx);
             const revMap = { "Gave": "Received", "Received": "Gave", "Shared Expense": "Received" };
             await updatePersonBalance(pIdField, revMap[trx.trx_type], trx.amount);
             await pb.collection("transactions").delete(id);
@@ -951,6 +1109,9 @@
         document.getElementById("person-modal").addEventListener("click", e => { 
             if (e.target.id === "person-modal") closePersonModal(); 
         });
+        document.getElementById("report-modal").addEventListener("click", e => { 
+            if (e.target.id === "report-modal") closeReportModal(); 
+        });
     }
     
     function showToast(msg, type = "info") {
@@ -975,10 +1136,8 @@
         }
     }
     
-    // Numbers always in English Digits
     function fmt(amt) { return "৳" + Number(amt || 0).toLocaleString("en-IN", { minimumFractionDigits: 0, maximumFractionDigits: 2 }); }
     
-    // Dates & Times always in English
     function fmtDateObj(iso) { 
         if (!iso) return { d: "—", t: "" };
         try { 
