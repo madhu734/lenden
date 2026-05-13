@@ -274,13 +274,6 @@
 
     <!-- ================= MAIN CONTENT ================= -->
     <main class="max-w-7xl mx-auto px-4 py-6 flex flex-col gap-6 md:gap-8">
-        
-        <!-- --- MONTH TABS --- -->
-        <div class="w-full">
-            <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-2" id="month-tabs">
-                <!-- Javascript will inject months here -->
-            </div>
-        </div>
 
         <!-- --- STAT CARDS (Clickable for Reports) --- -->
         <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
@@ -664,7 +657,6 @@
     };
 
     function initApp() {
-        renderMonthTabs();
         setupFormListeners();
         setupModalListeners();
         refreshAll();
@@ -673,39 +665,11 @@
     // ------------------------------------------------------------------------
     // MONTH FILTERING LOGIC
     // ------------------------------------------------------------------------
-    function renderMonthTabs() {
-        const container = document.getElementById("month-tabs");
-        
-        container.innerHTML = monthNames.map((m, idx) => {
-            const isSelected = state.reportMonth.month === idx;
-            const btnClass = isSelected 
-                ? "bg-[var(--accent)] text-white shadow-[0_0_10px_rgba(56,189,248,0.4)] border-transparent" 
-                : "bg-[var(--bg-input)] text-[var(--text-muted)] border-[var(--border)] hover:border-[var(--border-bright)] hover:text-white";
-            
-            return `<button onclick="selectMonth(${idx})" class="whitespace-nowrap px-4 py-1.5 md:py-2 rounded-xl text-xs md:text-sm font-semibold transition-all border ${btnClass}">
-                ${m}
-            </button>`;
-        }).join("");
-
-        setTimeout(() => {
-            const activeBtn = container.querySelector('.bg-\\[var\\(--accent\\)\\]');
-            if (activeBtn) activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-        }, 100);
-    }
-
-    function selectMonth(idx) {
-        state.reportMonth.month = idx;
-        renderMonthTabs();
-        renderStats();
-        renderTransactionsTable();
-        renderExpenseBreakdown();
-        renderExpenseTable();
-    }
-
     function isWithinSelectedMonth(iso) {
         if (!iso) return false;
         const d = new Date(iso);
-        return d.getFullYear() === state.reportMonth.year && d.getMonth() === state.reportMonth.month;
+        const now = new Date();
+        return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
     }
 
     // ------------------------------------------------------------------------
@@ -829,7 +793,7 @@
         document.getElementById("stat-personal-spend").textContent = fmt(thisMonthExpense);
 
         // Update Labels with Month Name
-        const currentMonthStr = monthNames[state.reportMonth.month];
+        const currentMonthStr = monthNames[new Date().getMonth()];
         document.getElementById("stat-people-spend-sub").innerHTML = `${currentMonthStr} মাসে <i class="fas fa-chevron-right ml-1 text-[10px]"></i>`;
         document.getElementById("stat-personal-spend-sub").innerHTML = `${currentMonthStr} মাসে <i class="fas fa-chevron-right ml-1 text-[10px]"></i>`;
     }
@@ -1073,7 +1037,7 @@
             }
         } 
         else if (type === 'people-spend') {
-            const mName = monthNames[state.reportMonth.month];
+            const mName = monthNames[new Date().getMonth()];
             title.innerHTML = `<i class="fas fa-users text-sky-400 mr-2"></i>অন্যদের খরচ (${mName})`;
             const list = state.transactions.filter(t => (t.trx_type === "Gave" || t.trx_type === "Shared Expense") && isWithinSelectedMonth(t.created));
             
@@ -1103,7 +1067,7 @@
             }
         } 
         else if (type === 'personal-spend') {
-            const mName = monthNames[state.reportMonth.month];
+            const mName = monthNames[new Date().getMonth()];
             title.innerHTML = `<i class="fas fa-user-tag text-pink-400 mr-2"></i>নিজস্ব খরচ (${mName})`;
             const list = state.personalExpenses.filter(e => isWithinSelectedMonth(e.created));
             
