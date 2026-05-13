@@ -526,14 +526,14 @@
             </div>
         </section>
 
-        <!-- --- BOTTOM BAR FOR MONTHLY ARCHIVE (Normal Flow, Not Sticky) --- -->
-        <div class="flex justify-center mt-6 mb-8">
-            <button onclick="openMonthlyListModal()" class="btn-primary btn-tertiary w-full max-w-lg py-3 md:py-3.5 rounded-xl font-display font-bold text-[0.95rem] md:text-base tracking-wide shadow-[0_8px_30px_rgba(168,85,247,0.3)]">
-                <i class="fas fa-calendar-check mr-2 text-lg"></i> মাসিক রিপোর্ট ও আর্কাইভ
-            </button>
-        </div>
-
     </main>
+    
+    <!-- BOTTOM STICKY BAR FOR MONTHLY ARCHIVE -->
+    <div class="bottom-bar">
+        <button onclick="openMonthlyListModal()" class="btn-primary btn-tertiary w-full max-w-lg py-3 md:py-3.5 rounded-xl font-display font-bold text-[0.95rem] md:text-base tracking-wide shadow-[0_8px_30px_rgba(168,85,247,0.3)]">
+            <i class="fas fa-calendar-check mr-2 text-lg"></i> মাসিক রিপোর্ট ও আর্কাইভ
+        </button>
+    </div>
 </div>
 
 <!-- ================= MODAL: ADD PERSON ================= -->
@@ -593,7 +593,9 @@
                 <div id="profile-modal-avatar" class="avatar-sm !w-12 !h-12 md:!w-14 md:!h-14 !rounded-xl shadow-md border border-sky-500/20 bg-sky-500/10 text-sky-400"></div>
                 <div>
                     <h3 id="profile-modal-name" class="font-display font-bold text-lg md:text-xl text-primary tracking-wide mb-1"></h3>
-                    <div id="profile-modal-balance" class="text-sm font-semibold number-display bg-[var(--bg-input)] px-2 py-1 rounded-md inline-block border border-[var(--border)]"></div>
+                    <div id="profile-modal-balance-container" class="flex items-center mt-1 bg-[var(--bg-input)] px-2.5 py-1 rounded-md border border-[var(--border)] inline-flex">
+                        <!-- Filled by JS -->
+                    </div>
                 </div>
             </div>
             <button onclick="closePersonProfileModal()" class="btn-ghost !px-2.5 !py-1.5 shrink-0"><i class="fas fa-times text-lg"></i></button>
@@ -649,8 +651,7 @@
         people: [],
         transactions: [],
         personalExpenses: [],
-        selectedTrxType: "Gave",
-        filterPersonId: ""
+        selectedTrxType: "Gave"
     };
 
     const monthNames = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
@@ -668,10 +669,7 @@
         refreshAll();
     }
 
-    // ------------------------------------------------------------------------
-    // MONTH FILTERING LOGIC
-    // ------------------------------------------------------------------------
-    function isWithinSelectedMonth(iso) {
+    function isCurrentMonth(iso) {
         if (!iso) return false;
         const d = new Date(iso);
         const now = new Date();
@@ -679,7 +677,7 @@
     }
 
     // ------------------------------------------------------------------------
-    // DATA FETCHING
+    // DATA FETCHING (Now perfectly Anti-Cached)
     // ------------------------------------------------------------------------
     async function refreshAll() {
         const btn = document.getElementById("refresh-btn");
@@ -702,7 +700,9 @@
 
     async function fetchPeople() {
         try {
-            state.people = await pb.collection("people").getFullList({ sort: "name" });
+            state.people = await pb.collection("people").getFullList({ 
+                sort: "name", requestKey: null, cb: Date.now() 
+            });
             populatePersonDropdowns();
         } catch (err) {
             setConnectionStatus(false);
@@ -712,7 +712,9 @@
 
     async function fetchTransactions() {
         try {
-            const result = await pb.collection("transactions").getList(1, 200, { sort: "-created", expand: "people_id,person_id,person" });
+            const result = await pb.collection("transactions").getList(1, 200, { 
+                sort: "-created", expand: "people_id,person_id,person", requestKey: null, cb: Date.now() 
+            });
             state.transactions = result.items;
         } catch (err) {
             setConnectionStatus(false);
@@ -722,7 +724,9 @@
 
     async function fetchPersonalExpenses() {
         try {
-            const result = await pb.collection("personal_expenses").getList(1, 200, { sort: "-created" });
+            const result = await pb.collection("personal_expenses").getList(1, 200, { 
+                sort: "-created", requestKey: null, cb: Date.now() 
+            });
             state.personalExpenses = result.items;
         } catch (err) {
             setConnectionStatus(false);
@@ -732,7 +736,7 @@
     }
     
     // ------------------------------------------------------------------------
-    // ROBUST RELATION MATCHER (Fixes "Unknown/অজানা" Issue completely)
+    // ROBUST RELATION MATCHER 
     // ------------------------------------------------------------------------
     function getPersonIdFromTrx(t) {
         let pId = t.people_id || t.person_id || t.person || t.personId;
@@ -770,24 +774,22 @@
     function renderStats() {
         let owedToMe = 0, iOwe = 0;
         
-        // Outstanding Balances are OVERALL
         state.people.forEach(p => {
             const bal = p.net_balance || 0;
             if (bal < 0) owedToMe += Math.abs(bal); 
             else if (bal > 0) iOwe += bal; 
         });
 
-        // Spendings are filtered to CURRENT MONTH
         let recentPeopleSpend = 0;
         state.transactions.forEach(t => {
-            if ((t.trx_type === "Gave" || t.trx_type === "Shared Expense") && isWithinSelectedMonth(t.created)) {
+            if ((t.trx_type === "Gave" || t.trx_type === "Shared Expense") && isCurrentMonth(t.created)) {
                 recentPeopleSpend += Math.abs(t.amount);
             }
         });
 
         let thisMonthExpense = 0;
         state.personalExpenses.forEach(e => {
-            if (isWithinSelectedMonth(e.created)) {
+            if (isCurrentMonth(e.created)) {
                 thisMonthExpense += Math.abs(e.amount);
             }
         });
@@ -797,7 +799,6 @@
         document.getElementById("stat-people-spend").textContent = fmt(recentPeopleSpend);
         document.getElementById("stat-personal-spend").textContent = fmt(thisMonthExpense);
 
-        // Update Labels with Month Name
         const currentMonthStr = monthNames[new Date().getMonth()];
         document.getElementById("stat-people-spend-sub").innerHTML = `${currentMonthStr} মাসে <i class="fas fa-chevron-right ml-1 text-[10px]"></i>`;
         document.getElementById("stat-personal-spend-sub").innerHTML = `${currentMonthStr} মাসে <i class="fas fa-chevron-right ml-1 text-[10px]"></i>`;
@@ -840,7 +841,7 @@
         if(tbody.innerHTML.includes("ডাটাবেস")) return;
 
         // Dashboard table only shows current month transactions
-        const rows = state.transactions.filter(t => isWithinSelectedMonth(t.created));
+        const rows = state.transactions.filter(t => isCurrentMonth(t.created));
 
         if (rows.length === 0) {
             tbody.innerHTML = `<tr><td colspan=\"7\" class=\"text-center py-10 text-muted text-sm\"><i class=\"fas fa-inbox text-3xl mb-3 text-dim\"></i><br>এই মাসে কোনো লেনদেন নেই।</td></tr>`;
@@ -885,7 +886,7 @@
 
         const catTots = { "food": 0, "transport": 0, "shopping": 0, "extra": 0 };
         state.personalExpenses.forEach(e => {
-            if(isWithinSelectedMonth(e.created)) {
+            if(isCurrentMonth(e.created)) {
                 if(catTots[e.category] !== undefined) catTots[e.category] += e.amount;
                 else catTots["extra"] += e.amount;
             }
@@ -903,14 +904,12 @@
         const tbody = document.getElementById("expenses-tbody");
         if(tbody.innerHTML.includes("ডাটাবেস")) return;
 
-        const rows = state.personalExpenses.filter(e => isWithinSelectedMonth(e.created));
+        const rows = state.personalExpenses.filter(e => isCurrentMonth(e.created));
 
         if (rows.length === 0) {
             tbody.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-muted text-sm"><i class="fas fa-file-invoice-dollar text-3xl mb-3 text-dim"></i><br>এই মাসে কোনো খরচ নেই।</td></tr>`;
             return;
         }
-
-        const methodMap = { "Cash": "ক্যাশ", "Bkash": "বিকাশ", "3rd party": "৩য় পক্ষ" };
 
         tbody.innerHTML = rows.map(e => {
             const dt = fmtDateObj(e.created);
@@ -927,7 +926,7 @@
     }
     
     // ------------------------------------------------------------------------
-    // PERSON PROFILE & HISTORY (MODAL)
+    // PERSON PROFILE, HISTORY & EDIT BALANCE (MODAL)
     // ------------------------------------------------------------------------
     function openPersonProfile(pId) {
         if(!pId) return;
@@ -942,7 +941,15 @@
 
         document.getElementById("profile-modal-name").textContent = p.name;
         document.getElementById("profile-modal-avatar").innerHTML = getAvatarHTML(p);
-        document.getElementById("profile-modal-balance").innerHTML = `<span style="color:${mainColor}">${displayBal}</span> <span class="text-xs text-muted font-normal ml-1">(${balLabel})</span>`;
+        
+        // Setup Balance with Manual Edit Button
+        document.getElementById("profile-modal-balance-container").innerHTML = `
+            <span style="color:${mainColor}" class="number-display font-bold text-[0.95rem]">${displayBal}</span> 
+            <span class="text-[0.7rem] text-muted font-normal ml-1.5 uppercase tracking-wide">(${balLabel})</span>
+            <button onclick="editPersonBalance('${p.id}')" class="ml-3 text-sky-400 hover:text-white transition-colors bg-sky-500/10 hover:bg-sky-500 px-1.5 py-1 rounded border border-sky-500/30" title="ম্যানুয়ালি ব্যালেন্স ঠিক করুন">
+                <i class="fas fa-pencil-alt text-[0.7rem]"></i>
+            </button>
+        `;
 
         // Get ALL transactions for this person
         const trxs = state.transactions.filter(t => getPersonIdFromTrx(t) === pId);
@@ -973,8 +980,8 @@
                             <span class="text-[0.6rem] bg-[var(--bg-base)] border border-[var(--border)] px-1.5 py-0.5 rounded text-muted">${methodMap[t.method] || escapeHtml(t.method)}</span>
                         </div>
                     </div>
-                    <div class="text-right">
-                        <div class="mb-1">${typeBadge}</div>
+                    <div class="text-right flex flex-col items-end gap-1.5">
+                        <div>${typeBadge}</div>
                         <div class="font-bold number-display text-[1rem]" style="color:${color};">${t.trx_type === "Received" ? "+" : "−"}${fmt(t.amount)}</div>
                     </div>
                 </div>`;
@@ -986,8 +993,30 @@
 
     function closePersonProfileModal() { document.getElementById("person-profile-modal").classList.remove("open"); }
 
+    async function editPersonBalance(pId) {
+        const p = state.people.find(x => x.id === pId);
+        if(!p) return;
+        
+        const newBalStr = prompt(`'${p.name}' এর বর্তমান ব্যালেন্স আপডেট করুন।\n\n(পাওনা হলে নেগেটিভ [-], আর দেনা হলে পজিটিভ [+] দিন। যেমন: ৫০০ টাকা পাওনা হলে লিখুন -500, দেনা হলে লিখুন 500)`, p.net_balance || 0);
+        
+        if(newBalStr === null || newBalStr.trim() === "") return;
+        
+        const newBal = parseFloat(newBalStr);
+        if(isNaN(newBal)) return showToast("সঠিক সংখ্যা দিন!", "error");
+
+        try {
+            await pb.collection("people").update(pId, { net_balance: newBal });
+            await refreshAll();
+            openPersonProfile(pId);
+            showToast("ব্যালেন্স ম্যানুয়ালি আপডেট হয়েছে!", "success");
+        } catch(e) {
+            console.error("Balance Edit Error:", e);
+            showToast("আপডেট করা যায়নি", "error");
+        }
+    }
+
     // ------------------------------------------------------------------------
-    // STAT CARD REPORTS (Added Top Summary Bar)
+    // STAT CARD REPORTS (Modal Pops Up on Click)
     // ------------------------------------------------------------------------
     function openReport(type) {
         const content = document.getElementById("report-content");
@@ -1046,7 +1075,7 @@
         else if (type === 'people-spend') {
             const mName = monthNames[new Date().getMonth()];
             title.innerHTML = `<i class="fas fa-users text-sky-400 mr-2"></i>অন্যদের খরচ (${mName})`;
-            const list = state.transactions.filter(t => (t.trx_type === "Gave" || t.trx_type === "Shared Expense") && isWithinSelectedMonth(t.created));
+            const list = state.transactions.filter(t => (t.trx_type === "Gave" || t.trx_type === "Shared Expense") && isCurrentMonth(t.created));
             
             const total = list.reduce((sum, t) => sum + Math.abs(t.amount), 0);
             headerHtml = `
@@ -1076,7 +1105,7 @@
         else if (type === 'personal-spend') {
             const mName = monthNames[new Date().getMonth()];
             title.innerHTML = `<i class="fas fa-user-tag text-pink-400 mr-2"></i>নিজস্ব খরচ (${mName})`;
-            const list = state.personalExpenses.filter(e => isWithinSelectedMonth(e.created));
+            const list = state.personalExpenses.filter(e => isCurrentMonth(e.created));
             
             const total = list.reduce((sum, e) => sum + Math.abs(e.amount), 0);
             headerHtml = `
@@ -1114,7 +1143,7 @@
     function closeReportModal() { document.getElementById("report-modal").classList.remove("open"); }
 
     // ------------------------------------------------------------------------
-    // MONTHLY ARCHIVE LOGIC (The Bottom Button)
+    // MONTHLY ARCHIVE LOGIC
     // ------------------------------------------------------------------------
     function getPastMonths() {
         const monthsMap = {};
@@ -1356,24 +1385,51 @@
         if (!confirm("আপনি কি নিশ্চিত এই লেনদেনটি ডিলিট করবেন?")) return;
         
         const trx = state.transactions.find(t => t.id === id); if (!trx) return;
+        
+        const btn = ev.currentTarget;
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+        btn.disabled = true;
+
         try {
             const pIdField = getPersonIdFromTrx(trx);
             const revMap = { "Gave": "Received", "Received": "Gave", "Shared Expense": "Received" };
-            await updatePersonBalance(pIdField, revMap[trx.trx_type], trx.amount);
+            
+            // 1. Delete from DB first
             await pb.collection("transactions").delete(id);
+            // 2. Update balance ONLY if deletion succeeds
+            await updatePersonBalance(pIdField, revMap[trx.trx_type], trx.amount);
+            
             await refreshAll(); 
+            // If modal was open, refresh the modal content
+            if(document.getElementById("person-profile-modal").classList.contains("open")) {
+                openPersonProfile(pIdField);
+            }
             showToast("লেনদেন ডিলিট হয়েছে", "success");
-        } catch (e) { showToast("ডিলিট করা যায়নি", "error"); }
+        } catch (e) { 
+            console.error("Delete Error:", e);
+            showToast("ডিলিট করা যায়নি", "error"); 
+            btn.innerHTML = `<i class="fas fa-trash-alt"></i>`;
+            btn.disabled = false;
+        }
     }
 
     async function deleteExpense(id, ev) {
         ev.stopPropagation(); 
         if (!confirm("খরচের রেকর্ডটি ডিলিট করবেন?")) return;
+        
+        const btn = ev.currentTarget;
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+        btn.disabled = true;
+
         try { 
             await pb.collection("personal_expenses").delete(id); 
             await refreshAll(); 
             showToast("খরচ ডিলিট হয়েছে", "success"); 
-        } catch (e) { showToast("ডিলিট করা যায়নি", "error"); }
+        } catch (e) { 
+            showToast("ডিলিট করা যায়নি", "error"); 
+            btn.innerHTML = `<i class="fas fa-trash-alt"></i>`;
+            btn.disabled = false;
+        }
     }
 
     async function updatePersonBalance(pId, type, amt) {
@@ -1391,21 +1447,6 @@
     // ------------------------------------------------------------------------
     // UI UTILITIES
     // ------------------------------------------------------------------------
-    function togglePersonFilter(pId) {
-        state.filterPersonId = state.filterPersonId === pId ? "" : pId;
-        renderTransactionsTable(); renderPeopleGrid();
-        
-        const clearBtn = document.getElementById("clear-filter-btn");
-        if (state.filterPersonId) {
-            clearBtn.style.display = "inline-flex";
-            clearBtn.classList.add("animate-pulse"); setTimeout(()=>clearBtn.classList.remove("animate-pulse"), 500);
-        } else {
-            clearBtn.style.display = "none";
-        }
-    }
-    
-    function clearPersonFilter() { togglePersonFilter(state.filterPersonId); }
-    
     function populatePersonDropdowns() {
         const sel = document.getElementById("form-person"); const val = sel.value;
         sel.innerHTML = `<option value="">নির্বাচন করুন…</option>` + state.people.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("");
@@ -1419,20 +1460,14 @@
     }
     
     function setupModalListeners() {
-        document.getElementById("person-modal").addEventListener("click", e => { 
-            if (e.target.id === "person-modal") closePersonModal(); 
-        });
-        document.getElementById("report-modal").addEventListener("click", e => { 
-            if (e.target.id === "report-modal") closeReportModal(); 
-        });
-        document.getElementById("month-list-modal").addEventListener("click", e => { 
-            if (e.target.id === "month-list-modal") closeMonthListModal(); 
-        });
-        document.getElementById("month-report-modal").addEventListener("click", e => { 
-            if (e.target.id === "month-report-modal") closeSpecificMonthReport(); 
-        });
-        document.getElementById("person-profile-modal").addEventListener("click", e => { 
-            if (e.target.id === "person-profile-modal") closePersonProfileModal(); 
+        // Modal Background Click outside to close
+        document.querySelectorAll('.modal-bg').forEach(bg => {
+            bg.addEventListener('click', e => {
+                if(e.target === bg) {
+                    bg.classList.remove('open');
+                    if(bg.id === "person-modal") document.getElementById("owner-code").value = ""; 
+                }
+            });
         });
     }
     
