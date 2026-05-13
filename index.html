@@ -1,1 +1,997 @@
-dd
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Madhu's financial tracker</title>
+
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/sx5dtBBK/psa.png">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- PocketBase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.3/dist/pocketbase.umd.js"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['Syne', 'sans-serif'],
+                        body:    ['Hind Siliguri', 'sans-serif'],
+                        mono:    ['DM Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* CSS CUSTOM PROPERTIES */
+        :root {
+            --bg-base:       #06090f;
+            --bg-card:       #0c1220;
+            --bg-card-hover: #111b2e;
+            --bg-input:      #080e1a;
+            --border:        #1a2540;
+            --border-bright: #243352;
+            --text-primary:  #e8edf5;
+            --text-muted:    #5a6a85;
+            --text-dim:      #3d4f68;
+            --accent:        #38bdf8;
+            --accent-glow:   rgba(56, 189, 248, 0.15);
+            --green:         #34d399;
+            --green-glow:    rgba(52, 211, 153, 0.12);
+            --red:           #f87171;
+            --red-glow:      rgba(248, 113, 113, 0.12);
+            --amber:         #fbbf24;
+            --purple:        #a78bfa;
+            --pink:          #f472b6;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                radial-gradient(ellipse 80% 50% at 20% -10%, rgba(56, 189, 248, 0.045) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 80% 110%, rgba(52, 211, 153, 0.03) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        #app { position: relative; z-index: 1; }
+
+        /* CARDS */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+        .card:hover { border-color: var(--border-bright); }
+
+        .stat-card { position: relative; overflow: hidden; }
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 130px; height: 130px;
+            border-radius: 50%;
+            opacity: 0.07;
+            transform: translate(35%, -35%);
+            pointer-events: none;
+        }
+        .stat-card.red-glow::after    { background: var(--red); }
+        .stat-card.green-glow::after  { background: var(--green); }
+        .stat-card.accent-glow::after { background: var(--accent); }
+        .stat-card.pink-glow::after   { background: var(--pink); }
+
+        /* FORM INPUTS */
+        .form-input {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-family: 'Hind Siliguri', sans-serif;
+            font-size: 0.9rem;
+            padding: 0.625rem 0.875rem;
+            width: 100%;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1); }
+        .form-input::placeholder { color: var(--text-dim); }
+        .form-input option { background: #0c1220; color: var(--text-primary); }
+        
+        /* File input specific styling */
+        input[type="file"].form-input { padding: 0.45rem 0.875rem; }
+        input[type="file"]::file-selector-button {
+            background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent); 
+            color: var(--accent); border-radius: 6px; padding: 0.2rem 0.5rem; 
+            margin-right: 10px; cursor: pointer; font-size: 0.8rem;
+        }
+
+        .form-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            display: block;
+            margin-bottom: 0.375rem;
+        }
+
+        /* BUTTONS */
+        .btn-primary {
+            background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+            color: #fff;
+            font-weight: 700;
+            font-family: 'Hind Siliguri', sans-serif;
+            font-size: 0.95rem;
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 0 24px rgba(56, 189, 248, 0.2);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 28px rgba(56, 189, 248, 0.38); }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .btn-secondary { background: linear-gradient(135deg, #8b5cf6, #c084fc); box-shadow: 0 0 24px rgba(139, 92, 246, 0.2); }
+        .btn-secondary:hover { box-shadow: 0 4px 28px rgba(139, 92, 246, 0.38); }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            border-radius: 8px;
+            padding: 0.45rem 0.875rem;
+            font-size: 0.85rem;
+            font-family: 'Hind Siliguri', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+        }
+        .btn-ghost:hover { border-color: var(--border-bright); color: var(--text-primary); background: var(--bg-card-hover); }
+
+        /* TYPE SELECTORS */
+        .trx-type-btn {
+            background: var(--bg-input); border: 1px solid var(--border); border-radius: 10px;
+            color: var(--text-muted); font-size: 0.85rem; font-weight: 500;
+            padding: 0.625rem 0.375rem; cursor: pointer; transition: all 0.2s; text-align: center;
+        }
+        .trx-type-btn:hover { border-color: var(--border-bright); color: var(--text-primary); background: var(--bg-card-hover); }
+        .trx-type-btn.selected { border-color: var(--accent); color: var(--accent); background: rgba(56, 189, 248, 0.08); box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.15); }
+        .trx-type-btn.sel-red    { border-color: var(--red);   color: var(--red);   background: rgba(248,113,113,0.08); }
+        .trx-type-btn.sel-green  { border-color: var(--green); color: var(--green); background: rgba(52,211,153,0.08); }
+        .trx-type-btn.sel-amber  { border-color: var(--amber); color: var(--amber); background: rgba(251,191,36,0.08); }
+
+        /* NUMBERS */
+        .number-display { font-family: 'DM Mono', monospace; font-feature-settings: 'tnum'; font-variant-numeric: tabular-nums; }
+
+        /* PERSON / EXPENSE CARDS */
+        .item-card { cursor: pointer; transition: all 0.2s; }
+        .item-card:hover { transform: translateY(-2px); }
+        .item-card.active-filter { box-shadow: 0 0 0 2px var(--accent); }
+
+        /* AVATAR WITH OVERFLOW HIDDEN FOR IMAGES */
+        .avatar {
+            width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; flex-shrink: 0; user-select: none;
+            overflow: hidden;
+        }
+        .avatar-sm { 
+            width: 28px; height: 28px; border-radius: 7px; font-size: 0.65rem; 
+            overflow: hidden;
+        }
+
+        /* BADGES */
+        .badge { font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 5px; white-space: nowrap; }
+        .type-gave     { background: rgba(248,113,113,0.12); color: #f87171; }
+        .type-received { background: rgba(52,211,153,0.12);  color: #34d399; }
+        .type-shared   { background: rgba(251,191,36,0.12);  color: #fbbf24; }
+        .type-expense  { background: rgba(244,114,182,0.12); color: #f472b6; }
+        
+        .method-cash   { background: rgba(167,139,250,0.1); color: #a78bfa; }
+        .method-bkash  { background: rgba(244,114,182,0.1); color: #f472b6; }
+        .method-3rd    { background: rgba(56,189,248,0.1);  color: #38bdf8; }
+
+        /* TABLES */
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .data-table thead th {
+            font-size: 0.8rem; font-weight: 700; color: var(--text-muted);
+            padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap;
+        }
+        .data-table tbody tr { transition: background 0.15s; }
+        .data-table tbody tr:hover { background: rgba(255,255,255,0.018); }
+        .data-table tbody td {
+            padding: 0.875rem 1rem; border-bottom: 1px solid rgba(26, 37, 64, 0.45); font-size: 0.9rem; vertical-align: middle;
+        }
+        .data-table tbody tr:last-child td { border-bottom: none; }
+
+        .delete-btn { opacity: 0; background: none; border: none; color: var(--red); cursor: pointer; padding: 5px 7px; border-radius: 6px; transition: all 0.15s; }
+        .data-table tbody tr:hover .delete-btn { opacity: 0.7; }
+        .delete-btn:hover { opacity: 1 !important; background: rgba(248,113,113,0.1); }
+
+        /* TOAST */
+        #toast { position: fixed; bottom: 24px; right: 24px; z-index: 9999; pointer-events: none; display: flex; flex-direction: column; gap: 8px; }
+        .toast-item { background: var(--bg-card); border: 1px solid var(--border-bright); border-radius: 12px; padding: 0.875rem 1.25rem; display: flex; align-items: center; gap: 0.625rem; box-shadow: 0 8px 40px rgba(0,0,0,0.5); animation: toastIn 0.3s forwards; pointer-events: all; }
+        @keyframes toastIn { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .toast-out { animation: toastOut 0.25s forwards !important; }
+        @keyframes toastOut { to { transform: translateX(110%); opacity: 0; } }
+
+        /* MODAL */
+        #person-modal { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.72); backdrop-filter: blur(5px); align-items: center; justify-content: center; padding: 1rem; }
+        #person-modal.open { display: flex; }
+        .modal-box { background: var(--bg-card); border: 1px solid var(--border-bright); border-radius: 20px; width: 100%; max-width: 420px; padding: 1.75rem; animation: modalIn 0.25s forwards; }
+        @keyframes modalIn { from { transform: scale(0.93) translateY(10px); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .skeleton { background: linear-gradient(90deg, var(--bg-card) 25%, #141e31 50%, var(--bg-card) 75%); background-size: 200% 100%; animation: shimmer 1.6s infinite; border-radius: 6px; display: inline-block; }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        .divider { height: 1px; background: var(--border); }
+        .section-header { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.25rem; color: var(--text-primary); margin: 2rem 0 1rem 0; display: flex; align-items: center; gap: 10px; }
+
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 4px; }
+        @media (max-width: 640px) { .hide-mobile { display: none !important; } }
+    </style>
+</head>
+<body>
+<div id="app">
+    <!-- HEADER -->
+    <header style="border-bottom: 1px solid var(--border);">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between flex-wrap gap-3">
+            <div class="flex items-center gap-3">
+                <div style="background: linear-gradient(135deg, #0284c7, #38bdf8); width: 38px; height: 38px; border-radius: 11px; box-shadow: 0 0 20px rgba(56,189,248,0.25);" class="flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-wallet text-white" style="font-size: 0.9rem;"></i>
+                </div>
+                <div>
+                    <h1 class="font-display font-bold text-lg leading-none" style="color: var(--text-primary);">
+                        Madhu's Finance
+                    </h1>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">পার্সোনাল ফাইন্যান্স ট্র্যাকার</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 flex-wrap">
+                <div id="connection-status" class="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full" style="background: rgba(52,211,153,0.08); color: #34d399; border: 1px solid rgba(52,211,153,0.18);">
+                    <div class="w-1.5 h-1.5 rounded-full bg-current" style="animation: pulse 2s infinite;"></div>
+                    <span id="status-text">কানেক্ট হচ্ছে...</span>
+                </div>
+                <button onclick="refreshAll()" id="refresh-btn" class="btn-ghost"><i class="fas fa-rotate-right mr-1.5 text-xs"></i>রিফ্রেশ</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="max-w-7xl mx-auto px-4 md:px-6 py-6" style="display: flex; flex-direction: column; gap: 1.5rem;">
+        
+        <!-- ================= STAT CARDS ================= -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="card stat-card red-glow p-5">
+                <div class="flex items-start justify-between" style="margin-bottom: 0.875rem;">
+                    <p class="form-label mb-0">আমি পাবো (অন্যদের থেকে)</p>
+                    <div class="flex items-center justify-center" style="width:36px;height:36px;border-radius:10px;background:var(--red-glow);"><i class="fas fa-arrow-trend-down" style="color:var(--red);"></i></div>
+                </div>
+                <div class="number-display text-2xl font-medium" style="color:var(--red);" id="stat-owed-to-me"><span class="skeleton" style="width:100px;height:30px;"></span></div>
+                <p style="font-size:0.8rem;color:var(--text-dim);margin-top:0.375rem;" id="stat-owed-to-me-sub">— জন আপনার কাছে ঋণী</p>
+            </div>
+
+            <div class="card stat-card green-glow p-5">
+                <div class="flex items-start justify-between" style="margin-bottom: 0.875rem;">
+                    <p class="form-label mb-0">আমি ঋণী (অন্যদের কাছে)</p>
+                    <div class="flex items-center justify-center" style="width:36px;height:36px;border-radius:10px;background:var(--green-glow);"><i class="fas fa-arrow-trend-up" style="color:var(--green);"></i></div>
+                </div>
+                <div class="number-display text-2xl font-medium" style="color:var(--green);" id="stat-i-owe"><span class="skeleton" style="width:100px;height:30px;"></span></div>
+                <p style="font-size:0.8rem;color:var(--text-dim);margin-top:0.375rem;" id="stat-i-owe-sub">আপনি — জনের কাছে ঋণী</p>
+            </div>
+
+            <div class="card stat-card accent-glow p-5">
+                <div class="flex items-start justify-between" style="margin-bottom: 0.875rem;">
+                    <p class="form-label mb-0">অন্যদের পিছনে খরচ</p>
+                    <div class="flex items-center justify-center" style="width:36px;height:36px;border-radius:10px;background:var(--accent-glow);"><i class="fas fa-users" style="color:var(--accent);"></i></div>
+                </div>
+                <div class="number-display text-2xl font-medium" style="color:var(--accent);" id="stat-people-spend"><span class="skeleton" style="width:100px;height:30px;"></span></div>
+                <p style="font-size:0.8rem;color:var(--text-dim);margin-top:0.375rem;">গত ৩০ দিন (প্রদান + শেয়ার্ড)</p>
+            </div>
+
+            <div class="card stat-card pink-glow p-5">
+                <div class="flex items-start justify-between" style="margin-bottom: 0.875rem;">
+                    <p class="form-label mb-0">আমার নিজস্ব খরচ</p>
+                    <div class="flex items-center justify-center" style="width:36px;height:36px;border-radius:10px;background:rgba(244,114,182,0.12);"><i class="fas fa-user-tag" style="color:var(--pink);"></i></div>
+                </div>
+                <div class="number-display text-2xl font-medium" style="color:var(--pink);" id="stat-personal-spend"><span class="skeleton" style="width:100px;height:30px;"></span></div>
+                <p style="font-size:0.8rem;color:var(--text-dim);margin-top:0.375rem;">চলতি মাসে</p>
+            </div>
+        </section>
+
+
+        <!-- ================= SECTION: মানুষের সাথে লেনদেন ================= -->
+        <h2 class="section-header">
+            <span style="background:var(--accent-glow);color:var(--accent);padding:8px;border-radius:10px;"><i class="fas fa-handshake"></i></span>
+            মানুষের সাথে লেনদেনের হিসাব
+        </h2>
+
+        <section class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+            <!-- QUICK ADD FORM -->
+            <div class="lg:col-span-2 card p-5 border-t-4" style="border-top-color: var(--accent);">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-display font-bold text-base text-primary">নতুন লেনদেন যোগ</h3>
+                    <button onclick="openPersonModal()" class="btn-ghost" style="padding:0.2rem 0.5rem; font-size:0.75rem;"><i class="fas fa-plus mr-1"></i>নতুন মানুষ</button>
+                </div>
+                
+                <form id="trx-add-form" style="display:flex;flex-direction:column;gap:0.875rem;">
+                    <div>
+                        <label class="form-label" for="form-person">ব্যক্তি</label>
+                        <select id="form-person" class="form-input" required><option value="">নির্বাচন করুন…</option></select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="form-label" for="form-amount">পরিমাণ (৳)</label>
+                            <input type="number" id="form-amount" class="form-input" placeholder="0.00" step="0.01" min="0.01" required>
+                        </div>
+                        <div>
+                            <label class="form-label" for="form-method">মাধ্যম</label>
+                            <select id="form-method" class="form-input">
+                                <option value="Cash">ক্যাশ</option>
+                                <option value="bKash">বিকাশ</option>
+                                <option value="3rd party">থার্ড পার্টি (অন্যের মাধ্যমে)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label">লেনদেনের ধরন</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button type="button" class="trx-type-btn selected sel-red" data-value="Gave" data-color="sel-red">
+                                <i class="fas fa-arrow-up block mb-1"></i>দিয়েছি
+                            </button>
+                            <button type="button" class="trx-type-btn" data-value="Received" data-color="sel-green">
+                                <i class="fas fa-arrow-down block mb-1"></i>পেয়েছি
+                            </button>
+                            <button type="button" class="trx-type-btn" data-value="Shared Expense" data-color="sel-amber">
+                                <i class="fas fa-utensils block mb-1"></i>শেয়ার্ড বিল
+                            </button>
+                        </div>
+                        <p id="amount-hint" style="font-size: 0.75rem; color: var(--amber); margin-top: 6px; display: none;">⚠ শেয়ার্ড বিলের ক্ষেত্রে <em>শুধুমাত্র তার অংশটুকু</em> লিখুন।</p>
+                    </div>
+                    <div>
+                        <label class="form-label" for="form-note">নোট (অপশনাল)</label>
+                        <input type="text" id="form-note" class="form-input" placeholder="যেমন: ধার, রিকশা ভাড়া…">
+                    </div>
+                    <button type="submit" class="btn-primary w-full mt-1" id="submit-btn"><i class="fas fa-check mr-2"></i>সেভ করুন</button>
+                </form>
+            </div>
+
+            <!-- PEOPLE GRID & TRX TABLE -->
+            <div class="lg:col-span-3 flex flex-col gap-4">
+                
+                <!-- People Cards -->
+                <div class="card p-5 flex-1">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-display font-bold text-base text-primary">ব্যক্তি ও ব্যালেন্স <span class="text-xs text-muted font-normal ml-2" id="people-count">(০)</span></h3>
+                        <p class="text-xs text-dim"><i class="fas fa-filter mr-1"></i>কার্ডে ক্লিক করে হিস্ট্রি ফিল্টার করুন</p>
+                    </div>
+                    <div id="people-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[220px] overflow-y-auto pr-1">
+                        <div class="col-span-full text-center py-6 text-muted"><i class="fas fa-spinner fa-spin text-2xl mb-2"></i><br>লোড হচ্ছে...</div>
+                    </div>
+                </div>
+
+                <!-- Trx History -->
+                <div class="card p-5 flex-1 flex flex-col">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-display font-bold text-base text-primary">লেনদেনের ইতিহাস</h3>
+                        <button id="clear-filter-btn" onclick="clearPersonFilter()" class="btn-ghost text-xs py-1" style="display:none;"><i class="fas fa-xmark mr-1"></i>ফিল্টার মুছুন</button>
+                    </div>
+                    <div class="overflow-x-auto flex-1">
+                        <table class="data-table">
+                            <thead><tr><th>তারিখ ও সময়</th><th>ব্যক্তি</th><th>ধরন</th><th class="hide-mobile">মাধ্যম</th><th>পরিমাণ</th><th class="hide-mobile">নোট</th><th style="width:40px;"></th></tr></thead>
+                            <tbody id="transactions-tbody">
+                                <tr><td colspan="7" class="text-center py-8 text-muted"><i class="fas fa-spinner fa-spin text-xl mb-2"></i><br>লোড হচ্ছে...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= SECTION: আমার নিজস্ব খরচ ================= -->
+        <h2 class="section-header">
+            <span style="background:rgba(244,114,182,0.15);color:var(--pink);padding:8px;border-radius:10px;"><i class="fas fa-receipt"></i></span>
+            আমার ব্যক্তিগত খরচের হিসাব
+        </h2>
+
+        <section class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+            
+            <!-- EXPENSE ADD FORM -->
+            <div class="lg:col-span-2 card p-5 border-t-4" style="border-top-color: var(--pink);">
+                <h3 class="font-display font-bold text-base text-primary mb-4">নতুন খরচ যোগ করুন</h3>
+                
+                <form id="exp-add-form" style="display:flex;flex-direction:column;gap:0.875rem;">
+                    <div>
+                        <label class="form-label" for="exp-category">ক্যাটাগরি</label>
+                        <select id="exp-category" class="form-input" required>
+                            <option value="">নির্বাচন করুন…</option>
+                            <option value="food">🍔 খাওয়া</option>
+                            <option value="transport">🚌 যাতায়াত</option>
+                            <option value="shopping">🛍️ জিনিস</option>
+                            <option value="extra">📦 হাবিজাবি</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label" for="exp-amount">পরিমাণ (৳)</label>
+                        <input type="number" id="exp-amount" class="form-input" placeholder="0.00" step="0.01" min="0.01" required>
+                    </div>
+                    <div>
+                        <label class="form-label" for="exp-note">বিস্তারিত (অপশনাল)</label>
+                        <input type="text" id="exp-note" class="form-input" placeholder="কীসে খরচ হলো?">
+                    </div>
+                    <button type="submit" class="btn-primary btn-secondary w-full mt-1" id="exp-submit-btn"><i class="fas fa-plus mr-2"></i>খরচ যুক্ত করুন</button>
+                </form>
+            </div>
+
+            <!-- EXPENSE BREAKDOWN & HISTORY -->
+            <div class="lg:col-span-3 flex flex-col gap-4">
+                
+                <!-- Category Breakdown -->
+                <div class="card p-5">
+                    <h3 class="font-display font-bold text-base text-primary mb-3">চলতি মাসের খাতওয়ারি খরচ</h3>
+                    <div id="expense-breakdown-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <!-- Filled dynamically -->
+                    </div>
+                </div>
+
+                <!-- Expense History Table -->
+                <div class="card p-5 flex-1 flex flex-col">
+                    <h3 class="font-display font-bold text-base text-primary mb-3">খরচের ইতিহাস</h3>
+                    <div class="overflow-x-auto flex-1 max-h-[300px] overflow-y-auto">
+                        <table class="data-table">
+                            <thead><tr><th>তারিখ ও সময়</th><th>ক্যাটাগরি</th><th>পরিমাণ</th><th class="hide-mobile">বিস্তারিত</th><th style="width:40px;"></th></tr></thead>
+                            <tbody id="expenses-tbody">
+                                <tr><td colspan="5" class="text-center py-8 text-muted"><i class="fas fa-spinner fa-spin text-xl mb-2"></i><br>লোড হচ্ছে...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+<!-- ADD PERSON MODAL -->
+<div id="person-modal">
+    <div class="modal-box">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="font-display font-bold text-lg text-primary">নতুন ব্যক্তি যোগ করুন</h3>
+            <button onclick="closePersonModal()" class="btn-ghost py-1 px-2"><i class="fas fa-xmark"></i></button>
+        </div>
+        <!-- Using enctype multipart to support file uploads via form data -->
+        <form id="add-person-form" class="flex flex-col gap-3">
+            <div>
+                <label class="form-label" for="person-name">নাম</label>
+                <input type="text" id="person-name" class="form-input" placeholder="পুরো নাম" required>
+            </div>
+            <div>
+                <label class="form-label" for="person-balance">প্রারম্ভিক ব্যালেন্স (৳)</label>
+                <input type="number" id="person-balance" class="form-input" placeholder="0.00" step="0.01">
+                <p class="text-xs text-dim mt-1 leading-relaxed">
+                    নেগেটিভ (-) = তারা আপনার কাছে ঋণী<br>
+                    পজিটিভ (+) = আপনি তাদের কাছে ঋণী<br>
+                    ০ = হিসাব ক্লিয়ার
+                </p>
+            </div>
+            <div>
+                <label class="form-label" for="person-photo">ছবি (ঐচ্ছিক)</label>
+                <input type="file" id="person-photo" class="form-input" accept="image/*">
+            </div>
+            
+            <!-- Owner Code added here -->
+            <div class="mt-1 p-3 border rounded-lg" style="border-color: rgba(248, 113, 113, 0.3); background: rgba(248, 113, 113, 0.05);">
+                <label class="form-label" style="color: var(--red);" for="owner-code"><i class="fas fa-lock mr-1"></i>মালিকানা কোড (Owner Code)</label>
+                <input type="password" id="owner-code" class="form-input" placeholder="****" required>
+                <p class="text-xs text-dim mt-1">শুধুমাত্র এই সাইটের মালিক নতুন ব্যক্তি যোগ করতে পারবেন।</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mt-2">
+                <button type="button" onclick="closePersonModal()" class="btn-ghost justify-center">বাতিল</button>
+                <button type="submit" class="btn-primary" id="add-person-btn"><i class="fas fa-user-plus mr-2"></i>সেভ</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- INTEGRATED JAVASCRIPT -->
+<script>
+    // =================================================================
+    // ⚙️ POCKETBASE CONFIGURATION
+    // =================================================================
+    const POCKETBASE_URL = "https://efljudb.duckdns.org";
+    const pb = new PocketBase(POCKETBASE_URL);
+    pb.autoCancellation(false);
+
+    const state = {
+        people: [],
+        transactions: [],
+        personalExpenses: [],
+        selectedTrxType: "Gave",
+        filterPersonId: "",
+    };
+
+    // Category mappings for English DB to Bengali UI
+    const catMap = {
+        "food": { name: "খাওয়া", icon: "fa-burger" },
+        "transport": { name: "যাতায়াত", icon: "fa-bus" },
+        "shopping": { name: "জিনিস", icon: "fa-bag-shopping" },
+        "extra": { name: "হাবিজাবি", icon: "fa-box" }
+    };
+
+    function initApp() {
+        setupFormListeners();
+        setupModalListeners();
+        refreshAll();
+    }
+
+    // =================================================================
+    // MASTER REFRESH & FETCH LOGIC
+    // =================================================================
+    async function refreshAll() {
+        const btn = document.getElementById("refresh-btn");
+        btn.innerHTML = `<i class="fas fa-rotate-right fa-spin mr-1.5 text-xs"></i>রিফ্রেশিং`;
+        btn.disabled = true;
+        setConnectionStatus(true);
+
+        // Fetching with "sort: -created" because the date field is removed
+        await Promise.allSettled([
+            fetchPeople(),
+            fetchTransactions(),
+            fetchPersonalExpenses()
+        ]);
+
+        renderStats();
+        renderPeopleGrid();
+        renderTransactionsTable();
+        renderExpenseBreakdown();
+        renderExpenseTable();
+
+        btn.innerHTML = `<i class="fas fa-rotate-right mr-1.5 text-xs"></i>রিফ্রেশ`;
+        btn.disabled = false;
+    }
+
+    async function fetchPeople() {
+        try {
+            state.people = await pb.collection("people").getFullList({ sort: "name" });
+            populatePersonDropdowns();
+        } catch (err) {
+            console.error("Failed to fetch people:", err);
+            setConnectionStatus(false);
+            showLoadError("people-grid", "মানুষের ডাটাবেস টেবিল পাওয়া যায়নি।");
+        }
+    }
+
+    async function fetchTransactions() {
+        try {
+            const result = await pb.collection("transactions").getList(1, 50, { sort: "-created", expand: "person_id" });
+            state.transactions = result.items;
+        } catch (err) {
+            console.error("Failed to fetch transactions:", err);
+            setConnectionStatus(false);
+            showLoadError("transactions-tbody", "লেনদেন টেবিল পাওয়া যায়নি বা sort issue রয়েছে।", 7);
+        }
+    }
+
+    async function fetchPersonalExpenses() {
+        try {
+            const result = await pb.collection("personal_expenses").getList(1, 100, { sort: "-created" });
+            state.personalExpenses = result.items;
+        } catch (err) {
+            console.error("Failed to fetch personal expenses:", err);
+            setConnectionStatus(false);
+            showLoadError("expenses-tbody", "personal_expenses টেবিল পাওয়া যায়নি।", 5);
+            showLoadError("expense-breakdown-grid", "ডাটাবেস এরর");
+        }
+    }
+
+    // =================================================================
+    // RENDER LOGIC: STATS
+    // =================================================================
+    function renderStats() {
+        let owedToMe = 0, iOwe = 0, owedToMeCount = 0, iOweCount = 0;
+        state.people.forEach(p => {
+            const bal = p.net_balance || 0;
+            if (bal < 0) { owedToMe += Math.abs(bal); owedToMeCount++; } 
+            else if (bal > 0) { iOwe += bal; iOweCount++; }
+        });
+
+        const now = new Date();
+        const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(now.getDate() - 30);
+        
+        let recentPeopleSpend = 0;
+        state.transactions.forEach(t => {
+            if ((t.trx_type === "Gave" || t.trx_type === "Shared Expense") && new Date(t.created) >= thirtyDaysAgo) {
+                recentPeopleSpend += Math.abs(t.amount);
+            }
+        });
+
+        let thisMonthExpense = 0;
+        state.personalExpenses.forEach(e => {
+            const expDate = new Date(e.created);
+            if (expDate.getMonth() === now.getMonth() && expDate.getFullYear() === now.getFullYear()) {
+                thisMonthExpense += Math.abs(e.amount);
+            }
+        });
+
+        document.getElementById("stat-owed-to-me").textContent = fmt(owedToMe);
+        document.getElementById("stat-owed-to-me-sub").textContent = `${owedToMeCount} জন ঋণী`;
+        
+        document.getElementById("stat-i-owe").textContent = fmt(iOwe);
+        document.getElementById("stat-i-owe-sub").textContent = `আপনি ${iOweCount} জনের কাছে ঋণী`;
+        
+        document.getElementById("stat-people-spend").textContent = fmt(recentPeopleSpend);
+        document.getElementById("stat-personal-spend").textContent = fmt(thisMonthExpense);
+    }
+
+    // =================================================================
+    // RENDER LOGIC: PEOPLE & TRX
+    // =================================================================
+    function renderPeopleGrid() {
+        const grid = document.getElementById("people-grid");
+        if(grid.innerHTML.includes("ডাটাবেস টেবিল পাওয়া যায়নি")) return;
+
+        document.getElementById("people-count").textContent = `(${state.people.length})`;
+        if (state.people.length === 0) {
+            grid.innerHTML = `<div class="col-span-full text-center py-6 text-muted"><p class="text-sm">এখনও কাউকে যোগ করা হয়নি।</p></div>`;
+            return;
+        }
+        grid.innerHTML = state.people.map(p => {
+            const bal = p.net_balance || 0;
+            const isNeg = bal < 0; const isPos = bal > 0;
+            const mainColor = isNeg ? "var(--red)" : isPos ? "var(--green)" : "var(--text-muted)";
+            const borderColor = isNeg ? "rgba(248,113,113,0.22)" : isPos ? "rgba(52,211,153,0.22)" : "var(--border)";
+            const avatarBg = isNeg ? "rgba(248,113,113,0.12)" : isPos ? "rgba(52,211,153,0.12)" : "rgba(56,189,248,0.1)";
+            const avatarColor = isNeg ? "var(--red)" : isPos ? "var(--green)" : "var(--accent)";
+            const displayBal = `${isNeg ? "-" : isPos ? "+" : ""}${fmt(Math.abs(bal))}`;
+            
+            // Photo vs Initials Logic
+            const initials = p.name.trim().split(/\s+/).map(w => w[0] || "").join("").substring(0, 2).toUpperCase();
+            let avatarInner = escapeHtml(initials);
+            if (p.photo) {
+                // PocketBase file URL logic
+                avatarInner = `<img src="${POCKETBASE_URL}/api/files/people/${p.id}/${p.photo}" alt="Photo" class="w-full h-full object-cover">`;
+            }
+
+            const activeClass = state.filterPersonId === p.id ? " active-filter" : "";
+
+            return `
+            <div class="card item-card${activeClass} p-3" style="border-color:${borderColor};" onclick="togglePersonFilter('${p.id}')">
+                <div class="flex items-center gap-3">
+                    <div class="avatar avatar-sm" style="background:${avatarBg};color:${avatarColor};">${avatarInner}</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-sm text-primary truncate">${escapeHtml(p.name)}</div>
+                        <div class="number-display text-sm font-medium" style="color:${mainColor};">${escapeHtml(displayBal)}</div>
+                    </div>
+                </div>
+            </div>`;
+        }).join("");
+    }
+
+    function renderTransactionsTable() {
+        const tbody = document.getElementById("transactions-tbody");
+        if(tbody.innerHTML.includes("টেবিল পাওয়া যায়নি")) return;
+
+        const rows = state.filterPersonId ? state.transactions.filter(t => t.person_id === state.filterPersonId) : state.transactions;
+        if (rows.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-muted">কোনো লেনদেন পাওয়া যায়নি।</td></tr>`;
+            return;
+        }
+
+        const methodBadgeMap = {
+            "Cash": `<span class="badge method-cash"><i class="fas fa-money-bill mr-1"></i>ক্যাশ</span>`,
+            "bKash": `<span class="badge method-bkash"><i class="fas fa-mobile-screen-button mr-1"></i>বিকাশ</span>`,
+            "3rd party": `<span class="badge method-3rd"><i class="fas fa-users-viewfinder mr-1"></i>থার্ড পার্টি</span>`
+        };
+
+        tbody.innerHTML = rows.map(t => {
+            const person = t.expand?.person_id || state.people.find(p => p.id === t.person_id);
+            const personName = person ? person.name : "অজানা";
+            
+            // Photo vs Initials Logic for Table
+            const initials = personName.substring(0, 2).toUpperCase();
+            let avatarInner = escapeHtml(initials);
+            if (person && person.photo) {
+                avatarInner = `<img src="${POCKETBASE_URL}/api/files/people/${person.id}/${person.photo}" alt="Photo" class="w-full h-full object-cover">`;
+            }
+
+            const typeBadge = t.trx_type === "Gave" ? `<span class="badge type-gave">দিয়েছি</span>` : t.trx_type === "Received" ? `<span class="badge type-received">পেয়েছি</span>` : `<span class="badge type-shared">শেয়ার্ড</span>`;
+            const amountColor = t.trx_type === "Received" ? "var(--green)" : t.trx_type === "Gave" ? "var(--red)" : "var(--amber)";
+            
+            return `
+            <tr>
+                <td class="number-display text-muted text-xs whitespace-nowrap">${escapeHtml(fmtDateTime(t.created))}</td>
+                <td>
+                    <div class="flex items-center gap-2">
+                        <div class="avatar avatar-sm" style="background:rgba(56,189,248,0.1);color:var(--accent);">${avatarInner}</div>
+                        <span class="font-medium">${escapeHtml(personName)}</span>
+                    </div>
+                </td>
+                <td>${typeBadge}</td>
+                <td class="hide-mobile">${methodBadgeMap[t.method] || escapeHtml(t.method)}</td>
+                <td class="number-display font-medium whitespace-nowrap" style="color:${amountColor};">${t.trx_type === "Received" ? "+" : "−"}${escapeHtml(fmt(t.amount))}</td>
+                <td class="hide-mobile text-sm text-muted truncate max-w-[150px]">${escapeHtml(t.note || "—")}</td>
+                <td class="text-right pr-2"><button class="delete-btn" onclick="deleteTransaction('${t.id}', event)"><i class="fas fa-trash-can"></i></button></td>
+            </tr>`;
+        }).join("");
+    }
+
+    // =================================================================
+    // RENDER LOGIC: PERSONAL EXPENSES
+    // =================================================================
+    function renderExpenseBreakdown() {
+        const grid = document.getElementById("expense-breakdown-grid");
+        if(grid.innerHTML.includes("ডাটাবেস এরর")) return;
+
+        const categoriesTotals = { "food": 0, "transport": 0, "shopping": 0, "extra": 0 };
+        
+        const now = new Date();
+        state.personalExpenses.forEach(e => {
+            const d = new Date(e.created);
+            if(d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+                if(categoriesTotals[e.category] !== undefined) categoriesTotals[e.category] += e.amount;
+                else categoriesTotals["extra"] += e.amount; // fallback
+            }
+        });
+
+        grid.innerHTML = Object.keys(categoriesTotals).map(catKey => `
+            <div class="card p-3 border-l-2 flex flex-col justify-center items-center text-center" style="border-left-color:var(--pink);">
+                <div class="flex items-center gap-1 mb-1 text-muted text-xs font-semibold uppercase tracking-wider">
+                    <i class="fas ${catMap[catKey].icon}"></i> ${escapeHtml(catMap[catKey].name)}
+                </div>
+                <div class="number-display text-base font-medium text-primary">${fmt(categoriesTotals[catKey])}</div>
+            </div>
+        `).join("");
+    }
+
+    function renderExpenseTable() {
+        const tbody = document.getElementById("expenses-tbody");
+        if(tbody.innerHTML.includes("টেবিল পাওয়া যায়নি")) return;
+
+        if (state.personalExpenses.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-muted">কোনো খরচের রেকর্ড নেই।</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = state.personalExpenses.map(e => {
+            const displayCatName = catMap[e.category] ? catMap[e.category].name : e.category;
+            return `
+            <tr>
+                <td class="number-display text-muted text-xs whitespace-nowrap">${escapeHtml(fmtDateTime(e.created))}</td>
+                <td><span class="badge type-expense">${escapeHtml(displayCatName)}</span></td>
+                <td class="number-display font-medium whitespace-nowrap text-primary">${escapeHtml(fmt(e.amount))}</td>
+                <td class="hide-mobile text-sm text-muted truncate max-w-[150px]">${escapeHtml(e.note || "—")}</td>
+                <td class="text-right pr-2"><button class="delete-btn" onclick="deleteExpense('${e.id}', event)"><i class="fas fa-trash-can"></i></button></td>
+            </tr>
+        `}).join("");
+    }
+
+    // =================================================================
+    // ACTIONS & HANDLERS
+    // =================================================================
+    function setupFormListeners() {
+        document.querySelectorAll(".trx-type-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".trx-type-btn").forEach(b => b.classList.remove("selected", "sel-red", "sel-green", "sel-amber"));
+                btn.classList.add("selected", btn.dataset.color);
+                state.selectedTrxType = btn.dataset.value;
+                document.getElementById("amount-hint").style.display = (state.selectedTrxType === "Shared Expense") ? "block" : "none";
+            });
+        });
+
+        document.getElementById("trx-add-form").addEventListener("submit", handleQuickAddTrx);
+        document.getElementById("exp-add-form").addEventListener("submit", handleAddExpense);
+        document.getElementById("add-person-form").addEventListener("submit", handleAddPerson);
+    }
+
+    async function handleQuickAddTrx(e) {
+        e.preventDefault();
+        const pId = document.getElementById("form-person").value;
+        const amt = parseFloat(document.getElementById("form-amount").value);
+        const method = document.getElementById("form-method").value;
+        const note = document.getElementById("form-note").value.trim();
+        const type = state.selectedTrxType;
+
+        if (!pId || !amt) return showToast("সব তথ্য সঠিকভাবে দিন।", "error");
+
+        const btn = document.getElementById("submit-btn"); btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>সেভ হচ্ছে…`;
+
+        try {
+            await pb.collection("transactions").create({ person_id: pId, amount: amt, trx_type: type, method: method, note: note });
+            await updatePersonBalance(pId, type, amt);
+            await refreshAll();
+            document.getElementById("form-amount").value = ""; document.getElementById("form-note").value = "";
+            showToast("লেনদেন যোগ হয়েছে!", "success");
+        } catch (err) {
+            console.error(err); showToast("সেভ করতে সমস্যা হয়েছে।", "error");
+        } finally {
+            btn.disabled = false; btn.innerHTML = `<i class="fas fa-check mr-2"></i>সেভ করুন`;
+        }
+    }
+
+    async function handleAddExpense(e) {
+        e.preventDefault();
+        const cat = document.getElementById("exp-category").value; 
+        const amt = parseFloat(document.getElementById("exp-amount").value);
+        const note = document.getElementById("exp-note").value.trim();
+
+        if (!cat || !amt) return showToast("সব তথ্য সঠিকভাবে দিন।", "error");
+
+        const btn = document.getElementById("exp-submit-btn"); btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>যোগ হচ্ছে…`;
+
+        try {
+            // Method removed from Personal Expense
+            await pb.collection("personal_expenses").create({ amount: amt, category: cat, note: note });
+            await refreshAll();
+            document.getElementById("exp-amount").value = ""; document.getElementById("exp-note").value = "";
+            showToast("খরচ যোগ করা হয়েছে!", "success");
+        } catch (err) {
+            console.error(err); 
+            showToast("ডাটাবেস কানেকশন এরর!", "error");
+        } finally {
+            btn.disabled = false; btn.innerHTML = `<i class="fas fa-plus mr-2"></i>খরচ যুক্ত করুন`;
+        }
+    }
+
+    async function handleAddPerson(e) {
+        e.preventDefault();
+        const name = document.getElementById("person-name").value.trim();
+        const balance = parseFloat(document.getElementById("person-balance").value) || 0;
+        const photoFile = document.getElementById("person-photo").files[0];
+        const ownerCode = document.getElementById("owner-code").value;
+
+        // Owner Code validation
+        if (ownerCode !== "0852") {
+            showToast("ভুল পিন! শুধুমাত্র মালিক নতুন ব্যক্তি যোগ করতে পারবেন।", "error");
+            return;
+        }
+
+        if (!name) return;
+
+        const btn = document.getElementById("add-person-btn"); btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>সেভ হচ্ছে…`;
+        try {
+            const formData = new FormData();
+            formData.append("name", name);
+            formData.append("net_balance", balance);
+            if (photoFile) {
+                formData.append("photo", photoFile);
+            }
+
+            await pb.collection("people").create(formData);
+            await refreshAll(); 
+            closePersonModal(); 
+            document.getElementById("add-person-form").reset();
+            showToast(`${name}-কে যোগ করা হয়েছে!`, "success");
+        } catch (err) {
+            console.error(err); showToast("সমস্যা হয়েছে। ডাটাবেস চেক করুন।", "error");
+        } finally {
+            btn.disabled = false; btn.innerHTML = `<i class="fas fa-user-plus mr-2"></i>সেভ`;
+        }
+    }
+
+    async function deleteTransaction(id, event) {
+        event.stopPropagation();
+        if (!confirm("লেনদেনটি ডিলিট করতে চান? এটি ব্যালেন্স পরিবর্তন করবে।")) return;
+        const trx = state.transactions.find(t => t.id === id); if (!trx) return;
+        try {
+            const revMap = { "Gave": "Received", "Received": "Gave", "Shared Expense": "Received" };
+            await updatePersonBalance(trx.person_id, revMap[trx.trx_type], trx.amount);
+            await pb.collection("transactions").delete(id);
+            await refreshAll(); showToast("লেনদেনটি ডিলিট করা হয়েছে।", "success");
+        } catch (err) { console.error(err); showToast("ডিলিট করতে সমস্যা হয়েছে।", "error"); }
+    }
+
+    async function deleteExpense(id, event) {
+        event.stopPropagation();
+        if (!confirm("এই খরচের রেকর্ডটি ডিলিট করতে চান?")) return;
+        try {
+            await pb.collection("personal_expenses").delete(id);
+            await refreshAll(); showToast("রেকর্ড ডিলিট করা হয়েছে।", "success");
+        } catch (err) { console.error(err); showToast("ডিলিট করতে সমস্যা হয়েছে।", "error"); }
+    }
+
+    async function updatePersonBalance(personId, trxType, amount) {
+        const p = await pb.collection("people").getOne(personId);
+        const delta = { "Gave": -amount, "Received": +amount, "Shared Expense": -amount }[trxType] ?? 0;
+        await pb.collection("people").update(personId, { net_balance: (p.net_balance || 0) + delta });
+    }
+
+    // =================================================================
+    // UTILS & UI HELPERS
+    // =================================================================
+    function togglePersonFilter(personId) {
+        state.filterPersonId = state.filterPersonId === personId ? "" : personId;
+        renderTransactionsTable(); renderPeopleGrid();
+        document.getElementById("clear-filter-btn").style.display = state.filterPersonId ? "inline-flex" : "none";
+    }
+    function clearPersonFilter() { togglePersonFilter(state.filterPersonId); }
+
+    function populatePersonDropdowns() {
+        const formSel = document.getElementById("form-person"); const prev = formSel.value;
+        formSel.innerHTML = `<option value="">নির্বাচন করুন…</option>` + state.people.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("");
+        formSel.value = prev;
+    }
+
+    function openPersonModal() { document.getElementById("person-modal").classList.add("open"); }
+    function closePersonModal() { document.getElementById("person-modal").classList.remove("open"); }
+    function setupModalListeners() {
+        document.getElementById("person-modal").addEventListener("click", e => { if (e.target.id === "person-modal") closePersonModal(); });
+        document.addEventListener("keydown", e => { if (e.key === "Escape") closePersonModal(); });
+    }
+
+    function showToast(msg, type = "info") {
+        const c = document.getElementById("toast");
+        const icons = { success: "fa-circle-check", error: "fa-circle-xmark", info: "fa-circle-info" };
+        const colors = { success: "var(--green)", error: "var(--red)", info: "var(--accent)" };
+        const el = document.createElement("div"); el.className = "toast-item";
+        el.innerHTML = `<i class="fas ${icons[type]}" style="color:${colors[type]};font-size:1rem;"></i><span class="text-sm font-medium">${escapeHtml(msg)}</span>`;
+        c.appendChild(el); setTimeout(() => { el.classList.add("toast-out"); el.addEventListener("animationend", () => el.remove(), {once:true}); }, 3500);
+    }
+
+    function setConnectionStatus(connected) {
+        const p = document.getElementById("connection-status"); const t = document.getElementById("status-text");
+        if (connected) { p.style.background = "rgba(52,211,153,0.08)"; p.style.color = "#34d399"; p.style.borderColor = "rgba(52,211,153,0.18)"; t.textContent = "কানেক্টেড"; } 
+        else { p.style.background = "rgba(248,113,113,0.08)"; p.style.color = "#f87171"; p.style.borderColor = "rgba(248,113,113,0.18)"; t.textContent = "ডাটাবেস এরর"; }
+    }
+
+    function fmt(amt) { return "৳" + Number(amt || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+    
+    function fmtDateTime(iso) { 
+        if (!iso) return "—";
+        try { 
+            const d = new Date(iso);
+            const datePart = d.toLocaleDateString("en-GB", { timeZone: "Asia/Dhaka", day: "numeric", month: "short", year: "2-digit" });
+            const timePart = d.toLocaleTimeString("en-US", { timeZone: "Asia/Dhaka", hour: "2-digit", minute: "2-digit", hour12: true });
+            return `${datePart}, ${timePart}`; 
+        } catch { return iso; } 
+    }
+
+    function escapeHtml(str) { return String(str||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;"); }
+    function showLoadError(id, msg, col) {
+        const el = document.getElementById(id); if(!el) return;
+        const inner = `<i class="fas fa-triangle-exclamation text-amber-500 text-xl mb-2 block"></i><span class="text-sm text-muted">${escapeHtml(msg)}</span>`;
+        el.innerHTML = col ? `<tr><td colspan="${col}" class="text-center py-6">${inner}</td></tr>` : `<div class="col-span-full text-center py-6">${inner}</div>`;
+    }
+
+    initApp();
+</script>
+</body>
+</html>
