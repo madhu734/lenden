@@ -59,6 +59,7 @@
             --red-glow:      rgba(248, 113, 113, 0.12);
             --amber:         #fbbf24;
             --pink:          #f472b6;
+            --purple:        #a855f7;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -79,7 +80,8 @@
                 radial-gradient(ellipse 60% 40% at 80% 110%, rgba(52, 211, 153, 0.03) 0%, transparent 60%);
             pointer-events: none; z-index: 0;
         }
-        #app { position: relative; z-index: 1; padding-bottom: 3rem; }
+        /* Extra padding bottom to prevent overlap with bottom bar */
+        #app { position: relative; z-index: 1; padding-bottom: 6rem; }
 
         .card {
             background: var(--bg-card); border: 1px solid var(--border);
@@ -133,6 +135,8 @@
 
         .btn-secondary { background: linear-gradient(135deg, #8b5cf6, #c084fc); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.25); }
         .btn-secondary:hover { box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4); }
+        .btn-tertiary { background: linear-gradient(135deg, #a855f7, #d946ef); box-shadow: 0 4px 15px rgba(168, 85, 247, 0.25); }
+        .btn-tertiary:hover { box-shadow: 0 8px 25px rgba(168, 85, 247, 0.4); }
         
         .btn-ghost {
             background: transparent; border: 1px solid var(--border); color: var(--text-muted);
@@ -186,7 +190,7 @@
         .delete-btn { background: none; border: none; color: var(--text-muted); padding: 6px 8px; border-radius: 6px; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
         .delete-btn:hover { color: var(--red); background: rgba(248,113,113,0.1); transform: scale(1.1); }
 
-        #toast { position: fixed; bottom: 30px; right: 30px; z-index: 9999; pointer-events: none; display: flex; flex-direction: column; gap: 10px; }
+        #toast { position: fixed; bottom: 90px; right: 30px; z-index: 9999; pointer-events: none; display: flex; flex-direction: column; gap: 10px; }
         .toast-item { 
             background: var(--bg-card); border: 1px solid var(--border-bright); border-radius: 12px; 
             padding: 1rem 1.5rem; display: flex; align-items: center; gap: 0.75rem; 
@@ -197,7 +201,7 @@
         .toast-out { animation: toastOut 0.3s ease forwards !important; }
         @keyframes toastOut { to { transform: translateX(120%); opacity: 0; } }
 
-        .modal-bg { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.75); backdrop-filter: blur(5px); align-items: center; justify-content: center; padding: 1rem; }
+        .modal-bg { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); align-items: center; justify-content: center; padding: 1rem; }
         .modal-bg.open { display: flex; }
         .modal-box { 
             background: var(--bg-card); border: 1px solid var(--border-bright); border-radius: 20px; 
@@ -211,6 +215,14 @@
         @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
         
         .section-header { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.3rem; color: var(--text-primary); display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
+
+        /* Sticky Bottom Bar */
+        .bottom-bar {
+            position: fixed; bottom: 0; left: 0; right: 0; padding: 1rem;
+            background: rgba(6, 9, 15, 0.85); backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border); z-index: 40;
+            display: flex; justify-content: center;
+        }
 
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -226,7 +238,7 @@
             .data-table thead th { padding: 0.6rem; font-size: 0.75rem; }
             .data-table tbody td { padding: 0.75rem 0.6rem; font-size: 0.85rem; }
             
-            #toast { left: 50%; right: auto; transform: translateX(-50%); bottom: 20px; width: 90%; max-width: 320px; }
+            #toast { left: 50%; right: auto; transform: translateX(-50%); bottom: 85px; width: 90%; max-width: 320px; }
             @keyframes toastIn { from { transform: translate(-50%, 100%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
             @keyframes toastOut { to { transform: translate(-50%, 100%); opacity: 0; } }
             .toast-item { padding: 0.75rem 1rem; }
@@ -268,9 +280,9 @@
     <!-- ================= MAIN CONTENT ================= -->
     <main class="max-w-7xl mx-auto px-4 py-6 flex flex-col gap-6 md:gap-8">
         
-        <!-- --- STAT CARDS (Now Clickable for Reports) --- -->
+        <!-- --- STAT CARDS (Clickable for Reports) --- -->
         <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
-            <!-- Card: আমি পাবো -->
+            <!-- Card: আমি পাবো (Overall) -->
             <div class="card stat-card red-glow hover:ring-2 hover:ring-[var(--border-bright)]" onclick="openReport('owed-to-me')">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">আমি পাবো</p>
@@ -284,7 +296,7 @@
                 <p class="text-xs text-dim mt-2 font-medium"><span id="stat-owed-to-me-sub">— জন ঋণী</span> <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
             </div>
 
-            <!-- Card: আমি ঋণী -->
+            <!-- Card: আমি ঋণী (Overall) -->
             <div class="card stat-card green-glow hover:ring-2 hover:ring-[var(--border-bright)]" onclick="openReport('i-owe')">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">আমি ঋণী</p>
@@ -298,7 +310,7 @@
                 <p class="text-xs text-dim mt-2 font-medium"><span id="stat-i-owe-sub">— জনের কাছে</span> <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
             </div>
 
-            <!-- Card: অন্যদের খরচ -->
+            <!-- Card: অন্যদের খরচ (Current Month) -->
             <div class="card stat-card accent-glow hover:ring-2 hover:ring-[var(--border-bright)]" onclick="openReport('people-spend')">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">অন্যদের খরচ</p>
@@ -309,10 +321,10 @@
                 <div class="number-display text-xl md:text-3xl font-semibold text-sky-400" id="stat-people-spend">
                     <span class="skeleton w-20 h-8"></span>
                 </div>
-                <p class="text-xs text-dim mt-2 font-medium">গত ৩০ দিন <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
+                <p class="text-xs text-dim mt-2 font-medium" id="stat-people-spend-sub">চলতি মাসে <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
             </div>
 
-            <!-- Card: নিজস্ব খরচ -->
+            <!-- Card: নিজস্ব খরচ (Current Month) -->
             <div class="card stat-card pink-glow hover:ring-2 hover:ring-[var(--border-bright)]" onclick="openReport('personal-spend')">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">নিজস্ব খরচ</p>
@@ -323,7 +335,7 @@
                 <div class="number-display text-xl md:text-3xl font-semibold text-pink-400" id="stat-personal-spend">
                     <span class="skeleton w-20 h-8"></span>
                 </div>
-                <p class="text-xs text-dim mt-2 font-medium">চলতি মাসে <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
+                <p class="text-xs text-dim mt-2 font-medium" id="stat-personal-spend-sub">চলতি মাসে <i class="fas fa-chevron-right ml-1 text-[10px]"></i></p>
             </div>
         </section>
 
@@ -435,13 +447,13 @@
                 <div>
                     <h2 class="section-header">
                         <span class="bg-pink-500/15 text-pink-400 p-2 md:p-2.5 rounded-xl shadow-[0_0_15px_rgba(244,114,182,0.15)]"><i class="fas fa-chart-pie"></i></span>
-                        ব্যক্তিগত রিপোর্ট
+                        চলতি মাসের ব্যক্তিগত রিপোর্ট
                     </h2>
                     
                     <div class="flex flex-col gap-4">
                         <!-- Category Breakdown -->
                         <div class="card p-4 md:p-5">
-                            <h3 class="font-display font-bold text-[0.9rem] md:text-base text-primary mb-4 tracking-wide border-b border-[var(--border)] pb-3">চলতি মাসের খাত</h3>
+                            <h3 class="font-display font-bold text-[0.9rem] md:text-base text-primary mb-4 tracking-wide border-b border-[var(--border)] pb-3">খাতওয়ারি খরচ (চলতি মাস)</h3>
                             <div id="expense-breakdown-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
                                 <!-- Filled dynamically -->
                             </div>
@@ -479,7 +491,7 @@
                             <div class="flex items-center justify-between mb-4 border-b border-[var(--border)] pb-3">
                                 <h3 class="font-display font-bold text-[0.9rem] md:text-base text-primary tracking-wide">ব্যালেন্স <span class="text-sm text-muted ml-1" id="people-count">(০)</span></h3>
                                 <div class="flex items-center gap-2">
-                                    <span class="text-[0.7rem] text-dim hidden sm:inline"><i class="fas fa-filter mr-1"></i>কার্ডে ক্লিক করে ফিল্টার করুন</span>
+                                    <span class="text-[0.7rem] text-dim hidden sm:inline"><i class="fas fa-filter mr-1"></i>কার্ডে ক্লিক করে সব হিস্ট্রি দেখুন</span>
                                     <button id="clear-filter-btn" onclick="clearPersonFilter()" class="btn-ghost !py-1 !px-2 !text-[0.7rem] text-red-400 border-red-500/30 hover:bg-red-500/10 hover:border-red-400" style="display:none;"><i class="fas fa-times mr-1"></i>মুছুন</button>
                                 </div>
                             </div>
@@ -492,7 +504,7 @@
                         <!-- Trx History Table -->
                         <div class="card flex flex-col overflow-hidden">
                             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-input)] bg-opacity-50">
-                                <h3 class="font-display font-bold text-[0.9rem] md:text-base text-primary tracking-wide">লেনদেনের হাবিজাবি তালিকা</h3>
+                                <h3 class="font-display font-bold text-[0.9rem] md:text-base text-primary tracking-wide">লেনদেনের তালিকা (চলতি মাস)</h3>
                             </div>
                             <div class="overflow-x-auto max-h-[350px] overflow-y-auto p-1">
                                 <table class="data-table">
@@ -512,6 +524,13 @@
         </section>
 
     </main>
+    
+    <!-- BOTTOM STICKY BAR FOR MONTHLY ARCHIVE -->
+    <div class="bottom-bar">
+        <button onclick="openMonthlyListModal()" class="btn-primary btn-tertiary w-full max-w-lg py-3 md:py-3.5 rounded-xl font-display font-bold text-[0.95rem] md:text-base tracking-wide">
+            <i class="fas fa-calendar-check mr-2 text-lg"></i> মাসিক রিপোর্ট ও আর্কাইভ
+        </button>
+    </div>
 </div>
 
 <!-- ================= MODAL: ADD PERSON ================= -->
@@ -550,7 +569,7 @@
     </div>
 </div>
 
-<!-- ================= MODAL: GENERIC REPORT (Clicking Stat Cards) ================= -->
+<!-- ================= MODAL: GENERIC REPORT ================= -->
 <div id="report-modal" class="modal-bg">
     <div class="modal-box report-box">
         <div class="flex items-center justify-between mb-4 border-b border-[var(--border)] pb-3">
@@ -563,6 +582,33 @@
     </div>
 </div>
 
+<!-- ================= MODAL: MONTHLY ARCHIVE LIST ================= -->
+<div id="month-list-modal" class="modal-bg">
+    <div class="modal-box">
+        <div class="flex items-center justify-between mb-4 border-b border-[var(--border)] pb-3">
+            <h3 class="font-display font-bold text-lg text-primary tracking-wide"><i class="fas fa-archive text-purple-400 mr-2"></i>আর্কাইভ রিপোর্ট</h3>
+            <button onclick="closeMonthListModal()" class="btn-ghost !px-2.5 !py-1.5"><i class="fas fa-times text-lg"></i></button>
+        </div>
+        <div id="month-list-content" class="flex flex-col gap-3 max-h-[60vh] overflow-y-auto pr-1">
+            <!-- Content filled by JS -->
+        </div>
+    </div>
+</div>
+
+<!-- ================= MODAL: SPECIFIC MONTH REPORT ================= -->
+<div id="month-report-modal" class="modal-bg">
+    <div class="modal-box report-box">
+        <div class="flex items-center justify-between mb-4 border-b border-[var(--border)] pb-3">
+            <div class="flex items-center gap-3">
+                <button onclick="backToMonthList()" class="btn-ghost !px-2.5 !py-1.5"><i class="fas fa-arrow-left text-base"></i></button>
+                <h3 id="specific-month-title" class="font-display font-bold text-base md:text-lg text-primary tracking-wide">রিপোর্ট</h3>
+            </div>
+        </div>
+        <div id="specific-month-content" class="text-sm flex flex-col gap-4 max-h-[65vh] overflow-y-auto pr-1">
+            <!-- Content filled by JS -->
+        </div>
+    </div>
+</div>
 
 <!-- ================= TOAST CONTAINER ================= -->
 <div id="toast"></div>
@@ -578,8 +624,10 @@
         transactions: [],
         personalExpenses: [],
         selectedTrxType: "Gave",
-        filterPersonId: "",
+        filterPersonId: ""
     };
+
+    const monthNames = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
 
     const catMap = {
         "food": { name: "খাওয়া", icon: "fa-burger" },
@@ -594,6 +642,16 @@
         refreshAll();
     }
 
+    function isCurrentMonth(iso) {
+        if (!iso) return false;
+        const d = new Date(iso);
+        const now = new Date();
+        return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+    }
+
+    // ------------------------------------------------------------------------
+    // DATA FETCHING
+    // ------------------------------------------------------------------------
     async function refreshAll() {
         const btn = document.getElementById("refresh-btn");
         const icon = btn.querySelector('i');
@@ -625,8 +683,7 @@
 
     async function fetchTransactions() {
         try {
-            // Using -created since date field is removed
-            const result = await pb.collection("transactions").getList(1, 50, { sort: "-created" });
+            const result = await pb.collection("transactions").getList(1, 200, { sort: "-created" });
             state.transactions = result.items;
         } catch (err) {
             setConnectionStatus(false);
@@ -636,7 +693,7 @@
 
     async function fetchPersonalExpenses() {
         try {
-            const result = await pb.collection("personal_expenses").getList(1, 100, { sort: "-created" });
+            const result = await pb.collection("personal_expenses").getList(1, 200, { sort: "-created" });
             state.personalExpenses = result.items;
         } catch (err) {
             setConnectionStatus(false);
@@ -646,17 +703,14 @@
     }
     
     // ------------------------------------------------------------------------
-    // HELPER: ROBUST DB RELATION MATCHER (Fixes "Unknown/অজানা" Issue)
+    // RELATION MATCHER (Fixes "Unknown" Issue)
     // ------------------------------------------------------------------------
     function getPersonIdFromTrx(t) {
-        // Try common field names first
         let pId = t.person_id || t.person || t.personId;
-        // If not found, scan all keys to find one that matches an ID in state.people
         if (!pId) {
             for (const key in t) {
                 if (typeof t[key] === 'string' && state.people.some(p => p.id === t[key])) {
-                    pId = t[key];
-                    break;
+                    pId = t[key]; break;
                 }
             }
         }
@@ -670,7 +724,7 @@
 
     function getPersonName(t) {
         const pObj = getPersonObj(t);
-        return pObj ? pObj.name : "অজানা"; // Bangla "Unknown" fallback
+        return pObj ? pObj.name : "অজানা";
     }
 
     function getAvatarHTML(pObj) {
@@ -682,39 +736,35 @@
     }
 
     // ------------------------------------------------------------------------
-    // RENDER FUNCTIONS
+    // RENDER FUNCTIONS (Main Dashboard - Current Month Focused)
     // ------------------------------------------------------------------------
     function renderStats() {
-        let owedToMe = 0, iOwe = 0, owedToMeCount = 0, iOweCount = 0;
+        let owedToMe = 0, iOwe = 0;
         
+        // Outstanding Balances are OVERALL
         state.people.forEach(p => {
             const bal = p.net_balance || 0;
-            if (bal < 0) { owedToMe += Math.abs(bal); owedToMeCount++; } 
-            else if (bal > 0) { iOwe += bal; iOweCount++; }
+            if (bal < 0) owedToMe += Math.abs(bal); 
+            else if (bal > 0) iOwe += bal; 
         });
 
-        const now = new Date();
-        const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(now.getDate() - 30);
-        
+        // Spendings are filtered to CURRENT MONTH
         let recentPeopleSpend = 0;
         state.transactions.forEach(t => {
-            if ((t.trx_type === "Gave" || t.trx_type === "Shared Expense") && new Date(t.created) >= thirtyDaysAgo) {
+            if ((t.trx_type === "Gave" || t.trx_type === "Shared Expense") && isCurrentMonth(t.created)) {
                 recentPeopleSpend += Math.abs(t.amount);
             }
         });
 
         let thisMonthExpense = 0;
         state.personalExpenses.forEach(e => {
-            const expDate = new Date(e.created);
-            if (expDate.getMonth() === now.getMonth() && expDate.getFullYear() === now.getFullYear()) {
+            if (isCurrentMonth(e.created)) {
                 thisMonthExpense += Math.abs(e.amount);
             }
         });
 
         document.getElementById("stat-owed-to-me").textContent = fmt(owedToMe);
-        document.getElementById("stat-owed-to-me-sub").textContent = `${owedToMeCount} জন ঋণী`;
         document.getElementById("stat-i-owe").textContent = fmt(iOwe);
-        document.getElementById("stat-i-owe-sub").textContent = `আপনি ${iOweCount} জনের কাছে`;
         document.getElementById("stat-people-spend").textContent = fmt(recentPeopleSpend);
         document.getElementById("stat-personal-spend").textContent = fmt(thisMonthExpense);
     }
@@ -739,7 +789,6 @@
             const avatarBg    = isNeg ? "rgba(248,113,113,0.15)" : isPos ? "rgba(52,211,153,0.15)" : "rgba(56,189,248,0.1)";
             const avatarColor = isNeg ? "var(--red)" : isPos ? "var(--green)" : "var(--accent)";
             const displayBal  = `${isNeg ? "-" : isPos ? "+" : ""}${fmt(Math.abs(bal))}`;
-            
             const activeClass = state.filterPersonId === p.id ? " active-filter" : "";
 
             return `
@@ -757,7 +806,12 @@
         const tbody = document.getElementById("transactions-tbody");
         if(tbody.innerHTML.includes("ডাটাবেস")) return;
 
-        const rows = state.filterPersonId ? state.transactions.filter(t => getPersonIdFromTrx(t) === state.filterPersonId) : state.transactions;
+        // If person selected, show their full history. Otherwise, show current month generally.
+        const rows = state.transactions.filter(t => {
+            if (state.filterPersonId) return getPersonIdFromTrx(t) === state.filterPersonId;
+            return isCurrentMonth(t.created);
+        });
+
         if (rows.length === 0) {
             tbody.innerHTML = `<tr><td colspan=\"7\" class=\"text-center py-10 text-muted text-sm\"><i class=\"fas fa-inbox text-3xl mb-3 text-dim\"></i><br>কোনো লেনদেন নেই।</td></tr>`;
             return;
@@ -800,10 +854,8 @@
         if(grid.innerHTML.includes("এরর")) return;
 
         const catTots = { "food": 0, "transport": 0, "shopping": 0, "extra": 0 };
-        const now = new Date();
         state.personalExpenses.forEach(e => {
-            const d = new Date(e.created);
-            if(d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+            if(isCurrentMonth(e.created)) {
                 if(catTots[e.category] !== undefined) catTots[e.category] += e.amount;
                 else catTots["extra"] += e.amount;
             }
@@ -821,12 +873,14 @@
         const tbody = document.getElementById("expenses-tbody");
         if(tbody.innerHTML.includes("ডাটাবেস")) return;
 
-        if (state.personalExpenses.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-muted text-sm"><i class="fas fa-file-invoice-dollar text-3xl mb-3 text-dim"></i><br>কোনো খরচ নেই।</td></tr>`;
+        const rows = state.personalExpenses.filter(e => isCurrentMonth(e.created));
+
+        if (rows.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-muted text-sm"><i class="fas fa-file-invoice-dollar text-3xl mb-3 text-dim"></i><br>এই মাসে কোনো খরচ নেই।</td></tr>`;
             return;
         }
 
-        tbody.innerHTML = state.personalExpenses.map(e => {
+        tbody.innerHTML = rows.map(e => {
             const dt = fmtDateObj(e.created);
             return `
             <tr>
@@ -841,7 +895,7 @@
     }
     
     // ------------------------------------------------------------------------
-    // STAT CARD REPORTS (Modal)
+    // STAT CARD REPORTS (Modal Pops Up on Click)
     // ------------------------------------------------------------------------
     function openReport(type) {
         const content = document.getElementById("report-content");
@@ -849,7 +903,7 @@
         let html = '';
 
         if(type === 'owed-to-me') {
-            title.innerHTML = '<i class="fas fa-arrow-trend-down text-red-400 mr-2"></i>যারা আপনার কাছে ঋণী (আমি পাবো)';
+            title.innerHTML = '<i class="fas fa-arrow-trend-down text-red-400 mr-2"></i>যারা আপনার কাছে ঋণী';
             const list = state.people.filter(p => (p.net_balance || 0) < 0);
             if(list.length === 0) html = '<p class="text-center text-muted py-6">কেউ ঋণী নেই।</p>';
             else {
@@ -881,11 +935,10 @@
             }
         } 
         else if (type === 'people-spend') {
-            title.innerHTML = '<i class="fas fa-users text-sky-400 mr-2"></i>অন্যদের পিছনে খরচ (গত ৩০ দিন)';
-            const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(new Date().getDate() - 30);
-            const list = state.transactions.filter(t => (t.trx_type === "Gave" || t.trx_type === "Shared Expense") && new Date(t.created) >= thirtyDaysAgo);
+            title.innerHTML = `<i class="fas fa-users text-sky-400 mr-2"></i>অন্যদের খরচ (চলতি মাস)`;
+            const list = state.transactions.filter(t => (t.trx_type === "Gave" || t.trx_type === "Shared Expense") && isCurrentMonth(t.created));
             
-            if(list.length === 0) html = '<p class="text-center text-muted py-6">গত ৩০ দিনে কোনো খরচ নেই।</p>';
+            if(list.length === 0) html = '<p class="text-center text-muted py-6">এই মাসে কোনো খরচ নেই।</p>';
             else {
                 html = list.map(t => {
                     const pObj = getPersonObj(t);
@@ -904,11 +957,10 @@
             }
         } 
         else if (type === 'personal-spend') {
-            title.innerHTML = '<i class="fas fa-user-tag text-pink-400 mr-2"></i>নিজস্ব খরচ (চলতি মাসে)';
-            const now = new Date();
-            const list = state.personalExpenses.filter(e => new Date(e.created).getMonth() === now.getMonth() && new Date(e.created).getFullYear() === now.getFullYear());
+            title.innerHTML = `<i class="fas fa-user-tag text-pink-400 mr-2"></i>নিজস্ব খরচ (চলতি মাস)`;
+            const list = state.personalExpenses.filter(e => isCurrentMonth(e.created));
             
-            if(list.length === 0) html = '<p class="text-center text-muted py-6">চলতি মাসে কোনো খরচ নেই।</p>';
+            if(list.length === 0) html = '<p class="text-center text-muted py-6">এই মাসে কোনো খরচ নেই।</p>';
             else {
                 html = list.map(e => `
                     <div class="flex items-center justify-between py-3 border-b border-[var(--border)] last:border-0">
@@ -931,12 +983,125 @@
         document.getElementById("report-modal").classList.add("open");
     }
 
-    function closeReportModal() {
-        document.getElementById("report-modal").classList.remove("open");
-    }
+    function closeReportModal() { document.getElementById("report-modal").classList.remove("open"); }
 
     // ------------------------------------------------------------------------
-    // EVENT LISTENERS
+    // MONTHLY ARCHIVE LOGIC (The Bottom Button)
+    // ------------------------------------------------------------------------
+    function getPastMonths() {
+        const monthsMap = {};
+        const now = new Date();
+        const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth()).padStart(2, '0')}`;
+
+        const addAmt = (iso, amt) => {
+            if(!iso) return;
+            const d = new Date(iso);
+            const key = `${d.getFullYear()}-${String(d.getMonth()).padStart(2, '0')}`;
+            if(key === currentMonthKey) return; // Ignore current ongoing month in archive list
+
+            if(!monthsMap[key]) monthsMap[key] = { year: d.getFullYear(), month: d.getMonth(), total: 0 };
+            monthsMap[key].total += Math.abs(amt);
+        };
+
+        state.transactions.forEach(t => addAmt(t.created, t.amount));
+        state.personalExpenses.forEach(e => addAmt(e.created, e.amount));
+
+        // Return only months with >= 1000 TK total volume
+        return Object.values(monthsMap)
+            .filter(m => m.total >= 1000)
+            .sort((a, b) => {
+                if (a.year !== b.year) return b.year - a.year;
+                return b.month - a.month;
+            });
+    }
+
+    function openMonthlyListModal() {
+        const list = getPastMonths();
+        const container = document.getElementById("month-list-content");
+        
+        if(list.length === 0) {
+            container.innerHTML = `<div class="text-center py-8 text-muted">কোনো অতীত মাসিক রিপোর্ট নেই (ন্যূনতম ১০০০৳ প্রয়োজন)।</div>`;
+        } else {
+            container.innerHTML = list.map(m => `
+                <button onclick="openSpecificMonthReport(${m.year}, ${m.month})" class="flex items-center justify-between p-4 rounded-xl border border-[var(--border)] hover:border-[var(--accent)] bg-[var(--bg-input)] hover:bg-sky-500/5 transition-all text-left group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg group-hover:bg-accent group-hover:text-white transition-colors">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-primary text-[0.95rem] md:text-base">${monthNames[m.month]} ${m.year}</div>
+                            <div class="text-xs text-muted mt-0.5 number-display">মোট ভলিউম: ${fmt(m.total)}</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-dim text-sm group-hover:text-[var(--accent)]"></i>
+                </button>
+            `).join("");
+        }
+        document.getElementById("month-list-modal").classList.add("open");
+    }
+    
+    function closeMonthListModal() { document.getElementById("month-list-modal").classList.remove("open"); }
+
+    function openSpecificMonthReport(year, month) {
+        closeMonthListModal();
+        const title = document.getElementById("specific-month-title");
+        title.textContent = `${monthNames[month]} ${year} - সামারি`;
+
+        let peopleSpend = 0;
+        state.transactions.forEach(t => {
+            const d = new Date(t.created);
+            if(d.getFullYear() === year && d.getMonth() === month) {
+                if(t.trx_type === "Gave" || t.trx_type === "Shared Expense") {
+                    peopleSpend += Math.abs(t.amount);
+                }
+            }
+        });
+
+        let personalSpend = 0;
+        const catTots = {};
+        state.personalExpenses.forEach(e => {
+            const d = new Date(e.created);
+            if(d.getFullYear() === year && d.getMonth() === month) {
+                personalSpend += Math.abs(e.amount);
+                if(catTots[e.category] !== undefined) catTots[e.category] += e.amount;
+                else catTots[e.category] = e.amount;
+            }
+        });
+
+        const catHtml = Object.keys(catTots).map(k => `
+            <div class="card p-3 border-l-[3px] flex flex-col justify-center bg-[var(--bg-base)]" style="border-left-color:var(--pink);">
+                <div class="text-[0.65rem] text-muted font-bold mb-1 uppercase"><i class="fas ${catMap[k]?.icon || 'fa-box'} mr-1 text-pink-400"></i> ${catMap[k]?.name || k}</div>
+                <div class="number-display text-[1rem] font-bold text-primary">${fmt(catTots[k])}</div>
+            </div>
+        `).join("");
+
+        document.getElementById("specific-month-content").innerHTML = `
+            <div class="grid grid-cols-2 gap-3 md:gap-4 mb-2">
+                <div class="card p-4 bg-sky-500/5 border-sky-500/20 text-center">
+                    <div class="text-xs text-muted font-semibold mb-1.5">অন্যদের পিছনে খরচ</div>
+                    <div class="number-display text-xl font-bold text-sky-400">${fmt(peopleSpend)}</div>
+                </div>
+                <div class="card p-4 bg-pink-500/5 border-pink-500/20 text-center">
+                    <div class="text-xs text-muted font-semibold mb-1.5">নিজস্ব খরচ</div>
+                    <div class="number-display text-xl font-bold text-pink-400">${fmt(personalSpend)}</div>
+                </div>
+            </div>
+            ${catHtml ? `
+            <h4 class="font-display font-bold text-sm text-primary mb-2 mt-2 border-b border-[var(--border)] pb-2">খাতওয়ারি খরচ</h4>
+            <div class="grid grid-cols-2 gap-2 mb-2">
+                ${catHtml}
+            </div>
+            ` : `<p class="text-center text-dim text-xs py-4">কোনো ব্যক্তিগত খরচ নেই।</p>`}
+        `;
+
+        document.getElementById("month-report-modal").classList.add("open");
+    }
+
+    function closeSpecificMonthReport() { document.getElementById("month-report-modal").classList.remove("open"); }
+    function backToMonthList() { closeSpecificMonthReport(); openMonthlyListModal(); }
+
+    // ------------------------------------------------------------------------
+    // EVENT LISTENERS & DB WRITES
     // ------------------------------------------------------------------------
     function setupFormListeners() {
         document.querySelectorAll(".trx-type-btn").forEach(btn => {
@@ -968,8 +1133,6 @@
             btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>সেভ হচ্ছে…`;
             
             try {
-                // Try to create with person_id as relation field. 
-                // Using a fallback catch to try creating with "person" field if "person_id" doesn't exist in DB schema.
                 try {
                     await pb.collection("transactions").create({ person_id: pId, amount: amt, trx_type: state.selectedTrxType, method, note });
                 } catch(err1) {
@@ -1078,6 +1241,9 @@
         await pb.collection("people").update(pId, { net_balance: (p.net_balance || 0) + delta });
     }
 
+    // ------------------------------------------------------------------------
+    // UI UTILITIES
+    // ------------------------------------------------------------------------
     function togglePersonFilter(pId) {
         state.filterPersonId = state.filterPersonId === pId ? "" : pId;
         renderTransactionsTable(); renderPeopleGrid();
@@ -1111,6 +1277,12 @@
         });
         document.getElementById("report-modal").addEventListener("click", e => { 
             if (e.target.id === "report-modal") closeReportModal(); 
+        });
+        document.getElementById("month-list-modal").addEventListener("click", e => { 
+            if (e.target.id === "month-list-modal") closeMonthListModal(); 
+        });
+        document.getElementById("month-report-modal").addEventListener("click", e => { 
+            if (e.target.id === "month-report-modal") closeSpecificMonthReport(); 
         });
     }
     
@@ -1157,6 +1329,7 @@
         el.innerHTML = col ? `<tr><td colspan="${col}" class="text-center py-8">${inner}</td></tr>` : `<div class="col-span-full text-center py-8">${inner}</div>`;
     }
 
+    // Start App
     initApp();
 </script>
 </body>
