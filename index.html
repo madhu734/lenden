@@ -300,8 +300,8 @@
             <div class="card stat-card red-glow">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">আমি পাবো</p>
-                    <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center bg-red-500/10 text-red-400">
-                        <i class="fas fa-arrow-trend-down text-sm md:text-base"></i>
+                    <div class="w-10 h-10 md:w-14 md:h-14 rounded-lg flex items-center justify-center bg-red-500/10 text-red-400 overflow-hidden shrink-0 shadow-sm border border-red-500/20">
+                        <img src="https://i.postimg.cc/sx5dtBBK/psa.png" alt="আমি পাবো" class="w-full h-full object-cover">
                     </div>
                 </div>
                 <div class="number-display text-xl md:text-3xl font-semibold text-red-400" id="stat-owed-to-me">
@@ -313,8 +313,8 @@
             <div class="card stat-card green-glow">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">আমি ঋণী</p>
-                    <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center bg-green-500/10 text-green-400">
-                        <i class="fas fa-arrow-trend-up text-sm md:text-base"></i>
+                    <div class="w-10 h-10 md:w-14 md:h-14 rounded-lg flex items-center justify-center bg-green-500/10 text-green-400 overflow-hidden shrink-0 shadow-sm border border-green-500/20">
+                        <img src="https://i.postimg.cc/SsRd3HPM/andha.jpg" alt="আমি ঋণী" class="w-full h-full object-cover">
                     </div>
                 </div>
                 <div class="number-display text-xl md:text-3xl font-semibold text-green-400" id="stat-i-owe">
@@ -326,8 +326,8 @@
             <div class="card stat-card accent-glow">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">অন্যদের খরচ</p>
-                    <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center bg-sky-500/10 text-sky-400">
-                        <i class="fas fa-users text-sm md:text-base"></i>
+                    <div class="w-10 h-10 md:w-14 md:h-14 rounded-lg flex items-center justify-center bg-sky-500/10 text-sky-400 shrink-0 border border-sky-500/20 shadow-sm">
+                        <i class="fas fa-users text-lg md:text-2xl"></i>
                     </div>
                 </div>
                 <div class="number-display text-xl md:text-3xl font-semibold text-sky-400" id="stat-people-spend">
@@ -339,8 +339,8 @@
             <div class="card stat-card pink-glow">
                 <div class="flex items-start justify-between mb-3">
                     <p class="form-label mb-0 text-[0.7rem] md:text-xs">নিজস্ব খরচ</p>
-                    <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center bg-pink-500/10 text-pink-400">
-                        <i class="fas fa-user-tag text-sm md:text-base"></i>
+                    <div class="w-10 h-10 md:w-14 md:h-14 rounded-lg flex items-center justify-center bg-pink-500/10 text-pink-400 overflow-hidden shrink-0 shadow-sm border border-pink-500/20">
+                        <img src="https://i.postimg.cc/KjLHpdK8/dk.jpg" alt="নিজস্ব খরচ" class="w-full h-full object-cover">
                     </div>
                 </div>
                 <div class="number-display text-xl md:text-3xl font-semibold text-pink-400" id="stat-personal-spend">
@@ -350,6 +350,75 @@
             </div>
         </section>
 
+        <!-- --- SECTION: আমার নিজস্ব খরচ --- -->
+        <h2 class="section-header">
+            <span class="bg-pink-500/15 text-pink-400 p-2 md:p-2.5 rounded-xl text-base md:text-lg shadow-[0_0_15px_rgba(244,114,182,0.15)]"><i class="fas fa-receipt"></i></span>
+            ব্যক্তিগত খরচ
+        </h2>
+
+        <section class="grid grid-cols-1 xl:grid-cols-5 gap-4 md:gap-6">
+            
+            <!-- EXPENSE ADD FORM -->
+            <div class="xl:col-span-2 card p-4 md:p-6 border-t-[3px] border-t-[var(--pink)] relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 text-[var(--pink)] opacity-[0.03] text-9xl pointer-events-none"><i class="fas fa-tags"></i></div>
+
+                <h3 class="font-display font-bold text-base md:text-lg text-primary tracking-wide mb-5 relative z-10">খরচ যোগ করুন</h3>
+                
+                <form id="exp-add-form" class="flex flex-col gap-4 relative z-10">
+                    <div class="grid grid-cols-2 gap-3 md:gap-4">
+                        <div>
+                            <label class="form-label">ক্যাটাগরি</label>
+                            <select id="exp-category" class="form-input" required>
+                                <option value="">নির্বাচন করুন…</option>
+                                <option value="food">🍔 খাওয়া</option>
+                                <option value="transport">🚌 যাতায়াত</option>
+                                <option value="shopping">🛍️ জিনিস</option>
+                                <option value="extra">📦 হাবিজাবি</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">পরিমাণ (৳)</label>
+                            <input type="number" id="exp-amount" class="form-input" placeholder="0.00" step="0.01" min="0.01" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label">বিস্তারিত (ঐচ্ছিক)</label>
+                        <input type="text" id="exp-note" class="form-input" placeholder="কীসে খরচ হলো?">
+                    </div>
+                    <button type="submit" class="btn-primary btn-secondary w-full mt-2" id="exp-submit-btn"><i class="fas fa-plus-circle mr-2"></i>খরচ যুক্ত করুন</button>
+                </form>
+            </div>
+
+            <!-- EXPENSE BREAKDOWN & HISTORY -->
+            <div class="xl:col-span-3 flex flex-col gap-4 md:gap-6">
+                
+                <!-- Category Breakdown -->
+                <div class="card p-4 md:p-5">
+                    <h3 class="font-display font-bold text-base md:text-lg text-primary mb-4 tracking-wide border-b border-[var(--border)] pb-3">চলতি মাসের খাত</h3>
+                    <div id="expense-breakdown-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
+                        <!-- Filled dynamically -->
+                    </div>
+                </div>
+
+                <!-- Expense History Table -->
+                <div class="card flex-1 flex flex-col overflow-hidden">
+                    <div class="p-4 md:p-5 border-b border-[var(--border)] bg-[var(--bg-input)] bg-opacity-50">
+                        <h3 class="font-display font-bold text-base md:text-lg text-primary tracking-wide">খরচের তালিকা</h3>
+                    </div>
+                    <div class="overflow-x-auto flex-1 max-h-[300px] overflow-y-auto p-1">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>সময়</th><th>খাত</th><th>পরিমাণ</th><th class="hide-mobile">বিস্তারিত</th><th></th></tr>
+                            </thead>
+                            <tbody id="expenses-tbody">
+                                <tr><td colspan="5" class="text-center py-10 text-muted"><i class="fas fa-spinner fa-spin text-2xl mb-2 text-dim"></i><br>লোড হচ্ছে...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </section>
 
         <!-- --- SECTION: মানুষের সাথে লেনদেন --- -->
         <h2 class="section-header">
@@ -357,7 +426,7 @@
             লেনদেনের হিসাব
         </h2>
 
-        <section class="grid grid-cols-1 xl:grid-cols-5 gap-4 md:gap-6">
+        <section class="grid grid-cols-1 xl:grid-cols-5 gap-4 md:gap-6 mb-8">
             
             <!-- QUICK ADD FORM -->
             <div class="xl:col-span-2 card p-4 md:p-6 border-t-[3px] border-t-[var(--accent)] relative overflow-hidden">
@@ -446,77 +515,6 @@
                     </div>
                 </div>
             </div>
-        </section>
-
-
-        <!-- --- SECTION: আমার নিজস্ব খরচ --- -->
-        <h2 class="section-header">
-            <span class="bg-pink-500/15 text-pink-400 p-2 md:p-2.5 rounded-xl text-base md:text-lg shadow-[0_0_15px_rgba(244,114,182,0.15)]"><i class="fas fa-receipt"></i></span>
-            ব্যক্তিগত খরচ
-        </h2>
-
-        <section class="grid grid-cols-1 xl:grid-cols-5 gap-4 md:gap-6 mb-8">
-            
-            <!-- EXPENSE ADD FORM -->
-            <div class="xl:col-span-2 card p-4 md:p-6 border-t-[3px] border-t-[var(--pink)] relative overflow-hidden">
-                <div class="absolute -top-10 -right-10 text-[var(--pink)] opacity-[0.03] text-9xl pointer-events-none"><i class="fas fa-tags"></i></div>
-
-                <h3 class="font-display font-bold text-base md:text-lg text-primary tracking-wide mb-5 relative z-10">খরচ যোগ করুন</h3>
-                
-                <form id="exp-add-form" class="flex flex-col gap-4 relative z-10">
-                    <div class="grid grid-cols-2 gap-3 md:gap-4">
-                        <div>
-                            <label class="form-label">ক্যাটাগরি</label>
-                            <select id="exp-category" class="form-input" required>
-                                <option value="">নির্বাচন করুন…</option>
-                                <option value="food">🍔 খাওয়া</option>
-                                <option value="transport">🚌 যাতায়াত</option>
-                                <option value="shopping">🛍️ জিনিস</option>
-                                <option value="extra">📦 হাবিজাবি</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="form-label">পরিমাণ (৳)</label>
-                            <input type="number" id="exp-amount" class="form-input" placeholder="0.00" step="0.01" min="0.01" required>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="form-label">বিস্তারিত (ঐচ্ছিক)</label>
-                        <input type="text" id="exp-note" class="form-input" placeholder="কীসে খরচ হলো?">
-                    </div>
-                    <button type="submit" class="btn-primary btn-secondary w-full mt-2" id="exp-submit-btn"><i class="fas fa-plus-circle mr-2"></i>খরচ যুক্ত করুন</button>
-                </form>
-            </div>
-
-            <!-- EXPENSE BREAKDOWN & HISTORY -->
-            <div class="xl:col-span-3 flex flex-col gap-4 md:gap-6">
-                
-                <!-- Category Breakdown -->
-                <div class="card p-4 md:p-5">
-                    <h3 class="font-display font-bold text-base md:text-lg text-primary mb-4 tracking-wide border-b border-[var(--border)] pb-3">চলতি মাসের খাত</h3>
-                    <div id="expense-breakdown-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
-                        <!-- Filled dynamically -->
-                    </div>
-                </div>
-
-                <!-- Expense History Table -->
-                <div class="card flex-1 flex flex-col overflow-hidden">
-                    <div class="p-4 md:p-5 border-b border-[var(--border)] bg-[var(--bg-input)] bg-opacity-50">
-                        <h3 class="font-display font-bold text-base md:text-lg text-primary tracking-wide">খরচের তালিকা</h3>
-                    </div>
-                    <div class="overflow-x-auto flex-1 max-h-[300px] overflow-y-auto p-1">
-                        <table class="data-table">
-                            <thead>
-                                <tr><th>সময়</th><th>খাত</th><th>পরিমাণ</th><th class="hide-mobile">বিস্তারিত</th><th></th></tr>
-                            </thead>
-                            <tbody id="expenses-tbody">
-                                <tr><td colspan="5" class="text-center py-10 text-muted"><i class="fas fa-spinner fa-spin text-2xl mb-2 text-dim"></i><br>লোড হচ্ছে...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
         </section>
 
     </main>
