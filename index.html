@@ -276,6 +276,26 @@
     <!-- ================= MAIN CONTENT ================= -->
     <main class="max-w-7xl mx-auto px-4 py-6 flex flex-col gap-6 md:gap-8">
 
+        <!-- --- GLOBAL BALANCE CARD --- -->
+        <div class="card p-5 md:p-6 mb-2 relative overflow-hidden border-t-[3px] border-t-[var(--accent)]" style="background: linear-gradient(135deg, #0c1220 0%, #0a192f 100%);">
+            <div class="absolute -right-6 -top-6 text-[var(--accent)] opacity-5 text-9xl pointer-events-none"><i class="fas fa-wallet"></i></div>
+            <div class="relative z-10">
+                <h2 class="text-[0.75rem] md:text-sm font-bold text-muted uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                    <i class="fas fa-vault text-[var(--accent)]"></i> আমার বর্তমান ক্যাশ ব্যালেন্স
+                </h2>
+                <div class="flex flex-wrap items-end gap-3 md:gap-4 mb-2">
+                    <div class="text-3xl md:text-5xl font-display font-bold text-primary number-display" id="global-cash">
+                        <span class="skeleton w-32 h-10"></span>
+                    </div>
+                    <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-colors bg-opacity-20" id="global-saving-box">
+                        <i class="fas fa-circle-notch fa-spin text-muted" id="global-saving-icon"></i>
+                        <div class="text-xs md:text-sm font-bold number-display tracking-wide" id="global-saving-text">হিসাব হচ্ছে...</div>
+                    </div>
+                </div>
+                <p class="text-[0.65rem] md:text-xs text-dim mt-2 font-medium"><i class="fas fa-info-circle mr-1"></i>দেনা-পাওনা এবং আপনার সেভিংসের সাথে এডজাস্ট করা রিয়েল-টাইম হিসাব</p>
+            </div>
+        </div>
+
         <!-- --- STAT CARDS (Clickable for Reports) --- -->
         <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
             <!-- Card: আমি পাবো (Overall) -->
@@ -338,14 +358,14 @@
         <!-- --- TWO COLUMN LAYOUT: FORMS (LEFT) & REPORTS (RIGHT) --- -->
         <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
             
-            <!-- ====== LEFT COLUMN: ENTRY FORMS (lg:col-span-5) ====== -->
+            <!-- ====== LEFT COLUMN: ENTRY FORMS ====== -->
             <div class="lg:col-span-5 flex flex-col gap-8 md:gap-10">
                 
                 <!-- 1. PERSONAL EXPENSE ENTRY -->
                 <div>
                     <h2 class="section-header">
                         <span class="bg-pink-500/15 text-pink-400 p-2 md:p-2.5 rounded-xl shadow-[0_0_15px_rgba(244,114,182,0.15)]"><i class="fas fa-receipt"></i></span>
-                        ব্যক্তিগত খরচ এন্ট্রি
+                        ব্যক্তিগত এন্ট্রি (আয়/ব্যয়)
                     </h2>
                     
                     <div class="card p-4 md:p-6 border-t-[3px] border-t-[var(--pink)] relative overflow-hidden">
@@ -357,6 +377,7 @@
                                     <label class="form-label">ক্যাটাগরি</label>
                                     <select id="exp-category" class="form-input" required>
                                         <option value="">নির্বাচন করুন…</option>
+                                        <option value="income">💰 আয়/ইনকাম</option>
                                         <option value="food">🍔 খাওয়া</option>
                                         <option value="transport">🚌 যাতায়াত</option>
                                         <option value="shopping">🛍️ জিনিস</option>
@@ -369,10 +390,12 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="form-label">বিস্তারিত (ঐচ্ছিক)</label>
-                                <input type="text" id="exp-note" class="form-input" placeholder="কীসে খরচ হলো?">
+                                <label class="form-label">বিস্তারিত / নোট (ঐচ্ছিক)</label>
+                                <input type="text" id="exp-note" class="form-input" placeholder="কীসে খরচ বা কীসের আয় হলো?">
                             </div>
-                            <button type="submit" class="btn-primary btn-secondary w-full mt-2" id="exp-submit-btn"><i class="fas fa-plus-circle mr-2"></i>খরচ যুক্ত করুন</button>
+                            <button type="submit" class="btn-primary w-full mt-2" style="background: linear-gradient(135deg, #ec4899, #f43f5e); box-shadow: 0 4px 15px rgba(236, 72, 153, 0.25);" id="exp-submit-btn">
+                                <i class="fas fa-plus-circle mr-2"></i>অ্যাড করুন
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -437,20 +460,20 @@
 
             </div>
 
-            <!-- ====== RIGHT COLUMN: REPORTS & HISTORY (lg:col-span-7) ====== -->
+            <!-- ====== RIGHT COLUMN: REPORTS & HISTORY ====== -->
             <div class="lg:col-span-7 flex flex-col gap-8 md:gap-10">
                 
                 <!-- 1. PERSONAL EXPENSE DATA -->
                 <div>
                     <h2 class="section-header">
                         <span class="bg-pink-500/15 text-pink-400 p-2 md:p-2.5 rounded-xl shadow-[0_0_15px_rgba(244,114,182,0.15)]"><i class="fas fa-chart-pie"></i></span>
-                        চলতি মাসের ব্যক্তিগত রিপোর্ট
+                        ব্যক্তিগত রিপোর্ট (চলতি মাস)
                     </h2>
                     
                     <div class="flex flex-col gap-4">
                         <!-- Category Breakdown -->
                         <div class="card p-4 md:p-5">
-                            <h3 class="font-display font-bold text-[0.9rem] md:text-base text-primary mb-4 tracking-wide border-b border-[var(--border)] pb-3">খাতওয়ারি খরচ (চলতি মাস)</h3>
+                            <h3 class="font-display font-bold text-[0.9rem] md:text-base text-primary mb-4 tracking-wide border-b border-[var(--border)] pb-3">খাতওয়ারি হিসাব</h3>
                             <div id="expense-breakdown-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
                                 <!-- Filled dynamically -->
                             </div>
@@ -459,15 +482,15 @@
                         <!-- Expense History Table -->
                         <div class="card flex flex-col overflow-hidden">
                             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-input)] bg-opacity-50">
-                                <h3 class="font-display font-bold text-[0.9rem] md:text-base text-primary tracking-wide">খরচের হাবিজাবি তালিকা</h3>
+                                <h3 class="font-display font-bold text-[0.9rem] md:text-base text-primary tracking-wide">হাবিজাবি তালিকা</h3>
                             </div>
                             <div class="overflow-x-auto max-h-[300px] overflow-y-auto p-1">
                                 <table class="data-table">
                                     <thead>
-                                        <tr><th>সময়</th><th>খাত</th><th>পরিমাণ</th><th class="hide-mobile">বিস্তারিত</th><th></th></tr>
+                                        <tr><th>সময়</th><th>খাত ও নোট</th><th>পরিমাণ</th><th></th></tr>
                                     </thead>
                                     <tbody id="expenses-tbody">
-                                        <tr><td colspan="5" class="text-center py-10 text-muted"><i class="fas fa-spinner fa-spin text-2xl mb-2 text-dim"></i><br>লোড হচ্ছে...</td></tr>
+                                        <tr><td colspan="4" class="text-center py-10 text-muted"><i class="fas fa-spinner fa-spin text-2xl mb-2 text-dim"></i><br>লোড হচ্ছে...</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -488,7 +511,7 @@
                             <div class="flex items-center justify-between mb-4 border-b border-[var(--border)] pb-3">
                                 <h3 class="font-display font-bold text-[0.9rem] md:text-base text-primary tracking-wide">ব্যালেন্স <span class="text-sm text-muted ml-1" id="people-count">(০)</span></h3>
                                 <div class="flex items-center gap-2">
-                                    <span class="text-[0.7rem] text-dim"><i class="fas fa-user-circle mr-1"></i>কার্ডে ক্লিক করে প্রোফাইল ও হিস্ট্রি দেখুন</span>
+                                    <span class="text-[0.7rem] text-dim"><i class="fas fa-user-circle mr-1"></i>কার্ডে ক্লিক করে প্রোফাইল দেখুন</span>
                                 </div>
                             </div>
                             <!-- Swipeable grid -->
@@ -500,15 +523,15 @@
                         <!-- Trx History Table -->
                         <div class="card flex flex-col overflow-hidden">
                             <div class="p-4 border-b border-[var(--border)] bg-[var(--bg-input)] bg-opacity-50">
-                                <h3 class="font-display font-bold text-[0.9rem] md:text-base text-primary tracking-wide">লেনদেনের হাবিজাবি তালিকা (চলতি মাস)</h3>
+                                <h3 class="font-display font-bold text-[0.9rem] md:text-base text-primary tracking-wide">লেনদেনের তালিকা (চলতি মাস)</h3>
                             </div>
                             <div class="overflow-x-auto max-h-[350px] overflow-y-auto p-1">
                                 <table class="data-table">
                                     <thead>
-                                        <tr><th>সময়</th><th>ব্যক্তি</th><th>ধরন</th><th class="hide-mobile">মাধ্যম</th><th>পরিমাণ</th><th class="hide-mobile">নোট</th><th></th></tr>
+                                        <tr><th>সময়</th><th>ব্যক্তি ও নোট</th><th>ধরন</th><th class="hide-mobile">মাধ্যম</th><th>পরিমাণ</th><th></th></tr>
                                     </thead>
                                     <tbody id="transactions-tbody">
-                                        <tr><td colspan="7" class="text-center py-10 text-muted"><i class="fas fa-spinner fa-spin text-2xl mb-2 text-dim"></i><br>লোড হচ্ছে...</td></tr>
+                                        <tr><td colspan="6" class="text-center py-10 text-muted"><i class="fas fa-spinner fa-spin text-2xl mb-2 text-dim"></i><br>লোড হচ্ছে...</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -519,7 +542,7 @@
             </div>
         </section>
 
-        <!-- --- BOTTOM BAR FOR MONTHLY ARCHIVE (Normal Flow, Not Sticky) --- -->
+        <!-- --- BOTTOM ARCHIVE BUTTON --- -->
         <div class="flex justify-center mt-6 mb-8">
             <button onclick="openMonthlyListModal()" class="btn-primary btn-tertiary w-full max-w-lg py-3 md:py-3.5 rounded-xl font-display font-bold text-[0.95rem] md:text-base tracking-wide shadow-[0_8px_30px_rgba(168,85,247,0.3)]">
                 <i class="fas fa-calendar-check mr-2 text-lg"></i> মাসিক রিপোর্ট ও আর্কাইভ
@@ -650,6 +673,7 @@
     const monthNames = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
 
     const catMap = {
+        "income": { name: "আয়/ইনকাম", icon: "fa-sack-dollar" },
         "food": { name: "খাওয়া", icon: "fa-burger" },
         "transport": { name: "যাতায়াত", icon: "fa-bus" },
         "shopping": { name: "জিনিস", icon: "fa-bag-shopping" },
@@ -670,7 +694,7 @@
     }
 
     // ------------------------------------------------------------------------
-    // DATA FETCHING (Now perfectly Anti-Cached)
+    // DATA FETCHING (Anti-Cached)
     // ------------------------------------------------------------------------
     async function refreshAll() {
         const btn = document.getElementById("refresh-btn");
@@ -705,25 +729,23 @@
 
     async function fetchTransactions() {
         try {
-            const result = await pb.collection("transactions").getList(1, 200, { 
+            state.transactions = await pb.collection("transactions").getFullList({ 
                 sort: "-created", expand: "people_id,person_id,person", requestKey: null, cb: Date.now() 
             });
-            state.transactions = result.items;
         } catch (err) {
             setConnectionStatus(false);
-            showLoadError("transactions-tbody", "লেনদেনের ডাটা পাওয়া যায়নি", 7);
+            showLoadError("transactions-tbody", "লেনদেনের ডাটা পাওয়া যায়নি", 6);
         }
     }
 
     async function fetchPersonalExpenses() {
         try {
-            const result = await pb.collection("personal_expenses").getList(1, 200, { 
+            state.personalExpenses = await pb.collection("personal_expenses").getFullList({ 
                 sort: "-created", requestKey: null, cb: Date.now() 
             });
-            state.personalExpenses = result.items;
         } catch (err) {
             setConnectionStatus(false);
-            showLoadError("expenses-tbody", "খরচের ডাটা পাওয়া যায়নি", 5);
+            showLoadError("expenses-tbody", "খরচের ডাটা পাওয়া যায়নি", 4);
             showLoadError("expense-breakdown-grid", "ডাটাবেস এরর");
         }
     }
@@ -766,12 +788,36 @@
     // ------------------------------------------------------------------------
     function renderStats() {
         let owedToMe = 0, iOwe = 0;
-        
         state.people.forEach(p => {
             const bal = p.net_balance || 0;
             if (bal < 0) owedToMe += Math.abs(bal); 
             else if (bal > 0) iOwe += bal; 
         });
+
+        let totalIncome = 0, totalExpense = 0;
+        state.personalExpenses.forEach(e => {
+            if (e.category === 'income') totalIncome += e.amount;
+            else totalExpense += e.amount;
+        });
+
+        const currentCash = iOwe - owedToMe + totalIncome - totalExpense;
+        const netSaving = totalIncome - totalExpense;
+
+        document.getElementById("global-cash").textContent = fmt(currentCash);
+        
+        const savingBox = document.getElementById("global-saving-box");
+        const savingIcon = document.getElementById("global-saving-icon");
+        const savingText = document.getElementById("global-saving-text");
+
+        if (netSaving >= 0) {
+            savingBox.className = "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border bg-green-500/10 border-green-500/20 text-green-400";
+            savingIcon.className = "fas fa-piggy-bank text-green-400";
+            savingText.textContent = `সেভিং: +${fmt(netSaving)}`;
+        } else {
+            savingBox.className = "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border bg-red-500/10 border-red-500/20 text-red-400";
+            savingIcon.className = "fas fa-arrow-trend-down text-red-400";
+            savingText.textContent = `বাজেট ঘাটতি: -${fmt(Math.abs(netSaving))}`;
+        }
 
         let recentPeopleSpend = 0;
         state.transactions.forEach(t => {
@@ -782,7 +828,7 @@
 
         let thisMonthExpense = 0;
         state.personalExpenses.forEach(e => {
-            if (isCurrentMonth(e.created)) {
+            if (isCurrentMonth(e.created) && e.category !== 'income') {
                 thisMonthExpense += Math.abs(e.amount);
             }
         });
@@ -791,10 +837,6 @@
         document.getElementById("stat-i-owe").textContent = fmt(iOwe);
         document.getElementById("stat-people-spend").textContent = fmt(recentPeopleSpend);
         document.getElementById("stat-personal-spend").textContent = fmt(thisMonthExpense);
-
-        const currentMonthStr = monthNames[new Date().getMonth()];
-        document.getElementById("stat-people-spend-sub").innerHTML = `${currentMonthStr} মাসে <i class="fas fa-chevron-right ml-1 text-[10px]"></i>`;
-        document.getElementById("stat-personal-spend-sub").innerHTML = `${currentMonthStr} মাসে <i class="fas fa-chevron-right ml-1 text-[10px]"></i>`;
     }
 
     function renderPeopleGrid() {
@@ -802,7 +844,6 @@
         if(grid.innerHTML.includes("ডাটাবেস")) return; 
 
         document.getElementById("people-count").textContent = `(${state.people.length})`;
-        
         if (state.people.length === 0) {
             grid.innerHTML = `<div class="col-span-full text-center py-6 text-muted text-sm"><i class="fas fa-users-slash text-2xl mb-2 text-dim"></i><br>কাউকে যোগ করা হয়নি।</div>`;
             return;
@@ -811,7 +852,6 @@
         grid.innerHTML = state.people.map(p => {
             const bal = p.net_balance || 0;
             const isNeg = bal < 0, isPos = bal > 0;
-            
             const mainColor   = isNeg ? "var(--red)" : isPos ? "var(--green)" : "var(--text-muted)";
             const borderColor = isNeg ? "rgba(248,113,113,0.3)" : isPos ? "rgba(52,211,153,0.3)" : "var(--border)";
             const avatarBg    = isNeg ? "rgba(248,113,113,0.15)" : isPos ? "rgba(52,211,153,0.15)" : "rgba(56,189,248,0.1)";
@@ -833,11 +873,10 @@
         const tbody = document.getElementById("transactions-tbody");
         if(tbody.innerHTML.includes("ডাটাবেস")) return;
 
-        // Dashboard table only shows current month transactions
         const rows = state.transactions.filter(t => isCurrentMonth(t.created));
 
         if (rows.length === 0) {
-            tbody.innerHTML = `<tr><td colspan=\"7\" class=\"text-center py-10 text-muted text-sm\"><i class=\"fas fa-inbox text-3xl mb-3 text-dim\"></i><br>এই মাসে কোনো লেনদেন নেই।</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan=\"6\" class=\"text-center py-10 text-muted text-sm\"><i class=\"fas fa-inbox text-3xl mb-3 text-dim\"></i><br>এই মাসে কোনো লেনদেন নেই।</td></tr>`;
             return;
         }
 
@@ -846,7 +885,6 @@
         tbody.innerHTML = rows.map(t => {
             const pObj = getPersonObj(t);
             const pName = getPersonName(t);
-            
             let typeBadge = "";
             if(t.trx_type === "Gave") typeBadge = `<span class="badge type-gave">দিয়েছি</span>`;
             else if(t.trx_type === "Received") typeBadge = `<span class="badge type-received">নিয়েছি/পেয়েছি</span>`;
@@ -859,15 +897,15 @@
             <tr class="cursor-pointer hover:bg-[var(--bg-card-hover)]" onclick="openPersonProfile('${pObj ? pObj.id : ''}')">
                 <td class="number-display text-muted whitespace-nowrap"><div class="text-[0.75rem] md:text-[0.8rem] text-primary">${dt.d}</div><div class="text-[0.65rem] md:text-xs mt-0.5 opacity-80">${dt.t}</div></td>
                 <td>
-                    <div class="flex items-center gap-2 md:gap-3">
+                    <div class="flex items-center gap-2 md:gap-3 mb-1.5">
                         <div class="avatar-sm !w-7 !h-7 md:!w-8 md:!h-8 !rounded-md bg-sky-500/10 text-sky-400">${getAvatarHTML(pObj)}</div>
                         <span class="font-semibold text-primary truncate max-w-[90px] md:max-w-none text-[0.85rem] md:text-[0.95rem] hover:text-[var(--accent)] transition-colors">${escapeHtml(pName)}</span>
                     </div>
+                    ${t.note ? `<div class="text-[0.65rem] text-muted truncate max-w-[140px]"><i class="fas fa-comment-alt text-dim mr-1.5"></i>${escapeHtml(t.note)}</div>` : ''}
                 </td>
                 <td>${typeBadge}</td>
                 <td class="hide-mobile text-sm text-muted font-medium">${methodMap[t.method] || escapeHtml(t.method)}</td>
                 <td class="number-display font-bold whitespace-nowrap text-[0.95rem] md:text-base" style="color:${color};">${t.trx_type === "Received" ? "+" : "−"}${escapeHtml(fmt(t.amount))}</td>
-                <td class="hide-mobile text-sm text-muted truncate max-w-[120px]">${escapeHtml(t.note || "—")}</td>
                 <td class="text-right"><button class="delete-btn" onclick="deleteTransaction('${t.id}', event)" title="ডিলিট করুন"><i class="fas fa-trash-alt"></i></button></td>
             </tr>`;
         }).join("");
@@ -877,7 +915,7 @@
         const grid = document.getElementById("expense-breakdown-grid");
         if(grid.innerHTML.includes("এরর")) return;
 
-        const catTots = { "food": 0, "transport": 0, "shopping": 0, "extra": 0 };
+        const catTots = { "income": 0, "food": 0, "transport": 0, "shopping": 0, "extra": 0 };
         state.personalExpenses.forEach(e => {
             if(isCurrentMonth(e.created)) {
                 if(catTots[e.category] !== undefined) catTots[e.category] += e.amount;
@@ -885,12 +923,19 @@
             }
         });
 
-        grid.innerHTML = Object.keys(catTots).map(k => `
-            <div class="card p-3 border-l-[3px] text-center flex flex-col justify-center shadow-none hover:shadow-[0_4px_15px_rgba(244,114,182,0.1)]" style="border-bottom-color:var(--pink); background:linear-gradient(to bottom, transparent, rgba(244,114,182,0.03));">
-                <div class="text-[0.65rem] md:text-xs text-muted font-bold mb-1.5 uppercase tracking-wide"><i class="fas ${catMap[k].icon} mr-1 text-pink-400"></i> ${catMap[k].name}</div>
-                <div class="number-display text-[0.9rem] md:text-[1.1rem] font-bold text-primary">${fmt(catTots[k])}</div>
-            </div>
-        `).join("");
+        grid.innerHTML = Object.keys(catTots).map(k => {
+            const isIncome = k === 'income';
+            const baseColor = isIncome ? 'var(--green)' : 'var(--pink)';
+            const bgClass = isIncome ? 'rgba(52,211,153,0.03)' : 'rgba(244,114,182,0.03)';
+            const textClass = isIncome ? 'text-green-400' : 'text-pink-400';
+            const numberClass = isIncome ? 'text-green-400' : 'text-primary';
+            
+            return `
+            <div class="card p-3 border-l-[3px] text-center flex flex-col justify-center shadow-none hover:shadow-[0_4px_15px_rgba(244,114,182,0.1)]" style="border-bottom-color:${baseColor}; background:linear-gradient(to bottom, transparent, ${bgClass});">
+                <div class="text-[0.65rem] md:text-xs text-muted font-bold mb-1.5 uppercase tracking-wide"><i class="fas ${catMap[k]?.icon || 'fa-box'} mr-1 ${textClass}"></i> ${catMap[k]?.name || k}</div>
+                <div class="number-display text-[0.9rem] md:text-[1.1rem] font-bold ${numberClass}">${fmt(catTots[k])}</div>
+            </div>`;
+        }).join("");
     }
 
     function renderExpenseTable() {
@@ -900,18 +945,27 @@
         const rows = state.personalExpenses.filter(e => isCurrentMonth(e.created));
 
         if (rows.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-muted text-sm"><i class="fas fa-file-invoice-dollar text-3xl mb-3 text-dim"></i><br>এই মাসে কোনো খরচ নেই।</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-10 text-muted text-sm"><i class="fas fa-file-invoice-dollar text-3xl mb-3 text-dim"></i><br>এই মাসে কোনো এন্ট্রি নেই।</td></tr>`;
             return;
         }
 
         tbody.innerHTML = rows.map(e => {
             const dt = fmtDateObj(e.created);
+            const isIncome = e.category === 'income';
+            const amtColor = isIncome ? 'text-green-400' : 'text-primary';
+            const sign = isIncome ? '+' : '';
+            const badgeClass = isIncome ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'type-expense';
+
             return `
             <tr>
                 <td class="number-display text-muted whitespace-nowrap"><div class="text-[0.75rem] md:text-[0.8rem] text-primary">${dt.d}</div><div class="text-[0.65rem] md:text-xs mt-0.5 opacity-80">${dt.t}</div></td>
-                <td><span class="badge type-expense px-2 py-1">${escapeHtml(catMap[e.category]?.name || e.category)}</span></td>
-                <td class="number-display font-bold text-primary text-[0.95rem] md:text-base">${escapeHtml(fmt(e.amount))}</td>
-                <td class="hide-mobile text-sm text-muted truncate max-w-[150px]">${escapeHtml(e.note || "—")}</td>
+                <td>
+                    <div class="flex flex-col items-start gap-1.5">
+                        <span class="badge ${badgeClass} px-2 py-0.5">${escapeHtml(catMap[e.category]?.name || e.category)}</span>
+                        ${e.note ? `<span class="text-[0.65rem] text-muted truncate max-w-[140px] mt-0.5"><i class="fas fa-comment-alt text-dim mr-1.5"></i>${escapeHtml(e.note)}</span>` : `<span class="text-[0.65rem] text-dim italic mt-0.5">নোট নেই</span>`}
+                    </div>
+                </td>
+                <td class="number-display font-bold ${amtColor} text-[0.95rem] md:text-base">${sign}${escapeHtml(fmt(e.amount))}</td>
                 <td class="text-right"><button class="delete-btn" onclick="deleteExpense('${e.id}', event)" title="ডিলিট করুন"><i class="fas fa-trash-alt"></i></button></td>
             </tr>
             `;
@@ -926,7 +980,6 @@
         const p = state.people.find(x => x.id === pId);
         if(!p) return;
 
-        // Set Header
         const isNeg = p.net_balance < 0, isPos = p.net_balance > 0;
         const mainColor = isNeg ? "var(--red)" : isPos ? "var(--green)" : "var(--text-muted)";
         const displayBal = `${isNeg ? "-" : isPos ? "+" : ""}${fmt(Math.abs(p.net_balance || 0))}`;
@@ -935,7 +988,6 @@
         document.getElementById("profile-modal-name").textContent = p.name;
         document.getElementById("profile-modal-avatar").innerHTML = getAvatarHTML(p);
         
-        // Setup Balance with Manual Edit Button
         document.getElementById("profile-modal-balance-container").innerHTML = `
             <span style="color:${mainColor}" class="number-display font-bold text-[0.95rem]">${displayBal}</span> 
             <span class="text-[0.7rem] text-muted font-normal ml-1.5 uppercase tracking-wide">(${balLabel})</span>
@@ -944,9 +996,7 @@
             </button>
         `;
 
-        // Get ALL transactions for this person
         const trxs = state.transactions.filter(t => getPersonIdFromTrx(t) === pId);
-
         const listContainer = document.getElementById("profile-modal-trx-list");
         if(trxs.length === 0) {
             listContainer.innerHTML = `<div class="text-center py-10 text-muted text-sm border border-[var(--border)] rounded-xl bg-sky-500/5"><i class="fas fa-inbox text-3xl mb-3 text-dim"></i><br>কোনো লেনদেনের রেকর্ড নেই।</div>`;
@@ -963,7 +1013,8 @@
                 const dt = fmtDateObj(t.created);
 
                 return `
-                <div class="flex items-center justify-between p-3 border border-[var(--border)] rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-input)] hover:border-[var(--border-bright)] transition-colors">
+                <div class="flex items-center justify-between p-3 border border-[var(--border)] rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-input)] hover:border-[var(--border-bright)] transition-colors relative">
+                    <button onclick="deleteTransaction('${t.id}', event)" class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow-lg hover:bg-red-400 transition-colors opacity-90"><i class="fas fa-times text-[0.6rem]"></i></button>
                     <div>
                         <div class="flex items-center gap-2 mb-1">
                             <div class="text-[0.7rem] md:text-xs text-muted number-display font-medium"><i class="far fa-clock mr-1"></i>${dt.d}, ${dt.t}</div>
@@ -991,7 +1042,6 @@
         if(!p) return;
         
         const newBalStr = prompt(`'${p.name}' এর বর্তমান ব্যালেন্স আপডেট করুন।\n\n(পাওনা হলে নেগেটিভ [-], আর দেনা হলে পজিটিভ [+] দিন। যেমন: ৫০০ টাকা পাওনা হলে লিখুন -500, দেনা হলে লিখুন 500)`, p.net_balance || 0);
-        
         if(newBalStr === null || newBalStr.trim() === "") return;
         
         const newBal = parseFloat(newBalStr);
@@ -1101,7 +1151,7 @@
         else if (type === 'personal-spend') {
             const mName = monthNames[new Date().getMonth()];
             title.innerHTML = `<i class="fas fa-user-tag text-pink-400 mr-2"></i>নিজস্ব খরচ (${mName})`;
-            const list = state.personalExpenses.filter(e => isCurrentMonth(e.created));
+            const list = state.personalExpenses.filter(e => isCurrentMonth(e.created) && e.category !== 'income');
             
             const total = list.reduce((sum, e) => sum + Math.abs(e.amount), 0);
             headerHtml = `
@@ -1214,16 +1264,16 @@
         state.personalExpenses.forEach(e => {
             const d = new Date(e.created);
             if(d.getFullYear() === year && d.getMonth() === month) {
-                personalSpend += Math.abs(e.amount);
+                if(e.category !== 'income') personalSpend += Math.abs(e.amount);
                 if(catTots[e.category] !== undefined) catTots[e.category] += e.amount;
                 else catTots[e.category] = e.amount;
             }
         });
 
         const catHtml = Object.keys(catTots).map(k => `
-            <div class="card p-3 border-l-[3px] flex flex-col justify-center bg-[var(--bg-base)]" style="border-left-color:var(--pink);">
-                <div class="text-[0.65rem] text-muted font-bold mb-1 uppercase"><i class="fas ${catMap[k]?.icon || 'fa-box'} mr-1 text-pink-400"></i> ${catMap[k]?.name || k}</div>
-                <div class="number-display text-[1rem] font-bold text-primary">${fmt(catTots[k])}</div>
+            <div class="card p-3 border-l-[3px] flex flex-col justify-center bg-[var(--bg-base)]" style="border-left-color:${k==='income'?'var(--green)':'var(--pink)'};">
+                <div class="text-[0.65rem] text-muted font-bold mb-1 uppercase"><i class="fas ${catMap[k]?.icon || 'fa-box'} mr-1 ${k==='income'?'text-green-400':'text-pink-400'}"></i> ${catMap[k]?.name || k}</div>
+                <div class="number-display text-[1rem] font-bold ${k==='income'?'text-green-400':'text-primary'}">${fmt(catTots[k])}</div>
             </div>
         `).join("");
 
@@ -1239,11 +1289,11 @@
                 </div>
             </div>
             ${catHtml ? `
-            <h4 class="font-display font-bold text-sm text-primary mb-2 mt-2 border-b border-[var(--border)] pb-2"><i class="fas fa-chart-pie text-pink-400 mr-1.5"></i>খাতওয়ারি খরচ</h4>
+            <h4 class="font-display font-bold text-sm text-primary mb-2 mt-2 border-b border-[var(--border)] pb-2"><i class="fas fa-chart-pie text-pink-400 mr-1.5"></i>খাতওয়ারি হিসাব</h4>
             <div class="grid grid-cols-2 gap-2 mb-2">
                 ${catHtml}
             </div>
-            ` : `<p class="text-center text-dim text-xs py-4 border border-[var(--border)] rounded-xl bg-[var(--bg-input)]">কোনো ব্যক্তিগত খরচ নেই।</p>`}
+            ` : `<p class="text-center text-dim text-xs py-4 border border-[var(--border)] rounded-xl bg-[var(--bg-input)]">কোনো রেকর্ড নেই।</p>`}
         `;
 
         document.getElementById("month-report-modal").classList.add("open");
@@ -1327,16 +1377,16 @@
                 await pb.collection("personal_expenses").create({ amount: amt, category: cat, note: note });
                 await refreshAll(); 
                 e.target.reset(); 
-                showToast("খরচ সফলভাবে যুক্ত হয়েছে!", "success");
+                showToast("সফলভাবে যুক্ত হয়েছে!", "success");
             } catch (err) { 
                 console.error("Expense Save Error:", err.response || err);
-                let msg = "খরচ যুক্ত করা যায়নি!";
+                let msg = "যুক্ত করা যায়নি!";
                 if (err.response && err.response.data) {
                     msg = `ডেটাবেস ফিল্ড ভুল: ${Object.keys(err.response.data).join(", ")}`;
                 }
                 showToast(msg, "error"); 
             } finally { 
-                btn.disabled = false; btn.innerHTML = `<i class="fas fa-plus-circle mr-2"></i>খরচ যুক্ত করুন`; 
+                btn.disabled = false; btn.innerHTML = `<i class="fas fa-plus-circle mr-2"></i>অ্যাড করুন`; 
             }
         });
 
@@ -1393,13 +1443,10 @@
             const pIdField = getPersonIdFromTrx(trx);
             const revMap = { "Gave": "Received", "Received": "Gave", "Shared Expense": "Received" };
             
-            // 1. Delete from DB first
             await pb.collection("transactions").delete(id);
-            // 2. Update balance ONLY if deletion succeeds
             await updatePersonBalance(pIdField, revMap[trx.trx_type], trx.amount);
             
             await refreshAll(); 
-            // If modal was open, refresh the modal content
             if(document.getElementById("person-profile-modal").classList.contains("open")) {
                 openPersonProfile(pIdField);
             }
@@ -1462,7 +1509,6 @@
     }
     
     function setupModalListeners() {
-        // Modal Background Click outside to close
         document.querySelectorAll('.modal-bg').forEach(bg => {
             bg.addEventListener('click', e => {
                 if(e.target === bg) {
@@ -1516,7 +1562,6 @@
         el.innerHTML = col ? `<tr><td colspan="${col}" class="text-center py-8">${inner}</td></tr>` : `<div class="col-span-full text-center py-8">${inner}</div>`;
     }
 
-    // Start App
     initApp();
 </script>
 </body>
